@@ -393,6 +393,7 @@
       </button>
       <button class="btn btn-ghost btn-sm" onclick="importarDatos()" title="Importar datos desde backup" style="font-size:10px;padding:3px 8px">Importar</button>
       <button class="btn btn-ghost btn-sm" onclick="exportarPDF()" title="Exportar reporte PDF" style="font-size:10px;padding:3px 8px">📄 PDF</button>
+      <button class="btn btn-ghost btn-sm" id="btn-hide-prices" onclick="toggleHidePrecios()" title="Ocultar precios" style="font-size:13px;padding:3px 8px">👁️</button>
     </div>
   </div>
 
@@ -940,6 +941,18 @@ function importarDatos() {
 
 // ===================== APP =====================
 let DB = {trabajos:[], ingresos:[], nextId:1};
+
+// ===== OCULTAR PRECIOS =====
+let hidePrecios = false;
+function fmtS(num){ return hidePrecios ? '***' : 'S/ ' + (num||0).toLocaleString(); }
+function fmtSRaw(num){ return hidePrecios ? '***' : 'S/ ' + (num||0); }
+function toggleHidePrecios(){
+  hidePrecios = !hidePrecios;
+  const btn = document.getElementById('btn-hide-prices');
+  btn.textContent = hidePrecios ? '🙈' : '👁️';
+  btn.title = hidePrecios ? 'Mostrar precios' : 'Ocultar precios';
+  renderAll();
+}
 let editId=null, editIngId=null, cobroId=null;
 
 const today = new Date();
@@ -999,10 +1012,10 @@ function renderDashboard(){
   const pct=totalFact>0?Math.round(totalTodo/(totalFact+DB.ingresos.reduce((a,x)=>a+x.monto,0))*100):0;
 
   document.getElementById('stats-grid').innerHTML=`
-    <div class="stat-card"><div class="stat-label">Total Facturado</div><div class="stat-val">S/ ${totalFact.toLocaleString()}</div><div class="stat-sub">Acad\u00e9mico</div></div>
-    <div class="stat-card green"><div class="stat-label">Total Cobrado</div><div class="stat-val">S/ ${(totalCob+otrosCob).toLocaleString()}</div><div class="stat-sub">Todo</div></div>
-    <div class="stat-card red"><div class="stat-label">Saldo Pendiente</div><div class="stat-val">S/ ${(totalSaldo+otrosPend).toLocaleString()}</div><div class="stat-sub">Por cobrar</div></div>
-    <div class="stat-card yellow"><div class="stat-label">Otros Ingresos</div><div class="stat-val">S/ ${otrosCob.toLocaleString()}</div><div class="stat-sub">Cobrado | Pend: S/${otrosPend}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Facturado</div><div class="stat-val">${fmtS(totalFact)}</div><div class="stat-sub">Acad\u00e9mico</div></div>
+    <div class="stat-card green"><div class="stat-label">Total Cobrado</div><div class="stat-val">${fmtS((totalCob+otrosCob))}</div><div class="stat-sub">Todo</div></div>
+    <div class="stat-card red"><div class="stat-label">Saldo Pendiente</div><div class="stat-val">${fmtS((totalSaldo+otrosPend))}</div><div class="stat-sub">Por cobrar</div></div>
+    <div class="stat-card yellow"><div class="stat-label">Otros Ingresos</div><div class="stat-val">${fmtS(otrosCob)}</div><div class="stat-sub">Cobrado | Pend: ${fmtSRaw(otrosPend)}</div></div>
     <div class="stat-card accent"><div class="stat-label">En Proceso</div><div class="stat-val">${t.filter(x=>x.estado==='En proceso').length}</div><div class="stat-sub">Activos</div></div>
     <div class="stat-card"><div class="stat-label">Total Trabajos</div><div class="stat-val">${t.length}</div><div class="stat-sub">Registrados</div></div>
   `;
@@ -1043,7 +1056,7 @@ function renderDashboard(){
       <span><span class="semaforo ${s.cls}"></span><strong>${a.nombre}</strong><br><span style="color:var(--text3);font-size:10px">${a.tipo}</span></span>
       <span style="color:var(--text2)">${a.tipo}</span>
       <span class="dias-badge" style="${dcls}">${dbg}</span>
-      <span class="${sal>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">S/ ${sal}</span>
+      <span class="${sal>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">${fmtSRaw(sal)}</span>
     </div>`
   }).join('');
 
@@ -1076,7 +1089,7 @@ function renderDashboard(){
         <span><strong>${c.nombre}</strong><br><span style="color:var(--text3);font-size:10px">${c.tipo} — Cuota ${c.cuota}</span></span>
         <span style="color:var(--text2)">${fmt(c.fecha)}</span>
         <span class="dias-badge" style="${dcls}">${dbg}</span>
-        <span style="font-weight:600;color:var(--accent3)">S/ ${c.monto.toLocaleString()}</span>
+        <span style="font-weight:600;color:var(--accent3)">${fmtS(c.monto)}</span>
       </div>`;
     }).join('');
   }
@@ -1124,9 +1137,9 @@ function renderTabla(){
       <td style="color:var(--text2)">${t.tipo}</td>
       <td style="color:var(--text3)">${t.uni||'—'}</td>
       <td style="color:var(--text2)">${fmt(t.fent)}</td>
-      <td style="font-weight:600">S/ ${(t.precio||0).toLocaleString()}</td>
-      <td style="color:var(--green);font-weight:600">S/ ${(t.cobrado||0).toLocaleString()}</td>
-      <td class="${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">S/ ${saldo}</td>
+      <td style="font-weight:600">${fmtS((t.precio||0))}</td>
+      <td style="color:var(--green);font-weight:600">${fmtS((t.cobrado||0))}</td>
+      <td class="${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">${fmtSRaw(saldo)}</td>
       <td><div class="pct-bar"><div class="pct-fill" style="width:${pct}%"></div></div><span style="font-size:10px;color:var(--text3)">${pct}%</span></td>
       <td>${pillEstado(t.estado)}</td>
       <td><span class="semaforo ${s.cls}"></span><span style="font-size:10px;color:var(--text3)">${s.label}</span></td>
@@ -1155,9 +1168,9 @@ function renderTabla(){
         <div class="mcard-field"><div class="mcard-field-label">Tipo</div><div class="mcard-field-val">${t.tipo}</div></div>
         <div class="mcard-field"><div class="mcard-field-label">Universidad</div><div class="mcard-field-val">${t.uni||'—'}</div></div>
         <div class="mcard-field"><div class="mcard-field-label">F. Entrega</div><div class="mcard-field-val">${fmt(t.fent)}</div></div>
-        <div class="mcard-field"><div class="mcard-field-label">Precio</div><div class="mcard-field-val" style="font-weight:700">S/ ${(t.precio||0).toLocaleString()}</div></div>
-        <div class="mcard-field"><div class="mcard-field-label">Cobrado</div><div class="mcard-field-val" style="color:var(--green);font-weight:700">S/ ${(t.cobrado||0).toLocaleString()}</div></div>
-        <div class="mcard-field"><div class="mcard-field-label">Saldo</div><div class="mcard-field-val ${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:700">S/ ${saldo}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">Precio</div><div class="mcard-field-val" style="font-weight:700">${fmtS((t.precio||0))}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">Cobrado</div><div class="mcard-field-val" style="color:var(--green);font-weight:700">${fmtS((t.cobrado||0))}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">Saldo</div><div class="mcard-field-val ${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:700">${fmtSRaw(saldo)}</div></div>
       </div>
       <div class="pct-bar" style="margin-bottom:10px"><div class="pct-fill" style="width:${pct}%"></div></div>
       <div class="mcard-footer">
@@ -1195,7 +1208,7 @@ function renderAlertas(){
       <td>${t.tipo}</td>
       <td>${fmt(t.fent)}</td>
       <td><span class="dias-badge" style="${dcls}">${dtext}</span></td>
-      <td class="${sal>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">S/ ${sal}</td>
+      <td class="${sal>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">${fmtSRaw(sal)}</td>
       <td>${pillEstado(t.estado)}</td>
     </tr>`
   }).join('')+'</tbody></table>';
@@ -1224,18 +1237,18 @@ function renderIngresos(){
         <div class="mcard-body">
           <div class="mcard-field"><div class="mcard-field-label">Cliente</div><div class="mcard-field-val">${g.cliente||'—'}</div></div>
           <div class="mcard-field"><div class="mcard-field-label">Fecha</div><div class="mcard-field-val">${fmt(g.fecha)}</div></div>
-          <div class="mcard-field"><div class="mcard-field-label">Monto</div><div class="mcard-field-val" style="font-weight:700">S/ ${(g.monto||0).toLocaleString()}</div></div>
-          <div class="mcard-field"><div class="mcard-field-label">Cobrado</div><div class="mcard-field-val" style="color:var(--green);font-weight:700">S/ ${(g.cobrado||0).toLocaleString()}</div></div>
-          <div class="mcard-field"><div class="mcard-field-label">Pendiente</div><div class="mcard-field-val ${p>0?'saldo-pos':'saldo-zero'}" style="font-weight:700">S/ ${p}</div></div>
+          <div class="mcard-field"><div class="mcard-field-label">Monto</div><div class="mcard-field-val" style="font-weight:700">${fmtS((g.monto||0))}</div></div>
+          <div class="mcard-field"><div class="mcard-field-label">Cobrado</div><div class="mcard-field-val" style="color:var(--green);font-weight:700">${fmtS((g.cobrado||0))}</div></div>
+          <div class="mcard-field"><div class="mcard-field-label">Pendiente</div><div class="mcard-field-val ${p>0?'saldo-pos':'saldo-zero'}" style="font-weight:700">${fmtSRaw(p)}</div></div>
           <div class="mcard-field"><div class="mcard-field-label">Notas</div><div class="mcard-field-val" style="font-size:11px">${g.notas||'—'}</div></div>
         </div>
         <div class="pct-bar"><div class="pct-fill" style="width:${pct}%"></div></div>
       </div>`
     }).join('')+
     `<div style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-top:4px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-      <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">Total</div><div style="font-weight:700">S/ ${tot.toLocaleString()}</div></div>
-      <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">Cobrado</div><div style="font-weight:700;color:var(--green)">S/ ${cob.toLocaleString()}</div></div>
-      <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">Pendiente</div><div style="font-weight:700;color:var(--red)">S/ ${pend.toLocaleString()}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">Total</div><div style="font-weight:700">${fmtS(tot)}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">Cobrado</div><div style="font-weight:700;color:var(--green)">${fmtS(cob)}</div></div>
+      <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:4px">Pendiente</div><div style="font-weight:700;color:var(--red)">${fmtS(pend)}</div></div>
     </div>`;
   } else {
     // TABLA en desktop
@@ -1247,9 +1260,9 @@ function renderIngresos(){
         <td><strong>${g.desc}</strong></td>
         <td>${g.cliente}</td>
         <td style="color:var(--text2)">${fmt(g.fecha)}</td>
-        <td style="font-weight:600">S/ ${(g.monto||0).toLocaleString()}</td>
-        <td style="color:var(--green);font-weight:600">S/ ${(g.cobrado||0).toLocaleString()}</td>
-        <td class="${p>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">S/ ${p}</td>
+        <td style="font-weight:600">${fmtS((g.monto||0))}</td>
+        <td style="color:var(--green);font-weight:600">${fmtS((g.cobrado||0))}</td>
+        <td class="${p>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">${fmtSRaw(p)}</td>
         <td style="color:var(--text3);font-size:11px">${g.notas||'—'}</td>
         <td><div class="actions">
           <button class="btn btn-ghost btn-sm" onclick="editarIngreso(${g.id})">✎</button>
@@ -1257,7 +1270,7 @@ function renderIngresos(){
         </div></td>
       </tr>`
     }).join('')+
-    `<tr class="total-row"><td colspan="4" style="padding:10px;font-size:11px;color:var(--text3)">TOTALES</td><td style="padding:10px;font-weight:700">S/ ${tot.toLocaleString()}</td><td style="padding:10px;font-weight:700;color:var(--green)">S/ ${cob.toLocaleString()}</td><td style="padding:10px;font-weight:700;color:var(--red)">S/ ${pend.toLocaleString()}</td><td colspan="2"></td></tr>`+
+    `<tr class="total-row"><td colspan="4" style="padding:10px;font-size:11px;color:var(--text3)">TOTALES</td><td style="padding:10px;font-weight:700">${fmtS(tot)}</td><td style="padding:10px;font-weight:700;color:var(--green)">${fmtS(cob)}</td><td style="padding:10px;font-weight:700;color:var(--red)">${fmtS(pend)}</td><td colspan="2"></td></tr>`+
     '</tbody></table>';
   }
 }
@@ -1270,10 +1283,10 @@ function renderProyeccion(){
   const proy90=t.filter(x=>getSaldo(x)>0&&x.estado!=='Pagado'&&x.estado!=='Cancelado'&&diffDias(x.fpago)!==null&&diffDias(x.fpago)<=90&&diffDias(x.fpago)>=0).reduce((a,x)=>a+getSaldo(x),0);
   const totalPend=t.reduce((a,x)=>a+getSaldo(x),0)+DB.ingresos.reduce((a,x)=>a+(x.monto-x.cobrado||0),0);
   document.getElementById('proy-grid').innerHTML=`
-    <div class="proy-card"><div class="proy-periodo">Próximos 30 días</div><div class="proy-monto" style="color:var(--green)">S/ ${proy30.toLocaleString()}</div><div class="proy-desc">Cobros esperados</div></div>
-    <div class="proy-card"><div class="proy-periodo">Próximos 60 días</div><div class="proy-monto" style="color:var(--yellow)">S/ ${proy60.toLocaleString()}</div><div class="proy-desc">Cobros esperados</div></div>
-    <div class="proy-card"><div class="proy-periodo">Próximos 90 días</div><div class="proy-monto" style="color:var(--accent3)">S/ ${proy90.toLocaleString()}</div><div class="proy-desc">Cobros esperados</div></div>
-    <div class="proy-card" style="border-color:var(--accent)"><div class="proy-periodo">Gran Total Pendiente</div><div class="proy-monto" style="color:var(--red)">S/ ${totalPend.toLocaleString()}</div><div class="proy-desc">Todo por cobrar</div></div>
+    <div class="proy-card"><div class="proy-periodo">Próximos 30 días</div><div class="proy-monto" style="color:var(--green)">${fmtS(proy30)}</div><div class="proy-desc">Cobros esperados</div></div>
+    <div class="proy-card"><div class="proy-periodo">Próximos 60 días</div><div class="proy-monto" style="color:var(--yellow)">${fmtS(proy60)}</div><div class="proy-desc">Cobros esperados</div></div>
+    <div class="proy-card"><div class="proy-periodo">Próximos 90 días</div><div class="proy-monto" style="color:var(--accent3)">${fmtS(proy90)}</div><div class="proy-desc">Cobros esperados</div></div>
+    <div class="proy-card" style="border-color:var(--accent)"><div class="proy-periodo">Gran Total Pendiente</div><div class="proy-monto" style="color:var(--red)">${fmtS(totalPend)}</div><div class="proy-desc">Todo por cobrar</div></div>
   `;
 
   // Recolectar todas las cuotas
@@ -1332,7 +1345,7 @@ function renderProyeccion(){
       <td>${fmt(c.fecha)}${c.freal&&est==='retraso'?`<br><span style="font-size:10px;color:var(--yellow)">Pagó: ${fmt(c.freal)}</span>`:''}
       </td>
       <td><span class="dias-badge" style="${dcls}">${c.dias<0?Math.abs(c.dias)+'d venc':c.dias===0?'Hoy':c.dias+'d'}</span></td>
-      <td style="font-weight:600;color:var(--accent3)">S/ ${c.monto}</td>
+      <td style="font-weight:600;color:var(--accent3)">${fmtSRaw(c.monto)}</td>
       <td><span style="font-size:12px;color:${estColor[est]}">${estIcon[est]} ${estLabel[est]}</span></td>
     </tr>`;
   }).join('')+'</tbody></table>';
@@ -1461,7 +1474,7 @@ function actualizarCobradoDesdeCuotas(){
   const infoEl = document.getElementById('cobrado-preview');
   if(infoEl){
     const saldo = precio - cobradoFinal;
-    infoEl.innerHTML = `<span style="color:var(--green)">Cobrado: S/ ${cobradoFinal.toLocaleString()}</span> &nbsp;|&nbsp; <span style="color:var(--red)">Saldo: S/ ${saldo.toLocaleString()}</span>`;
+    infoEl.innerHTML = `<span style="color:var(--green)">Cobrado: ${fmtS(cobradoFinal)}</span> &nbsp;|&nbsp; <span style="color:var(--red)">Saldo: ${fmtS(saldo)}</span>`;
   }
 }
 
@@ -1587,7 +1600,7 @@ function cobrarTrabajo(id){
   cobroId=id;
   const saldo=(t.precio||0)-(t.cobrado||0);
   if(saldo<=0){alert('Este trabajo ya está completamente pagado.');return;}
-  document.getElementById('cobro-info').innerHTML=`<strong>${t.nombre}</strong><br>Precio: S/ ${t.precio} | Cobrado: S/ ${t.cobrado||0} | Saldo: <strong style="color:var(--red)">S/ ${saldo}</strong>`;
+  document.getElementById('cobro-info').innerHTML=`<strong>${t.nombre}</strong><br>Precio: ${fmtSRaw(t.precio)} | Cobrado: ${fmtSRaw(t.cobrado||0)} | Saldo: <strong style="color:var(--red)">${fmtSRaw(saldo)}</strong>`;
   document.getElementById('cobro-monto').value=saldo>0?saldo:'';
   document.getElementById('modal-cobro').classList.add('open');
 }
@@ -1680,9 +1693,9 @@ function verHistorial(id){
   // Resumen encabezado
   let html = `<div style="padding:14px 18px;background:var(--bg3);border-bottom:1px solid var(--border)">
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-      <div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Precio</div><div style="font-weight:700;font-size:15px">S/ ${(t.precio||0).toLocaleString()}</div></div>
-      <div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Cobrado</div><div style="font-weight:700;font-size:15px;color:var(--green)">S/ ${(t.cobrado||0).toLocaleString()}</div></div>
-      <div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Saldo</div><div style="font-weight:700;font-size:15px;color:${saldo>0?'var(--red)':'var(--green)'}">S/ ${saldo.toLocaleString()}</div></div>
+      <div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Precio</div><div style="font-weight:700;font-size:15px">${fmtS((t.precio||0))}</div></div>
+      <div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Cobrado</div><div style="font-weight:700;font-size:15px;color:var(--green)">${fmtS((t.cobrado||0))}</div></div>
+      <div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Saldo</div><div style="font-weight:700;font-size:15px;color:${saldo>0?'var(--red)':'var(--green)'}">${fmtS(saldo)}</div></div>
     </div>
     <div style="margin-top:10px">
       <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:4px"><span>Progreso</span><span>${pct}%</span></div>
@@ -1701,7 +1714,7 @@ function verHistorial(id){
     html += `<div style="padding:16px 18px">
       <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600">💵 Pago al Contado</div>
       ${t.cobrado>0
-        ? `<div style="background:#052e16;border:1px solid #166534;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green)">✅ Cobrado S/ ${(t.cobrado||0).toLocaleString()}</div>`
+        ? `<div style="background:#052e16;border:1px solid #166534;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green)">✅ Cobrado ${fmtS((t.cobrado||0))}</div>`
         : `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text3)">⏳ Pendiente de cobro</div>`}
     </div>`;
   } else {
@@ -1717,7 +1730,7 @@ function verHistorial(id){
       html += `<div style="background:${bg};border:1px solid ${border};border-radius:8px;padding:10px 14px;margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center">
         <div style="font-size:18px">${icon}</div>
         <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text)">Cuota ${i+1} — S/ ${(c.m||0).toLocaleString()}</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text)">Cuota ${i+1} — ${fmtS((c.m||0))}</div>
           <div style="font-size:10px;color:var(--text3);margin-top:2px">Programada: ${c.f ? fmt(c.f) : '—'}</div>
           ${est==='retraso'&&c.freal ? `<div style="font-size:10px;color:var(--yellow);margin-top:2px">Pagó el: ${fmt(c.freal)}</div>` : ''}
           ${est==='retraso'&&c.nota ? `<div style="font-size:10px;color:var(--text3);margin-top:2px;font-style:italic">"${c.nota}"</div>` : ''}
@@ -1797,7 +1810,7 @@ function buildFacturaHtml(t, empresa){
       const icon = (est==='pagada'||est==='retraso') ? '✅' : '⏳';
       cuotasHtml += `<div class="factura-cuota-item ${cls}">
         <span>${icon} Cuota ${i+1}${c.f?' — '+fmt(c.f):''}</span>
-        <strong>S/ ${(c.m||0).toLocaleString()}</strong>
+        <strong>${fmtS((c.m||0))}</strong>
       </div>`;
     });
     cuotasHtml += '</div>';
@@ -1847,7 +1860,7 @@ function buildFacturaHtml(t, empresa){
                 ${t.fent ? '&nbsp;·&nbsp;Entrega: '+fmt(t.fent) : ''}
               </span>
             </td>
-            <td style="text-align:right;font-weight:700;font-size:14px">S/ ${(t.precio||0).toLocaleString()}</td>
+            <td style="text-align:right;font-weight:700;font-size:14px">${fmtS((t.precio||0))}</td>
           </tr>
         </tbody>
       </table>
@@ -1855,13 +1868,13 @@ function buildFacturaHtml(t, empresa){
 
     <div class="factura-totals">
       <div class="factura-total-row grand">
-        <span>Total del Servicio</span><span>S/ ${(t.precio||0).toLocaleString()}</span>
+        <span>Total del Servicio</span><span>${fmtS((t.precio||0))}</span>
       </div>
       <div class="factura-total-row cobrado">
-        <span>✅ Pagado / Cobrado</span><span>S/ ${(t.cobrado||0).toLocaleString()}</span>
+        <span>✅ Pagado / Cobrado</span><span>${fmtS((t.cobrado||0))}</span>
       </div>
       ${saldo>0 ? `<div class="factura-total-row saldo">
-        <span>⏳ Saldo Pendiente</span><span>S/ ${saldo.toLocaleString()}</span>
+        <span>⏳ Saldo Pendiente</span><span>${fmtS(saldo)}</span>
       </div>` : ''}
       <div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span class="factura-badge-estado ${estadoCls}">${t.estado}</span>
@@ -1988,7 +2001,7 @@ function compartirWhatsAppTexto(t){
     cuotas.forEach((c,i)=>{
       const est  = c.estado||'pendiente';
       const icon = (est==='pagada'||est==='retraso') ? '✅' : '⏳';
-      cuotasTxt += `${icon} Cuota ${i+1}${c.f?' — '+fmt(c.f):''}: S/ ${(c.m||0).toLocaleString()}\n`;
+      cuotasTxt += `${icon} Cuota ${i+1}${c.f?' — '+fmt(c.f):''}: ${fmtS((c.m||0))}\n`;
     });
   }
 
@@ -2002,9 +2015,9 @@ function compartirWhatsAppTexto(t){
     + `${t.notas ? '📝 *Detalle:* '+t.notas+'\n' : ''}`
     + `${t.fent ? '📆 *Entrega:* '+fmt(t.fent)+'\n' : ''}`
     + `━━━━━━━━━━━━━━━━━━━━━━━\n`
-    + `💰 *Total:* S/ ${(t.precio||0).toLocaleString()}\n`
-    + `✅ *Pagado:* S/ ${(t.cobrado||0).toLocaleString()}\n`
-    + (saldo>0 ? `⏳ *Saldo pendiente:* S/ ${saldo.toLocaleString()}\n` : `🎉 *¡Pagado completo!*\n`)
+    + `💰 *Total:* ${fmtS((t.precio||0))}\n`
+    + `✅ *Pagado:* ${fmtS((t.cobrado||0))}\n`
+    + (saldo>0 ? `⏳ *Saldo pendiente:* ${fmtS(saldo)}\n` : `🎉 *¡Pagado completo!*\n`)
     + `📌 *Estado:* ${t.estado}`
     + cuotasTxt;
 
@@ -2036,9 +2049,9 @@ function exportarPDF(){
       <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:11px;color:#374151">${t.tipo}</td>
       <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:11px;color:#6b7280">${t.uni||'—'}</td>
       <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:11px">${t.fent?fmt(t.fent):'—'}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-weight:700;font-size:12px;text-align:right">S/ ${(t.precio||0).toLocaleString()}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;color:#059669;font-weight:600;text-align:right;font-size:12px">S/ ${(t.cobrado||0).toLocaleString()}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;color:${saldo>0?'#dc2626':'#059669'};font-weight:700;text-align:right;font-size:12px">S/ ${saldo.toLocaleString()}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-weight:700;font-size:12px;text-align:right">${fmtS((t.precio||0))}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;color:#059669;font-weight:600;text-align:right;font-size:12px">${fmtS((t.cobrado||0))}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;color:${saldo>0?'#dc2626':'#059669'};font-weight:700;text-align:right;font-size:12px">${fmtS(saldo)}</td>
       <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:11px">
         <span style="background:${semBg};color:${semColor};padding:2px 8px;border-radius:10px;font-weight:600;font-size:10px">${estado}</span>
       </td>
@@ -2131,9 +2144,9 @@ function exportarPDF(){
       <tfoot>
         <tr style="background:#f8f7ff">
           <td colspan="5" style="padding:10px;font-weight:800;font-size:12px;border-top:2px solid #7c6fff">TOTAL</td>
-          <td style="padding:10px;font-weight:800;font-size:13px;text-align:right;border-top:2px solid #7c6fff">S/ ${totalFact.toLocaleString()}</td>
-          <td style="padding:10px;font-weight:800;font-size:13px;text-align:right;color:#059669;border-top:2px solid #7c6fff">S/ ${totalCob.toLocaleString()}</td>
-          <td style="padding:10px;font-weight:800;font-size:13px;text-align:right;color:#dc2626;border-top:2px solid #7c6fff">S/ ${totalSaldo.toLocaleString()}</td>
+          <td style="padding:10px;font-weight:800;font-size:13px;text-align:right;border-top:2px solid #7c6fff">${fmtS(totalFact)}</td>
+          <td style="padding:10px;font-weight:800;font-size:13px;text-align:right;color:#059669;border-top:2px solid #7c6fff">${fmtS(totalCob)}</td>
+          <td style="padding:10px;font-weight:800;font-size:13px;text-align:right;color:#dc2626;border-top:2px solid #7c6fff">${fmtS(totalSaldo)}</td>
           <td style="border-top:2px solid #7c6fff"></td>
         </tr>
       </tfoot>
@@ -2273,7 +2286,7 @@ function renderChecklist(){
       <div style="padding:14px 18px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
         <div>
           <div style="font-weight:700;font-size:13px;color:var(--text)">${t.nombre} <span style="font-size:11px;color:var(--text3);font-weight:400">· ${t.tipo}</span></div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">${t.uni||''} ${t.fent?'· Entrega: '+fmt(t.fent):''} · Saldo: <span style="color:${saldo>0?'var(--red)':'var(--green)'}">S/ ${saldo}</span></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${t.uni||''} ${t.fent?'· Entrega: '+fmt(t.fent):''} · Saldo: <span style="color:${saldo>0?'var(--red)':'var(--green)'}">${fmtSRaw(saldo)}</span></div>
         </div>
         <div style="text-align:right">
           <div style="font-size:11px;font-weight:700;color:var(--accent3)">${total>0?done+'/'+total+' tareas':'Sin tareas'}</div>
@@ -2606,7 +2619,7 @@ function procesarComandoLocal(texto){
   <div class="arc-row"><span>Cliente</span><span><strong>${nuevo.nombre}</strong></span></div>
   <div class="arc-row"><span>Tipo</span><span>${nuevo.tipo}</span></div>
   ${uni ? `<div class="arc-row"><span>Universidad</span><span>${uni}</span></div>` : ''}
-  <div class="arc-row"><span>Precio</span><span style="color:var(--accent3)"><strong>S/ ${(nuevo.precio||0).toLocaleString()}</strong></span></div>
+  <div class="arc-row"><span>Precio</span><span style="color:var(--accent3)"><strong>${fmtS((nuevo.precio||0))}</strong></span></div>
   <div class="arc-row"><span>Modalidad</span><span>${modoPago==='cuotas'?'En Cuotas':'Al Contado'}</span></div>
   ${nuevo.fent ? `<div class="arc-row"><span>F. Entrega</span><span>${fmtFechaTxt(nuevo.fent)}</span></div>` : ''}
   <div class="arc-row"><span>Estado</span><span>${nuevo.estado}</span></div>
@@ -2614,7 +2627,7 @@ function procesarComandoLocal(texto){
     if(cuotasArr.length > 0){
       resumen += `<br>📅 <strong>${cuotasArr.length} cuota(s) programada(s):</strong><br>`;
       cuotasArr.forEach((c,i)=>{
-        resumen += `&nbsp;&nbsp;• Cuota ${i+1}: S/ ${c.m} ${c.f ? '— '+fmtFechaTxt(c.f) : '(sin fecha)'}<br>`;
+        resumen += `&nbsp;&nbsp;• Cuota ${i+1}: ${fmtSRaw(c.m)} ${c.f ? '— '+fmtFechaTxt(c.f) : '(sin fecha)'}<br>`;
       });
     }
     if(!monto){
@@ -2633,11 +2646,11 @@ function procesarComandoLocal(texto){
     }
     if(!monto){
       const saldo = (t.precio||0)-(t.cobrado||0);
-      return {tipo:'error', msg:`⚠️ Encontré a <strong>${t.nombre}</strong> (saldo: S/ ${saldo}), pero no vi el monto.\nEjemplo: <em>"Cobrar 200 soles a ${t.nombre}"</em>`};
+      return {tipo:'error', msg:`⚠️ Encontré a <strong>${t.nombre}</strong> (saldo: ${fmtSRaw(saldo)}), pero no vi el monto.\nEjemplo: <em>"Cobrar 200 soles a ${t.nombre}"</em>`};
     }
     const saldoAntes = (t.precio||0)-(t.cobrado||0);
     if(monto > saldoAntes){
-      return {tipo:'error', msg:`❌ El monto S/ ${monto} supera el saldo de S/ ${saldoAntes} de <strong>${t.nombre}</strong>.`};
+      return {tipo:'error', msg:`❌ El monto ${fmtSRaw(monto)} supera el saldo de ${fmtSRaw(saldoAntes)} de <strong>${t.nombre}</strong>.`};
     }
     t.cobrado = (t.cobrado||0) + monto;
     if(t.cobrado >= t.precio){ t.cobrado = t.precio; t.estado = 'Pagado'; }
@@ -2645,8 +2658,8 @@ function procesarComandoLocal(texto){
     return {tipo:'html', msg:`✅ <strong>Cobro registrado</strong>
 <div class="ai-result-card">
   <div class="arc-row"><span>Cliente</span><span>${t.nombre}</span></div>
-  <div class="arc-row"><span>Cobrado ahora</span><span style="color:var(--green)">+S/ ${monto}</span></div>
-  <div class="arc-row"><span>Nuevo saldo</span><span style="color:${t.precio-t.cobrado>0?'var(--red)':'var(--green)'}">S/ ${t.precio-t.cobrado}</span></div>
+  <div class="arc-row"><span>Cobrado ahora</span><span style="color:var(--green)">+${fmtSRaw(monto)}</span></div>
+  <div class="arc-row"><span>Nuevo saldo</span><span style="color:${t.precio-t.cobrado>0?'var(--red)':'var(--green)'}">${fmtSRaw(t.precio-t.cobrado)}</span></div>
   <div class="arc-row"><span>Estado</span><span>${t.estado}</span></div>
 </div>`};
   }
@@ -2718,15 +2731,15 @@ function generarRespuestaConsulta(texto){
       .sort((a,b)=>((b.precio||0)-(b.cobrado||0))-((a.precio||0)-(a.cobrado||0)));
     let resp = `💰 <strong>Saldo pendiente de cobro</strong>
 <div class="ai-result-card">
-  <div class="arc-row"><span>Total facturado</span><span>S/ ${totalFact.toLocaleString()}</span></div>
-  <div class="arc-row"><span>Total cobrado</span><span style="color:var(--green)">S/ ${totalCob.toLocaleString()}</span></div>
-  <div class="arc-row"><span>Por cobrar</span><span style="color:var(--red);font-weight:700">S/ ${saldoPend.toLocaleString()}</span></div>
+  <div class="arc-row"><span>Total facturado</span><span>${fmtS(totalFact)}</span></div>
+  <div class="arc-row"><span>Total cobrado</span><span style="color:var(--green)">${fmtS(totalCob)}</span></div>
+  <div class="arc-row"><span>Por cobrar</span><span style="color:var(--red);font-weight:700">${fmtS(saldoPend)}</span></div>
 </div>`;
     if(deudores.length > 0){
       resp += `<br>👥 <strong>Top deudores:</strong><br>`;
       deudores.slice(0,5).forEach(x=>{
         const sal = (x.precio||0)-(x.cobrado||0);
-        resp += `&nbsp;• <strong>${x.nombre}</strong>: S/ ${sal} <span style="color:var(--text3);font-size:11px">(${x.estado})</span><br>`;
+        resp += `&nbsp;• <strong>${x.nombre}</strong>: ${fmtSRaw(sal)} <span style="color:var(--text3);font-size:11px">(${x.estado})</span><br>`;
       });
     }
     return {tipo:'html', msg: resp};
@@ -2739,7 +2752,7 @@ function generarRespuestaConsulta(texto){
       resp += `🔴 <strong>Vencidos (${vencidos.length}):</strong><br>`;
       vencidos.forEach(x=>{
         const d = diffDias(x.fent);
-        resp += `&nbsp;• ${x.nombre} — venció hace ${Math.abs(d)} día(s) | Saldo: S/${(x.precio||0)-(x.cobrado||0)}<br>`;
+        resp += `&nbsp;• ${x.nombre} — venció hace ${Math.abs(d)} día(s) | Saldo: ${fmtSRaw((x.precio||0)-(x.cobrado||0))}<br>`;
       });
       resp += '<br>';
     }
@@ -2747,7 +2760,7 @@ function generarRespuestaConsulta(texto){
       resp += `🟡 <strong>Vencen esta semana (${proximos.length}):</strong><br>`;
       proximos.forEach(x=>{
         const d = diffDias(x.fent);
-        resp += `&nbsp;• ${x.nombre} — en ${d===0?'hoy':d===1?'mañana':d+' días'} | S/${(x.precio||0)-(x.cobrado||0)}<br>`;
+        resp += `&nbsp;• ${x.nombre} — en ${d===0?'hoy':d===1?'mañana':d+' días'} | ${fmtSRaw((x.precio||0)-(x.cobrado||0))}<br>`;
       });
     }
     if(vencidos.length===0 && proximos.length===0){
@@ -2765,8 +2778,8 @@ function generarRespuestaConsulta(texto){
   <div class="arc-row"><span>Pendientes</span><span>${t.filter(x=>x.estado==='Pendiente').length}</span></div>
   <div class="arc-row"><span>Terminados</span><span>${t.filter(x=>x.estado==='Terminado').length}</span></div>
   <div class="arc-row"><span>Pagados</span><span style="color:var(--green)">${t.filter(x=>x.estado==='Pagado').length}</span></div>
-  <div class="arc-row"><span>Total facturado</span><span>S/ ${totalFact.toLocaleString()}</span></div>
-  <div class="arc-row"><span>Por cobrar</span><span style="color:var(--red)">S/ ${saldoPend.toLocaleString()}</span></div>
+  <div class="arc-row"><span>Total facturado</span><span>${fmtS(totalFact)}</span></div>
+  <div class="arc-row"><span>Por cobrar</span><span style="color:var(--red)">${fmtS(saldoPend)}</span></div>
 </div>`;
     return {tipo:'html', msg: resp};
   }
@@ -2788,9 +2801,9 @@ function generarRespuestaConsulta(texto){
     return {tipo:'html', msg:`📊 <strong>Trabajos de ${mNom[mesActual]} ${anioActual}</strong>
 <div class="ai-result-card">
   <div class="arc-row"><span>Trabajos nuevos</span><span>${esteMes.length}</span></div>
-  <div class="arc-row"><span>Facturado</span><span>S/ ${factEsteMes.toLocaleString()}</span></div>
-  <div class="arc-row"><span>Cobrado</span><span style="color:var(--green)">S/ ${cobEsteMes.toLocaleString()}</span></div>
-  <div class="arc-row"><span>Pendiente</span><span style="color:var(--red)">S/ ${(factEsteMes-cobEsteMes).toLocaleString()}</span></div>
+  <div class="arc-row"><span>Facturado</span><span>${fmtS(factEsteMes)}</span></div>
+  <div class="arc-row"><span>Cobrado</span><span style="color:var(--green)">${fmtS(cobEsteMes)}</span></div>
+  <div class="arc-row"><span>Pendiente</span><span style="color:var(--red)">${fmtS((factEsteMes-cobEsteMes))}</span></div>
 </div>`};
   }
 
@@ -2803,7 +2816,7 @@ function generarRespuestaConsulta(texto){
     let resp = `👥 <strong>Clientes con mayor saldo pendiente:</strong><br><br>`;
     deudores.slice(0,8).forEach((x,i)=>{
       const sal = (x.precio||0)-(x.cobrado||0);
-      resp += `${i+1}. <strong>${x.nombre}</strong>: <span style="color:var(--red)">S/ ${sal}</span> <span style="color:var(--text3);font-size:11px">— ${x.tipo}</span><br>`;
+      resp += `${i+1}. <strong>${x.nombre}</strong>: <span style="color:var(--red)">${fmtSRaw(sal)}</span> <span style="color:var(--text3);font-size:11px">— ${x.tipo}</span><br>`;
     });
     return {tipo:'html', msg: resp};
   }
