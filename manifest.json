@@ -1,0 +1,29 @@
+{
+  "name": "Tracker Académico",
+  "short_name": "Tracker",
+  "description": "Gestión de trabajos académicos freelance — Tesla Six",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0f13",
+  "theme_color": "#7c6fff",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "permissions": [
+    "microphone"
+  ],
+  "categories": ["productivity", "business"]
+}
