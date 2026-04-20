@@ -216,6 +216,10 @@
     .modal{border-radius:16px 16px 0 0;max-height:95vh}
     .modal-overlay{align-items:flex-end}
     .logo span{display:none}
+    .btn-hide-only-desktop{display:none!important}
+    /* Ocultar Importar y PDF en móvil para dar espacio al ojo */
+    .btn-importar-mobile{display:none!important}
+    .btn-pdf-mobile{display:none!important}
   }
 
   @media print {
@@ -391,8 +395,8 @@
         <div class="sync-dot"></div>
         <span id="sync-label">Listo</span>
       </button>
-      <button class="btn btn-ghost btn-sm" onclick="importarDatos()" title="Importar datos desde backup" style="font-size:10px;padding:3px 8px">Importar</button>
-      <button class="btn btn-ghost btn-sm" onclick="exportarPDF()" title="Exportar reporte PDF" style="font-size:10px;padding:3px 8px">📄 PDF</button>
+      <button class="btn btn-ghost btn-sm btn-importar-mobile" onclick="importarDatos()" title="Importar datos desde backup" style="font-size:10px;padding:3px 8px">Importar</button>
+      <button class="btn btn-ghost btn-sm btn-pdf-mobile" onclick="exportarPDF()" title="Exportar reporte PDF" style="font-size:10px;padding:3px 8px">📄 PDF</button>
       <button class="btn btn-ghost btn-sm" id="btn-hide-prices" onclick="toggleHidePrecios()" title="Ocultar precios" style="font-size:13px;padding:3px 8px">👁️</button>
     </div>
   </div>
@@ -624,6 +628,7 @@
     <button class="mnav-btn" id="mnav-asistente" onclick="goView('asistente',this,true)">
       <span class="mnav-icon">🤖</span>Offline
     </button>
+
   </div>
 </nav>
 
@@ -948,9 +953,19 @@ function fmtS(num){ return hidePrecios ? '***' : 'S/ ' + (num||0).toLocaleString
 function fmtSRaw(num){ return hidePrecios ? '***' : 'S/ ' + (num||0); }
 function toggleHidePrecios(){
   hidePrecios = !hidePrecios;
-  const btn = document.getElementById('btn-hide-prices');
-  btn.textContent = hidePrecios ? '🙈' : '👁️';
-  btn.title = hidePrecios ? 'Mostrar precios' : 'Ocultar precios';
+  // Botón desktop header
+  const btnDesktop = document.getElementById('btn-hide-prices');
+  if(btnDesktop){
+    btnDesktop.textContent = hidePrecios ? '🙈' : '👁️';
+    btnDesktop.title = hidePrecios ? 'Mostrar precios' : 'Ocultar precios';
+  }
+  // Botón mobile nav
+  const iconMobile = document.getElementById('hide-prices-icon');
+  const labelMobile = document.getElementById('hide-prices-label');
+  const btnMobile = document.getElementById('mnav-hide-prices');
+  if(iconMobile) iconMobile.textContent = hidePrecios ? '🙈' : '👁️';
+  if(labelMobile) labelMobile.textContent = hidePrecios ? 'Mostrar' : 'Precios';
+  if(btnMobile) btnMobile.style.color = hidePrecios ? 'var(--yellow)' : '';
   renderAll();
 }
 let editId=null, editIngId=null, cobroId=null;
