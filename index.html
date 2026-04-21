@@ -2270,7 +2270,7 @@ function eliminarIngreso(id){
 // Cerrar modales con click fuera
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{
-    if(e.target===m){
+    if(e.target===m && m.id!=='modal-drive'){
       m.classList.remove('open');
       if(m.id==='modal-cobro') cobroId=null;
       if(m.id==='modal-factura') facturaActualId=null;
@@ -5392,7 +5392,9 @@ function initDriveAuth(forceConnect){
       updateDriveStatusUI();
       renderDriveConnectedView();
       showToast('✅ Conectado a Google Drive');
-      if(DRIVE.autoSync) setTimeout(()=>driveBackupSubir(), 1000);
+      // Auto-load backups list after connect
+      setTimeout(()=>driveListarBackups(), 800);
+      if(DRIVE.autoSync) setTimeout(()=>driveBackupSubir(), 1500);
     }
   });
   // Update connect button in modal
@@ -5480,7 +5482,7 @@ function renderDriveConnectedView(){
 }
 
 async function driveBackupSubir(){
-  if(!DRIVE.isConnected){ showToast('⚠️ Conecta Google Drive primero'); return; }
+  if(!DRIVE.isConnected && !DRIVE.accessToken){ showToast('⚠️ Conecta Google Drive primero'); return; }
   showToast('☁️ Subiendo backup a Drive...');
   updateDriveBtn('⬆️','Subiendo...');
   try {
@@ -5495,7 +5497,7 @@ async function driveBackupSubir(){
 }
 
 async function driveListarBackups(){
-  if(!DRIVE.isConnected){ showToast('⚠️ Conecta Google Drive primero'); return; }
+  if(!DRIVE.isConnected && !DRIVE.accessToken){ showToast('⚠️ Conecta Google Drive primero'); return; }
   const listEl = document.getElementById('drive-files-list');
   if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">🔄 Cargando...</div>';
   try {
