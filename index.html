@@ -18,6 +18,7 @@
 <title>Tracker Academico</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -35,7 +36,10 @@
   .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
   .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--text)}
   .logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-  .header-right{display:flex;align-items:center;gap:8px}
+  .header-right{display:flex;align-items:center;gap:6px}
+  @media(max-width:400px){
+    .header-right .btn:not(:last-child):not(:nth-last-child(2)):not(:nth-last-child(3)){display:none}
+  }
   .header-date{font-size:11px;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:20px;border:1px solid var(--border);white-space:nowrap}
   .sync-status{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .2s;white-space:nowrap}
   .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
@@ -65,6 +69,7 @@
   /* STATS GRID */
   .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
   .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+  @media(max-width:380px){.stat-card{padding:10px 12px}}
   .stat-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
   .stat-val{font-size:22px;font-weight:700;color:var(--text);line-height:1}
   .stat-sub{font-size:10px;color:var(--text3);margin-top:3px}
@@ -112,7 +117,7 @@
 
   /* TABLE */
   .table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
-  .table-toolbar{padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .table-toolbar{padding:10px 12px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .search-input{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--text);font-size:12px;font-family:inherit;outline:none;flex:1;min-width:120px}
   .search-input:focus{border-color:var(--accent)}
   .filter-select{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--text);font-size:12px;font-family:inherit;outline:none;cursor:pointer}
@@ -133,14 +138,20 @@
 
   /* MOBILE CARDS - para registro en celular */
   .mobile-cards{display:none}
-  .mcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
-  .mcard-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-  .mcard-nombre{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}
-  .mcard-body{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
-  .mcard-field{font-size:11px}
-  .mcard-field-label{color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:1px}
-  .mcard-field-val{color:var(--text2)}
-  .mcard-footer{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .mcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;transition:border-color .2s}
+  .mcard:hover{border-color:var(--border2)}
+  .mcard-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px}
+  .mcard-nombre{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+  .mcard-nombre span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mcard-cel{font-size:11px;color:var(--text3);margin-top:2px}
+  .mcard-body{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+  .mcard-field{font-size:11px;background:var(--bg3);border-radius:6px;padding:7px 9px}
+  .mcard-field-label{color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;font-weight:600}
+  .mcard-field-val{color:var(--text);font-weight:600}
+  .mcard-progress{height:3px;background:var(--bg4);border-radius:3px;margin:8px 0;overflow:hidden}
+  .mcard-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .4s}
+  .mcard-footer{display:flex;gap:5px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:10px;margin-top:2px}
+  .mcard-footer .btn{flex:1;min-width:0;justify-content:center;display:flex;align-items:center;gap:3px}
 
   /* PILLS */
   .pill{padding:3px 9px;border-radius:12px;font-size:10px;font-weight:600;white-space:nowrap}
@@ -152,9 +163,11 @@
   .p-terminado{background:#1c0a1c;color:#d946ef;border:1px solid #701a75}
 
   /* MODAL */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
   .modal-overlay.open{display:flex}
-  .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto}
+  .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:600px;max-height:92vh;overflow-y:auto}
+  .modal-drag-handle{width:40px;height:4px;background:var(--border2);border-radius:4px;margin:10px auto 0;display:none}
+  @media(max-width:768px){.modal-drag-handle{display:block}}
   .modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg2);z-index:1}
   .modal-title{font-size:14px;font-weight:700;color:var(--text)}
   .modal-close{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text2);cursor:pointer;padding:4px 10px;font-size:16px;font-family:inherit}
@@ -169,11 +182,16 @@
 
   /* CUOTAS */
   .cuotas-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  @media(max-width:768px){.cuotas-grid{grid-template-columns:1fr}.cuota-item{padding:10px}}
   .cuota-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px}
   .cuota-label{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase}
 
   /* INGRESOS */
   .ingreso-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;font-size:12px}
+  @media(max-width:768px){
+    .ingreso-row{grid-template-columns:1fr auto;gap:6px;padding:10px 12px}
+    .ingreso-row>span:nth-child(2),.ingreso-row>span:nth-child(3),.ingreso-row>span:nth-child(4){display:none}
+  }
   .ingreso-row:hover{background:var(--bg3)}
 
   /* PROYECCION */
@@ -195,31 +213,124 @@
   .toast.show{opacity:1}
 
   /* RESPONSIVE */
-  @media(max-width:640px){
-    .main{padding:12px 10px 80px}
+  /* ===== MOBILE RESPONSIVE — COMPLETO ===== */
+  @media(max-width:768px){
+    /* Layout base */
+    .main{padding:10px 10px 76px}
+    .header{padding:0 10px;height:50px}
     .header-date{display:none}
     .nav{display:none}
     .mobile-nav{display:block}
-    .stats-grid{grid-template-columns:1fr 1fr}
-    .stat-val{font-size:18px}
-    .alert-row{grid-template-columns:1fr auto;gap:6px}
-    .alert-row>span:nth-child(2){display:none}
-    /* Tabla → cards en mobile */
-    .tbl-desktop{display:none}
-    .mobile-cards{display:block}
-    .form-grid{grid-template-columns:1fr}
-    .form-full{grid-column:1}
-    .cuotas-grid{grid-template-columns:1fr 1fr}
-    .ingreso-row{grid-template-columns:1fr auto}
-    .ingreso-row>span:not(:first-child):not(:last-child){display:none}
-    .filter-select{display:none}
-    .modal{border-radius:16px 16px 0 0;max-height:95vh}
-    .modal-overlay{align-items:flex-end}
     .logo span{display:none}
     .btn-hide-only-desktop{display:none!important}
-    /* Ocultar Importar y PDF en móvil para dar más espacio */
     .btn-importar-mobile{display:none!important}
     .btn-pdf-mobile{display:none!important}
+
+    /* Dashboard stats */
+    .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
+    .stat-card{padding:10px 12px}
+    .stat-val{font-size:18px}
+    .stat-label{font-size:9px}
+    .progress-wrap{padding:12px 14px}
+    .counters{gap:5px}
+    .counter-badge{font-size:10px;padding:4px 10px}
+
+    /* Daily summary */
+    .daily-summary{padding:14px}
+    .daily-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+    .daily-kpi-val{font-size:16px}
+    .daily-kpi-label{font-size:8px}
+
+    /* Alerts */
+    .alert-row{grid-template-columns:1fr auto;gap:6px}
+    .alert-row>span:nth-child(2){display:none}
+    .section-header{padding:10px 12px}
+
+    /* Registro - tabla → cards */
+    .tbl-desktop{display:none}
+    .mobile-cards{display:block}
+    .table-toolbar{padding:8px 10px;gap:6px;flex-wrap:wrap}
+    .search-input{min-width:0;flex:1;font-size:13px}
+    .filter-select{display:none}
+    #mob-filter-btn{display:flex!important}
+    .mob-filters-open .filter-select{display:block;width:100%}
+    .mob-filters-open{flex-wrap:wrap}
+    .mob-filters-open .filter-select{flex:1;min-width:calc(50% - 4px)}
+
+    /* Tag filters — scroll horizontal */
+    .tag-filters-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:6px 10px;gap:5px}
+    .tag-filters-wrap::-webkit-scrollbar{display:none}
+    .tag-filter-btn{font-size:10px;padding:3px 9px;white-space:nowrap;flex-shrink:0}
+
+    /* Mobile cards mejoradas */
+    .mcard{padding:12px;border-radius:10px}
+    .mcard-nombre{font-size:13px}
+    .mcard-body{grid-template-columns:1fr 1fr;gap:5px}
+    .mcard-field{font-size:11px}
+
+    /* Modal — bottom sheet */
+    .modal-overlay{align-items:flex-end!important;padding:0!important}
+    .modal{border-radius:20px 20px 0 0!important;max-height:96vh;width:100%!important;max-width:100%!important}
+    .modal-header{padding:14px 16px}
+    .modal-body{padding:12px 14px}
+    .modal-footer{padding:10px 14px;gap:8px}
+
+    /* Form grid — una columna en mobile */
+    .form-grid{grid-template-columns:1fr!important;gap:10px}
+    .form-full{grid-column:1!important}
+    .form-input,.form-select{font-size:16px;padding:10px 12px} /* evita zoom en iOS */
+    .form-group label{font-size:9px;margin-bottom:3px}
+    .cuotas-grid{grid-template-columns:1fr 1fr}
+    .cuota-item{padding:8px}
+
+    /* Ingresos */
+    .ingreso-row{grid-template-columns:1fr auto;gap:6px}
+    .ingreso-row>span:not(:first-child):not(:last-child){display:none}
+
+    /* Proyección */
+    .stats-grid.proy-grid-mobile{grid-template-columns:1fr 1fr}
+    .proy-card{padding:12px 10px}
+    .proy-monto{font-size:18px}
+
+    /* Productividad */
+    .estados-section{padding:12px}
+    .estados-add-row{flex-direction:column;gap:6px}
+    .estados-add-row input{width:100%}
+    .estados-add-row .btn{width:100%}
+
+    /* Asistente */
+    .ai-wrap{flex-direction:column}
+    .ai-sidebar{display:none}
+    .ai-chat{border-radius:0;border:none}
+    .ai-input-row{padding:8px 10px;gap:6px}
+    .ai-input{font-size:16px}
+
+    /* WhatsApp */
+    .wa-template-actions{flex-wrap:wrap}
+
+    /* Checklist */
+    #checklist-container .table-toolbar{flex-wrap:wrap}
+
+    /* Botones de acción en cards */
+    .btn-sm{padding:5px 8px;font-size:11px}
+
+    /* QR modal */
+    .qr-section{padding:14px}
+
+    /* Drive modal */
+    .drive-section{padding:14px}
+
+    /* Cliente resumen */
+    .cliente-resumen{grid-template-columns:1fr 1fr}
+    .cliente-kpi:nth-child(3){grid-column:1/-1;border-right:none;border-top:1px solid var(--border)}
+  }
+
+  @media(max-width:380px){
+    .stats-grid{grid-template-columns:1fr}
+    .daily-grid{grid-template-columns:1fr 1fr}
+    .mcard-body{grid-template-columns:1fr}
+    .header-right .btn{display:none}
+    .header-right .btn:last-child,.header-right .btn:nth-last-child(2){display:flex}
   }
 
   @media print {
@@ -328,6 +439,7 @@
 
   .ai-chat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
   .ai-messages{min-height:200px;max-height:420px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+  @media(max-width:768px){.ai-messages{max-height:calc(100svh - 280px);min-height:180px}.ai-wrap{margin:0}.ai-chat{border-radius:var(--radius);margin-bottom:10px}}
   .ai-msg{display:flex;gap:10px;align-items:flex-start}
   .ai-msg.user{flex-direction:row-reverse}
   .ai-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
@@ -379,7 +491,9 @@
   .tag-revision{background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e}
   .tag-express{background:#052e16;color:#4ade80;border:1px solid #166534}
   .tag-personalizado{background:var(--bg4);color:var(--text2);border:1px solid var(--border2)}
-  .tag-filter-btn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+  .tag-filters-wrap{display:flex;gap:6px;align-items:center;padding:7px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
+  .tag-filters-wrap::-webkit-scrollbar{display:none}
+  .tag-filter-btn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--border);cursor:pointer;transition:all .15s;flex-shrink:0;white-space:nowrap}
   .tag-filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 
   /* PRIORIDAD */
@@ -463,6 +577,47 @@
   }
 
 
+  /* ===== GOOGLE DRIVE ===== */
+  .drive-status{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .2s;white-space:nowrap}
+  .drive-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0}
+  .drive-status.connected .drive-dot{background:#34a853;box-shadow:0 0 5px #34a853}
+  .drive-status.connecting .drive-dot{background:var(--yellow);animation:pulse 1s infinite}
+  .drive-status.error .drive-dot{background:var(--red)}
+  .drive-section{padding:18px 20px}
+  .drive-user-card{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;margin-bottom:16px}
+  .drive-avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--accent)}
+  .drive-user-info{flex:1;min-width:0}
+  .drive-user-name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .drive-user-email{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .drive-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  .drive-action-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;cursor:pointer;transition:all .2s;font-family:inherit;color:var(--text)}
+  .drive-action-btn:hover{border-color:var(--accent);background:rgba(124,111,255,.08)}
+  .drive-action-btn .da-icon{font-size:24px;line-height:1}
+  .drive-action-btn .da-label{font-size:11px;font-weight:700;color:var(--text)}
+  .drive-action-btn .da-sub{font-size:9px;color:var(--text3);text-align:center}
+  .drive-file-list{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px}
+  .drive-file-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;transition:background .15s}
+  .drive-file-item:last-child{border-bottom:none}
+  .drive-file-item:hover{background:var(--bg4)}
+  .drive-file-icon{font-size:16px;flex-shrink:0}
+  .drive-file-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:var(--text)}
+  .drive-file-date{font-size:10px;color:var(--text3);white-space:nowrap}
+  .drive-file-actions{display:flex;gap:4px;flex-shrink:0}
+  .drive-setup-box{background:linear-gradient(135deg,#1a1a2e,#1e1b3a);border:1px solid var(--accent);border-radius:12px;padding:20px;text-align:center}
+  .drive-setup-icon{font-size:40px;margin-bottom:12px}
+  .drive-setup-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+  .drive-setup-desc{font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:16px}
+  .drive-auto-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:#052e16;color:var(--green);border:1px solid #166534}
+  .drive-section-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+
+  @media(max-width:768px){
+    .drive-actions{grid-template-columns:1fr 1fr}
+    .drive-action-btn{padding:12px 8px}
+    .drive-action-btn .da-icon{font-size:20px}
+    .drive-section{padding:12px 14px}
+  }
+
+    @media(min-width:769px){
     .mobile-nav{display:none}
     .nav{display:flex}
     .main{padding:20px 20px}
@@ -489,6 +644,9 @@
       <button class="btn btn-ghost btn-sm btn-importar-mobile" onclick="importarDatos()" title="Importar datos desde backup" style="font-size:10px;padding:3px 8px">Importar</button>
       <button class="btn btn-ghost btn-sm btn-pdf-mobile" onclick="exportarPDF()" title="Exportar reporte PDF" style="font-size:10px;padding:3px 8px">📄 PDF</button>
       <button class="btn btn-ghost btn-sm" onclick="abrirBusquedaGlobal()" title="Buscar clientes" style="font-size:13px;padding:3px 8px">🔍</button>
+      <button class="drive-status" id="drive-status-btn" onclick="abrirDrive()" title="Google Drive">
+        <div class="drive-dot"></div><span id="drive-status-text">Drive</span>
+      </button>
       <button class="btn btn-ghost btn-sm" onclick="abrirQR()" title="QR / Backup" style="font-size:13px;padding:3px 8px">📱</button>
       <button class="btn btn-ghost btn-sm" id="btn-hide-prices" onclick="toggleHidePrecios()" title="Ocultar precios" style="font-size:13px;padding:3px 8px">👁️</button>
     </div>
@@ -543,7 +701,8 @@
     <div class="view" id="v-registro">
       <div class="table-wrap">
         <div class="table-toolbar">
-          <input class="search-input" id="search-input" placeholder="Buscar cliente..." oninput="renderTabla()">
+          <input class="search-input" id="search-input" placeholder="🔍 Buscar cliente..." oninput="renderTabla()" style="flex:1;min-width:120px">
+          <button class="btn btn-ghost btn-sm" id="mob-filter-btn" onclick="toggleMobFilters()" style="display:none" title="Filtros">⚙️</button>
           <select class="filter-select" id="filter-estado" onchange="renderTabla()">
             <option value="">Todos los estados</option>
             <option>En proceso</option><option>Pagado</option><option>Pendiente</option>
@@ -558,11 +717,11 @@
             <option value="media">🟡 Media</option>
             <option value="baja">🟢 Baja</option>
           </select>
-          <button class="btn btn-primary" onclick="openModal()">+ Nuevo</button>
+          <button class="btn btn-primary" onclick="openModal()">＋ Nuevo</button>
         </div>
         <!-- Filtro de etiquetas -->
-        <div style="padding:8px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap">🏷️ Tags:</span>
+        <div class="tag-filters-wrap" style="background:var(--bg3);border-bottom:1px solid var(--border)">
+          <span style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;flex-shrink:0">🏷️</span>
           <button class="tag-filter-btn active" id="tag-filter-all" onclick="setTagFilter('')">Todos</button>
           <button class="tag-filter-btn" onclick="setTagFilter('urgente')">🔥 Urgente</button>
           <button class="tag-filter-btn" onclick="setTagFilter('vip')">⭐ VIP</button>
@@ -610,7 +769,7 @@
 
     <!-- PROYECCION -->
     <div class="view" id="v-proyeccion">
-      <div class="stats-grid" id="proy-grid"></div>
+      <div class="stats-grid proy-grid-mobile" id="proy-grid"></div>
       <div class="divider"></div>
       <div class="table-wrap">
         <div class="table-toolbar" style="justify-content:space-between">
@@ -1103,6 +1262,92 @@
         <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Selecciona la plantilla de mensaje a enviar:</div>
         <select class="form-select" id="cobro-masivo-template" style="margin-bottom:12px"></select>
         <button class="btn btn-primary" style="width:100%;background:#25d366;border-color:#25d366;font-size:13px" onclick="enviarCobroMasivo()">📲 Enviar WhatsApp a seleccionados</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GOOGLE DRIVE -->
+<div class="modal-overlay" id="modal-drive">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <span class="modal-title">☁️ Google Drive</span>
+      <button class="modal-close" onclick="document.getElementById('modal-drive').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <!-- VISTA: NO CONECTADO -->
+      <div id="drive-disconnected-view" class="drive-section">
+        <div class="drive-setup-box">
+          <div class="drive-setup-icon">☁️</div>
+          <div class="drive-setup-title">Conectar Google Drive</div>
+          <div class="drive-setup-desc">
+            Sincroniza tus datos automáticamente con Google Drive.<br>
+            Accede desde cualquier dispositivo y nunca pierdas tu información.
+          </div>
+          <div id="google-signin-btn-wrap" style="display:flex;justify-content:center;margin-bottom:14px"></div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.7">
+            ⚠️ <strong>Importante:</strong> Necesitas configurar tu Client ID de Google. 
+            <a href="#" onclick="mostrarDriveConfig();return false" style="color:var(--accent3)">Ver instrucciones</a>
+          </div>
+        </div>
+        <!-- Config Client ID -->
+        <div id="drive-config-box" style="display:none;margin-top:14px">
+          <div class="drive-section-label">🔑 Tu Google Client ID</div>
+          <input class="form-input" id="drive-client-id-input" placeholder="xxxx.apps.googleusercontent.com" style="margin-bottom:8px;font-size:12px">
+          <button class="btn btn-primary" style="width:100%" onclick="guardarClientId()">💾 Guardar y Conectar</button>
+          <div style="margin-top:10px;font-size:10px;color:var(--text3);line-height:1.6">
+            1. Ve a <strong>console.cloud.google.com</strong><br>
+            2. Crea un proyecto → APIs → Google Drive API → Habilitar<br>
+            3. Credenciales → Crear credencial → OAuth → Aplicación web<br>
+            4. En "Orígenes autorizados" agrega la URL de tu archivo<br>
+            5. Copia el Client ID y pégalo aquí
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA: CONECTADO -->
+      <div id="drive-connected-view" class="drive-section" style="display:none">
+        <div class="drive-user-card">
+          <img class="drive-avatar" id="drive-user-avatar" src="" alt="">
+          <div class="drive-user-info">
+            <div class="drive-user-name" id="drive-user-name">—</div>
+            <div class="drive-user-email" id="drive-user-email">—</div>
+          </div>
+          <span class="drive-auto-badge">✅ Conectado</span>
+        </div>
+
+        <div class="drive-actions">
+          <button class="drive-action-btn" onclick="driveBackupSubir()">
+            <span class="da-icon">⬆️</span>
+            <span class="da-label">Subir Backup</span>
+            <span class="da-sub">Guarda tus datos en Drive</span>
+          </button>
+          <button class="drive-action-btn" onclick="driveListarBackups()">
+            <span class="da-icon">⬇️</span>
+            <span class="da-label">Restaurar</span>
+            <span class="da-sub">Descarga desde Drive</span>
+          </button>
+          <button class="drive-action-btn" onclick="driveBackupAuto()">
+            <span class="da-icon">🔄</span>
+            <span class="da-label">Auto-Sync</span>
+            <span class="da-sub" id="drive-autosync-label">Activar sync automático</span>
+          </button>
+          <button class="drive-action-btn" onclick="driveDesconectar()" style="border-color:#7f1d1d">
+            <span class="da-icon">🔓</span>
+            <span class="da-label" style="color:var(--red)">Desconectar</span>
+            <span class="da-sub">Cerrar sesión Drive</span>
+          </button>
+        </div>
+
+        <div class="drive-section-label">📂 Backups en Drive</div>
+        <div id="drive-files-list">
+          <div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">
+            Haz clic en "Restaurar" para ver tus backups
+          </div>
+        </div>
+
+        <div class="drive-section-label">⏱️ Último sync</div>
+        <div id="drive-last-sync" style="font-size:11px;color:var(--text3);padding:4px 0">Nunca</div>
       </div>
     </div>
   </div>
@@ -4814,30 +5059,49 @@ function renderTabla(){
     const saldo=(t.precio||0)-(t.cobrado||0);
     const pct=t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
     const s=semaforo(t);
-    const prioHtml = t.prioridad ? '<span class="prio-'+t.prioridad+'" style="font-size:10px;margin-left:6px">'+(t.prioridad==='alta'?'🔴':t.prioridad==='media'?'🟡':'🟢')+' '+t.prioridad+'</span>' : '';
+    const diasD=diffDias(t.fent);
+    const diasBadge = t.estado==='Pagado'||t.estado==='Cancelado' ? '' :
+      diasD===null ? '' :
+      diasD<0 ? `<span style="font-size:9px;padding:2px 7px;border-radius:10px;background:#1f0505;color:var(--red);border:1px solid #7f1d1d;font-weight:700">⚠️ ${Math.abs(diasD)}d vencido</span>` :
+      diasD<=3 ? `<span style="font-size:9px;padding:2px 7px;border-radius:10px;background:#1c0f00;color:var(--yellow);border:1px solid #713f12;font-weight:700">⏰ ${diasD}d</span>` :
+      diasD<=7 ? `<span style="font-size:9px;padding:2px 7px;border-radius:10px;background:#1c0f00;color:var(--orange);border:1px solid #7c2d12;font-weight:700">${diasD}d</span>` : '';
+    const prioHtml = t.prioridad==='alta' ? '<span style="font-size:10px">🔴</span>' : t.prioridad==='media' ? '<span style="font-size:10px">🟡</span>' : '';
+    const tagsHtml = renderTagsPills(t.tags);
+    const pctColor = pct>=100?'var(--green)':pct>=50?'var(--accent)':'var(--yellow)';
     return`<div class="mcard">
       <div class="mcard-header">
-        <div class="mcard-nombre"><span class="semaforo ${s.cls}"></span>${t.nombre}${prioHtml}${renderTagsPills(t.tags)}</div>
-        ${pillEstado(t.estado)}
+        <div style="flex:1;min-width:0">
+          <div class="mcard-nombre">${prioHtml}<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block">${t.nombre}</span></div>
+          ${t.cel ? `<div class="mcard-cel">📱 ${t.cel}${t.uni?' · 🏫 '+t.uni:''}</div>` : (t.uni ? `<div class="mcard-cel">🏫 ${t.uni}</div>` : '')}
+          ${tagsHtml ? `<div style="margin-top:5px;display:flex;gap:3px;flex-wrap:wrap">${tagsHtml}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+          ${pillEstado(t.estado)}
+          ${diasBadge}
+        </div>
       </div>
       <div class="mcard-body">
-        <div class="mcard-field"><div class="mcard-field-label">Tipo</div><div class="mcard-field-val">${t.tipo}</div></div>
-        <div class="mcard-field"><div class="mcard-field-label">Universidad</div><div class="mcard-field-val">${t.uni||'—'}</div></div>
-        <div class="mcard-field"><div class="mcard-field-label">F. Entrega</div><div class="mcard-field-val">${fmt(t.fent)}</div></div>
-        <div class="mcard-field"><div class="mcard-field-label">Precio</div><div class="mcard-field-val" style="font-weight:700">${fmtS((t.precio||0))}</div></div>
-        <div class="mcard-field"><div class="mcard-field-label">Cobrado</div><div class="mcard-field-val" style="color:var(--green);font-weight:700">${fmtS((t.cobrado||0))}</div></div>
-        <div class="mcard-field"><div class="mcard-field-label">Saldo</div><div class="mcard-field-val ${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:700">${fmtSRaw(saldo)}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">📋 Tipo</div><div class="mcard-field-val" style="font-size:11px">${t.tipo||'—'}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">📅 Entrega</div><div class="mcard-field-val" style="font-size:12px">${t.fent?fmt(t.fent):'—'}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">💰 Precio</div><div class="mcard-field-val" style="color:var(--accent3);font-size:13px">${fmtS(t.precio||0)}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">✅ Cobrado</div><div class="mcard-field-val" style="color:var(--green);font-size:13px">${fmtS(t.cobrado||0)}</div></div>
+        <div class="mcard-field" style="grid-column:1/-1">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <div class="mcard-field-label">Saldo pendiente</div>
+            <div style="font-size:11px;font-weight:700;color:${saldo>0?'var(--red)':'var(--green)'}">${saldo>0?fmtSRaw(saldo):'¡Pagado!'}</div>
+          </div>
+          <div class="mcard-progress"><div class="mcard-progress-fill" style="width:${pct}%;background:${pctColor}"></div></div>
+          <div style="font-size:9px;color:var(--text3);margin-top:3px;text-align:right">${pct}% cobrado</div>
+        </div>
       </div>
-      <div class="pct-bar" style="margin-bottom:10px"><div class="pct-fill" style="width:${pct}%"></div></div>
       <div class="mcard-footer">
-        <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" style="color:var(--accent3);font-weight:700">👤 Cliente</button>
-        <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})">💰 Cobrar</button>
-        <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa">📓</button>
-        <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa">📋</button>
-        <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" style="color:#f59e0b">🧾</button>
-        <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})">✎</button>
-        <button class="btn btn-ghost btn-sm" onclick="duplicarTrabajo(${t.id})" style="color:var(--accent3)">⧉</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})">✕</button>
+        <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" style="color:var(--accent3)" title="Ver cliente">👤</button>
+        <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰 Cobrar</button>
+        <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button>
+        <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa" title="Historial">📋</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa" title="Bitácora">📓</button>
+        <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" style="color:#f59e0b" title="Comprobante">🧾</button>
+        <button class="btn btn-danger btn-sm" onclick="if(confirm('¿Eliminar?'))eliminarTrabajo(${t.id})" title="Eliminar">✕</button>
       </div>
     </div>`;
   }).join('');
@@ -4941,6 +5205,353 @@ function abrirPlantillasDesdeModal(){
 
 // ===================== FIN NUEVOS BLOQUES =====================
 
+// ===================== GOOGLE DRIVE =====================
+const DRIVE = {
+  CLIENT_ID: localStorage.getItem('drive_client_id') || '',
+  SCOPES: 'https://www.googleapis.com/auth/drive.file',
+  TOKEN_KEY: 'drive_access_token',
+  TOKEN_EXP_KEY: 'drive_token_exp',
+  USER_KEY: 'drive_user',
+  AUTOSYNC_KEY: 'drive_autosync',
+  FOLDER_NAME: 'TrackerAcademico_Backups',
+  FOLDER_ID_KEY: 'drive_folder_id',
+  tokenClient: null,
+  accessToken: null,
+
+  get isConnected(){ return !!(this.getToken()); },
+  get autoSync(){ return localStorage.getItem(this.AUTOSYNC_KEY)==='1'; },
+
+  getToken(){
+    const t = localStorage.getItem(this.TOKEN_KEY);
+    const exp = parseInt(localStorage.getItem(this.TOKEN_EXP_KEY)||'0');
+    if(t && Date.now() < exp) return t;
+    return null;
+  },
+
+  saveToken(token, expiresIn){
+    this.accessToken = token;
+    localStorage.setItem(this.TOKEN_KEY, token);
+    localStorage.setItem(this.TOKEN_EXP_KEY, String(Date.now() + (expiresIn||3600)*1000));
+  },
+
+  clearToken(){
+    this.accessToken = null;
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.TOKEN_EXP_KEY);
+    localStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem(this.FOLDER_ID_KEY);
+  },
+
+  getUser(){
+    try { return JSON.parse(localStorage.getItem(this.USER_KEY)||'null'); } catch(e){ return null; }
+  },
+  saveUser(u){ localStorage.setItem(this.USER_KEY, JSON.stringify(u)); },
+
+  async request(url, options={}){
+    const token = this.getToken() || this.accessToken;
+    if(!token) throw new Error('No autenticado');
+    const resp = await fetch(url, {
+      ...options,
+      headers: { 'Authorization': 'Bearer '+token, ...(options.headers||{}) }
+    });
+    if(resp.status === 401){ this.clearToken(); updateDriveStatusUI(); throw new Error('Token expirado'); }
+    return resp;
+  },
+
+  async getUserInfo(){
+    const r = await this.request('https://www.googleapis.com/oauth2/v1/userinfo');
+    return await r.json();
+  },
+
+  async getOrCreateFolder(){
+    const cached = localStorage.getItem(this.FOLDER_ID_KEY);
+    if(cached) return cached;
+    // Search for existing
+    const q = encodeURIComponent(`name='${this.FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+    const r = await this.request(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`);
+    const data = await r.json();
+    if(data.files && data.files.length > 0){
+      localStorage.setItem(this.FOLDER_ID_KEY, data.files[0].id);
+      return data.files[0].id;
+    }
+    // Create folder
+    const cr = await this.request('https://www.googleapis.com/drive/v3/files', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name: this.FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' })
+    });
+    const folder = await cr.json();
+    localStorage.setItem(this.FOLDER_ID_KEY, folder.id);
+    return folder.id;
+  },
+
+  async uploadBackup(){
+    const folderId = await this.getOrCreateFolder();
+    const fecha = new Date().toISOString().slice(0,16).replace('T','_').replace(':','-');
+    const filename = `tracker_backup_${fecha}.json`;
+    const content = JSON.stringify(DB);
+    const metadata = { name: filename, parents: [folderId], mimeType: 'application/json' };
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], {type:'application/json'}));
+    form.append('file', new Blob([content], {type:'application/json'}));
+    const r = await this.request('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+      method: 'POST', body: form
+    });
+    const file = await r.json();
+    localStorage.setItem('drive_last_sync', new Date().toLocaleString('es-PE'));
+    return file;
+  },
+
+  async listBackups(){
+    const folderId = await this.getOrCreateFolder();
+    const q = encodeURIComponent(`'${folderId}' in parents and trashed=false and mimeType='application/json'`);
+    const r = await this.request(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,createdTime,size)&orderBy=createdTime+desc&pageSize=10`);
+    return (await r.json()).files || [];
+  },
+
+  async downloadBackup(fileId){
+    const r = await this.request(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
+    return await r.json();
+  },
+
+  async deleteFile(fileId){
+    await this.request(`https://www.googleapis.com/drive/v3/files/${fileId}`, { method: 'DELETE' });
+  }
+};
+
+function guardarClientId(){
+  const val = document.getElementById('drive-client-id-input').value.trim();
+  if(!val || !val.includes('.apps.googleusercontent.com')){
+    showToast('❌ Client ID inválido. Debe terminar en .apps.googleusercontent.com');
+    return;
+  }
+  localStorage.setItem('drive_client_id', val);
+  DRIVE.CLIENT_ID = val;
+  showToast('✅ Client ID guardado. Iniciando conexión...');
+  initDriveAuth();
+}
+
+function mostrarDriveConfig(){
+  const box = document.getElementById('drive-config-box');
+  if(box){ box.style.display = box.style.display==='none'?'block':'none'; }
+  const inp = document.getElementById('drive-client-id-input');
+  if(inp && DRIVE.CLIENT_ID) inp.value = DRIVE.CLIENT_ID;
+}
+
+function initDriveAuth(){
+  if(!DRIVE.CLIENT_ID){ return; }
+  if(typeof google === 'undefined' || !google.accounts) {
+    setTimeout(initDriveAuth, 800); return;
+  }
+  DRIVE.tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: DRIVE.CLIENT_ID,
+    scope: DRIVE.SCOPES,
+    callback: async (resp) => {
+      if(resp.error){ showToast('❌ Error de autenticación: '+resp.error); return; }
+      DRIVE.saveToken(resp.access_token, resp.expires_in);
+      // Get user info
+      try {
+        const user = await DRIVE.getUserInfo();
+        DRIVE.saveUser(user);
+      } catch(e){}
+      updateDriveStatusUI();
+      renderDriveConnectedView();
+      showToast('✅ Conectado a Google Drive');
+      // Auto-sync if enabled
+      if(DRIVE.autoSync) setTimeout(()=>driveBackupSubir(), 1000);
+    }
+  });
+  // Create custom sign-in button
+  const wrap = document.getElementById('google-signin-btn-wrap');
+  if(wrap){
+    wrap.innerHTML = '';
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-primary';
+    btn.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:13px;padding:10px 20px';
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Conectar con Google';
+    btn.onclick = () => {
+      if(DRIVE.tokenClient) DRIVE.tokenClient.requestAccessToken({prompt:'consent'});
+      else { showToast('Cargando Google API...'); setTimeout(()=>btn.click(),1000); }
+    };
+    wrap.appendChild(btn);
+  }
+  // If already connected (token still valid)
+  if(DRIVE.isConnected){ updateDriveStatusUI(); }
+}
+
+function updateDriveStatusUI(){
+  const btn = document.getElementById('drive-status-btn');
+  const txt = document.getElementById('drive-status-text');
+  if(!btn||!txt) return;
+  if(DRIVE.isConnected){
+    btn.className='drive-status connected';
+    txt.textContent='Drive ✓';
+  } else {
+    btn.className='drive-status';
+    txt.textContent='Drive';
+  }
+}
+
+function abrirDrive(){
+  document.getElementById('modal-drive').classList.add('open');
+  if(DRIVE.isConnected){
+    renderDriveConnectedView();
+  } else {
+    document.getElementById('drive-disconnected-view').style.display='block';
+    document.getElementById('drive-connected-view').style.display='none';
+    // Load saved client id
+    const inp = document.getElementById('drive-client-id-input');
+    if(inp && DRIVE.CLIENT_ID) inp.value = DRIVE.CLIENT_ID;
+  }
+  initDriveAuth();
+}
+
+function renderDriveConnectedView(){
+  document.getElementById('drive-disconnected-view').style.display='none';
+  document.getElementById('drive-connected-view').style.display='block';
+  const user = DRIVE.getUser();
+  if(user){
+    const av = document.getElementById('drive-user-avatar');
+    const nm = document.getElementById('drive-user-name');
+    const em = document.getElementById('drive-user-email');
+    if(av && user.picture) av.src = user.picture;
+    if(nm) nm.textContent = user.name || 'Usuario';
+    if(em) em.textContent = user.email || '';
+  }
+  const ls = localStorage.getItem('drive_last_sync');
+  const lsEl = document.getElementById('drive-last-sync');
+  if(lsEl) lsEl.textContent = ls || 'Nunca';
+  const asl = document.getElementById('drive-autosync-label');
+  if(asl) asl.textContent = DRIVE.autoSync ? '✅ Auto-sync activo' : 'Activar sync automático';
+}
+
+async function driveBackupSubir(){
+  if(!DRIVE.isConnected){ showToast('⚠️ Conecta Google Drive primero'); return; }
+  showToast('☁️ Subiendo backup a Drive...');
+  updateDriveBtn('⬆️','Subiendo...');
+  try {
+    const file = await DRIVE.uploadBackup();
+    showToast('✅ Backup subido: '+file.name);
+    const lsEl = document.getElementById('drive-last-sync');
+    if(lsEl) lsEl.textContent = new Date().toLocaleString('es-PE');
+  } catch(e){
+    showToast('❌ Error al subir: '+(e.message||e));
+  }
+  updateDriveBtn('⬆️','Subir Backup');
+}
+
+async function driveListarBackups(){
+  if(!DRIVE.isConnected){ showToast('⚠️ Conecta Google Drive primero'); return; }
+  const listEl = document.getElementById('drive-files-list');
+  if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">🔄 Cargando...</div>';
+  try {
+    const files = await DRIVE.listBackups();
+    if(!files.length){
+      if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">Sin backups en Drive aún</div>';
+      return;
+    }
+    const html = files.map(f => {
+      const d = new Date(f.createdTime).toLocaleString('es-PE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+      const size = f.size ? (f.size/1024).toFixed(1)+'KB' : '';
+      return `<div class="drive-file-item">
+        <span class="drive-file-icon">📄</span>
+        <span class="drive-file-name" title="${f.name}">${f.name}</span>
+        <span class="drive-file-date">${d}${size?' · '+size:''}</span>
+        <div class="drive-file-actions">
+          <button class="btn btn-primary btn-sm" onclick="driveRestaurar('${f.id}','${f.name}')">⬇️</button>
+          <button class="btn btn-danger btn-sm" onclick="driveEliminarArchivo('${f.id}',this)">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+    if(listEl) listEl.innerHTML = html;
+  } catch(e){
+    if(listEl) listEl.innerHTML = '<div style="text-align:center;padding:12px;color:var(--red);font-size:12px">❌ '+e.message+'</div>';
+  }
+}
+
+async function driveRestaurar(fileId, name){
+  if(!confirm('¿Restaurar backup "'+name+'"?\nEsto reemplazará todos tus datos actuales.')) return;
+  showToast('⬇️ Descargando backup...');
+  try {
+    const data = await DRIVE.downloadBackup(fileId);
+    if(!data || !data.trabajos) throw new Error('Archivo inválido');
+    Object.assign(DB, data);
+    saveLocal();
+    renderAll();
+    showToast('✅ Datos restaurados desde Drive');
+    document.getElementById('modal-drive').classList.remove('open');
+  } catch(e){
+    showToast('❌ Error al restaurar: '+(e.message||e));
+  }
+}
+
+async function driveEliminarArchivo(fileId, btn){
+  if(!confirm('¿Eliminar este backup de Drive?')) return;
+  try {
+    await DRIVE.deleteFile(fileId);
+    btn.closest('.drive-file-item').remove();
+    showToast('🗑️ Archivo eliminado');
+  } catch(e){
+    showToast('❌ Error: '+e.message);
+  }
+}
+
+function driveBackupAuto(){
+  const newVal = !DRIVE.autoSync;
+  localStorage.setItem(DRIVE.AUTOSYNC_KEY, newVal?'1':'0');
+  const lbl = document.getElementById('drive-autosync-label');
+  if(lbl) lbl.textContent = newVal ? '✅ Auto-sync activo' : 'Activar sync automático';
+  showToast(newVal ? '✅ Auto-sync activado' : '⏸️ Auto-sync desactivado');
+}
+
+function driveDesconectar(){
+  if(!confirm('¿Desconectar Google Drive?')) return;
+  DRIVE.clearToken();
+  if(typeof google !== 'undefined' && google.accounts) google.accounts.oauth2.revoke(DRIVE.getToken()||'',()=>{});
+  updateDriveStatusUI();
+  abrirDrive();
+  showToast('🔓 Desconectado de Google Drive');
+}
+
+function updateDriveBtn(icon, label){
+  // Find button by icon content - just a helper
+}
+
+// Auto-sync on save if enabled
+const _origSaveLocal = typeof saveLocal === 'function' ? saveLocal : null;
+// Patch auto-sync after page load
+function initDriveAutoSync(){
+  if(DRIVE.CLIENT_ID) initDriveAuth();
+  // Auto-sync on save
+  const origSave = window.saveLocal;
+  if(origSave && !window._drivePatchedSave){
+    window._drivePatchedSave = true;
+    window.saveLocal = function(){
+      origSave.apply(this, arguments);
+      if(DRIVE.isConnected && DRIVE.autoSync){
+        clearTimeout(window._driveAutoSyncTimer);
+        window._driveAutoSyncTimer = setTimeout(async ()=>{
+          try {
+            await DRIVE.uploadBackup();
+            const lsEl = document.getElementById('drive-last-sync');
+            if(lsEl) lsEl.textContent = new Date().toLocaleString('es-PE');
+            const txt = document.getElementById('drive-status-text');
+            if(txt){ txt.textContent='Drive ✓↑'; setTimeout(()=>{if(txt)txt.textContent='Drive ✓';},3000); }
+          } catch(e){ console.warn('Drive auto-sync failed:',e); }
+        }, 4000); // debounce 4s
+      }
+    };
+  }
+  updateDriveStatusUI();
+}
+
+function toggleMobFilters(){
+  const tb = document.querySelector('#v-registro .table-toolbar');
+  if(tb) tb.classList.toggle('mob-filters-open');
+}
+
+// ===================== FIN GOOGLE DRIVE =====================
+
 function init(){
   const hasLocal = loadLocal();
   if(!hasLocal) seedData();
@@ -4950,6 +5561,7 @@ function init(){
   aiCheckKey();
   renderDailySummary();
   loadChatHistory();
+  setTimeout(initDriveAutoSync, 1200);
   // Wire up send button and textarea to patched aiEnviar
   const sendBtn = document.getElementById('ai-send-btn');
   if(sendBtn) sendBtn.onclick = aiEnviar;
