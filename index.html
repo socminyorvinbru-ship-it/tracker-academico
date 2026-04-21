@@ -153,8 +153,9 @@
   .mcard-field-val{color:var(--text);font-weight:600}
   .mcard-progress{height:3px;background:var(--bg4);border-radius:3px;margin:8px 0;overflow:hidden}
   .mcard-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .4s}
-  .mcard-footer{display:flex;gap:5px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:10px;margin-top:2px}
-  .mcard-footer .btn{flex:1;min-width:0;justify-content:center;display:flex;align-items:center;gap:3px}
+  .mcard-footer{display:flex;gap:4px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:10px;margin-top:2px}
+  .mcard-footer .btn{flex:1;min-width:0;justify-content:center;display:flex;align-items:center;gap:2px;padding:5px 4px;font-size:10px}
+  .mcard-footer .btn-primary{flex:1.5;font-size:11px;font-weight:700}
 
   /* PILLS */
   .pill{padding:3px 9px;border-radius:12px;font-size:10px;font-weight:600;white-space:nowrap}
@@ -1758,14 +1759,14 @@ function renderTabla(){
       </div>
       <div class="pct-bar" style="margin-bottom:10px"><div class="pct-fill" style="width:${pct}%"></div></div>
       <div class="mcard-footer">
-        <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" style="color:var(--accent3);font-weight:700">👤 Ver cliente</button>
-        <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})">💰 Cobrar</button>
-        <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa">📋</button>
-        <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa">📓</button>
-        <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" style="color:#f59e0b">🧾 Factura</button>
-        <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})">✎ Editar</button>
-        <button class="btn btn-ghost btn-sm" onclick="duplicarTrabajo(${t.id})" style="color:var(--accent3)">⧉ Dup.</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})">✕</button>
+        <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" style="color:var(--accent3)" title="Ver cliente">👤</button>
+        <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰 Cobrar</button>
+        <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button>
+        <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa" title="Historial">📋</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa" title="Bitácora">📓</button>
+        <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" style="color:#f59e0b" title="Comprobante">🧾</button>
+        <button class="btn btn-ghost btn-sm" onclick="duplicarTrabajo(${t.id})" style="color:var(--accent3)" title="Duplicar">⧉</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button>
       </div>
     </div>`
   }).join('');
