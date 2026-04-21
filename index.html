@@ -217,7 +217,7 @@
     .modal-overlay{align-items:flex-end}
     .logo span{display:none}
     .btn-hide-only-desktop{display:none!important}
-    /* Ocultar Importar y PDF en móvil para dar espacio al ojo */
+    /* Ocultar Importar y PDF en móvil para dar más espacio */
     .btn-importar-mobile{display:none!important}
     .btn-pdf-mobile{display:none!important}
   }
@@ -371,7 +371,98 @@
   .checklist-badge.has-tasks{background:#0c1a36;color:#60a5fa;border-color:#1e3a6e}
   .checklist-badge.all-done{background:#052e16;color:var(--green);border-color:#166534}
 
-  @media(min-width:641px){
+  /* ===== BLOQUE 1: TAGS / ETIQUETAS ===== */
+  .tag{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;white-space:nowrap;cursor:default}
+  .tag-urgente{background:#3f0d0d;color:#f87171;border:1px solid #7f1d1d}
+  .tag-vip{background:#2d1b69;color:#c4b5fd;border:1px solid #4c1d95}
+  .tag-dificil{background:#1c0f00;color:#fb923c;border:1px solid #7c2d12}
+  .tag-revision{background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e}
+  .tag-express{background:#052e16;color:#4ade80;border:1px solid #166534}
+  .tag-personalizado{background:var(--bg4);color:var(--text2);border:1px solid var(--border2)}
+  .tag-filter-btn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+  .tag-filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* PRIORIDAD */
+  .prio-alta{color:var(--red);font-weight:700}
+  .prio-media{color:var(--yellow);font-weight:700}
+  .prio-baja{color:var(--green);font-weight:600}
+  .prio-icon{font-size:14px;line-height:1}
+
+  /* BITÁCORA / LOG */
+  .log-entry{padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px}
+  .log-entry:last-child{border-bottom:none}
+  .log-date{font-size:10px;color:var(--text3);margin-bottom:2px}
+  .log-text{color:var(--text2)}
+
+  /* RECORDATORIOS */
+  .reminder-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;gap:8px}
+  .reminder-item:last-child{border-bottom:none}
+  .reminder-item.vencido{background:#1f0505}
+  .reminder-item.hoy{background:#1c0f00}
+
+  /* PLANTILLAS */
+  .template-card{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+  .template-card:hover{border-color:var(--accent2)}
+  .template-name{font-size:12px;font-weight:600;color:var(--text)}
+  .template-sub{font-size:10px;color:var(--text3);margin-top:2px}
+
+  /* ===== BLOQUE 2: CLIENTE NOTAS / CLASIFICACIÓN ===== */
+  .client-note{background:#1c0a1c;border:1px solid #701a75;border-radius:8px;padding:10px 14px;font-size:12px;color:#e879f9;margin-top:8px}
+  .client-note-label{font-size:9px;font-weight:700;color:#a21caf;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+
+  /* ===== BLOQUE 3: RESUMEN DIARIO / BADGE / QR / BACKUP ===== */
+  .daily-summary{background:linear-gradient(135deg,#1a1a2e,#1e1b3a);border:1px solid var(--accent);border-radius:var(--radius);padding:18px;margin-bottom:16px;position:relative}
+  .daily-summary-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;font-family:inherit}
+  .daily-title{font-size:14px;font-weight:700;color:var(--accent3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .daily-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+  .daily-kpi{background:rgba(124,111,255,.1);border:1px solid rgba(124,111,255,.2);border-radius:8px;padding:10px;text-align:center}
+  .daily-kpi-val{font-size:20px;font-weight:700;color:var(--accent3)}
+  .daily-kpi-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+  .backup-item{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:12px}
+  .backup-item:last-child{border-bottom:none}
+  .backup-date{color:var(--text2);font-weight:600}
+  .backup-size{color:var(--text3);font-size:10px}
+
+  /* QR modal */
+  .qr-section{text-align:center;padding:20px}
+  .qr-canvas{border-radius:12px;border:4px solid var(--accent);display:inline-block}
+
+  /* ===== BLOQUE 4: WA PLANTILLAS / COBRO MASIVO ===== */
+  .wa-template-card{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+  .wa-template-card:hover{border-color:#25d366}
+  .wa-template-preview{font-size:11px;color:var(--text3);margin-top:6px;line-height:1.5;max-height:60px;overflow:hidden}
+  .wa-template-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+
+  .moroso-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);gap:8px;font-size:12px}
+  .moroso-row:last-child{border-bottom:none}
+  .moroso-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+
+  /* ASISTENTE HISTORIAL CHAT */
+  .chat-session-divider{text-align:center;color:var(--text3);font-size:10px;margin:8px 0;position:relative}
+  .chat-session-divider::before,.chat-session-divider::after{content:'';position:absolute;top:50%;width:35%;height:1px;background:var(--border)}
+  .chat-session-divider::before{left:0}.chat-session-divider::after{right:0}
+
+  /* ===== MODAL CLIENTE ===== */
+  .cliente-resumen{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border)}
+  .cliente-kpi{padding:14px 16px;text-align:center;border-right:1px solid var(--border)}
+  .cliente-kpi:last-child{border-right:none}
+  .cliente-kpi-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;font-weight:600}
+  .cliente-kpi-val{font-size:18px;font-weight:700}
+  .cliente-estado-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700}
+  .ce-bueno{background:#052e16;color:var(--green);border:1px solid #166534}
+  .ce-regular{background:#1c0f00;color:var(--yellow);border:1px solid #713f12}
+  .ce-moroso{background:#1f0505;color:var(--red);border:1px solid #7f1d1d}
+  .cliente-trabajo-item{padding:12px 16px;border-bottom:1px solid var(--border);transition:background .15s}
+  .cliente-trabajo-item:hover{background:var(--bg3)}
+  .cliente-trabajo-item:last-child{border-bottom:none}
+
+  @media(max-width:640px){
+    .cliente-resumen{grid-template-columns:1fr 1fr}
+    .cliente-kpi:nth-child(3){grid-column:1/-1;border-right:none;border-top:1px solid var(--border)}
+  }
+
+
     .mobile-nav{display:none}
     .nav{display:flex}
     .main{padding:20px 20px}
@@ -397,6 +488,8 @@
       </button>
       <button class="btn btn-ghost btn-sm btn-importar-mobile" onclick="importarDatos()" title="Importar datos desde backup" style="font-size:10px;padding:3px 8px">Importar</button>
       <button class="btn btn-ghost btn-sm btn-pdf-mobile" onclick="exportarPDF()" title="Exportar reporte PDF" style="font-size:10px;padding:3px 8px">📄 PDF</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirBusquedaGlobal()" title="Buscar clientes" style="font-size:13px;padding:3px 8px">🔍</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirQR()" title="QR / Backup" style="font-size:13px;padding:3px 8px">📱</button>
       <button class="btn btn-ghost btn-sm" id="btn-hide-prices" onclick="toggleHidePrecios()" title="Ocultar precios" style="font-size:13px;padding:3px 8px">👁️</button>
     </div>
   </div>
@@ -409,12 +502,20 @@
     <button class="nav-btn" onclick="goView('ingresos',this)">💼 Otros Ingresos</button>
     <button class="nav-btn" onclick="goView('proyeccion',this)">📅 Proyección</button>
     <button class="nav-btn" onclick="goView('productividad',this)">⚙️ Productividad</button>
+    <button class="nav-btn" onclick="abrirWaTemplates()">📲 WhatsApp</button>
     <button class="nav-btn" onclick="goView('asistente',this)">🤖 Asistente Offline</button>
   </div>
 
   <div class="main">
     <!-- DASHBOARD -->
     <div class="view active" id="v-dashboard">
+      <!-- RESUMEN DIARIO (se muestra al abrir, se puede cerrar) -->
+      <div class="daily-summary" id="daily-summary-box">
+        <button class="daily-summary-close" onclick="closeDailySummary()" title="Cerrar">✕</button>
+        <div class="daily-title">☀️ Resumen del día — <span id="daily-fecha"></span></div>
+        <div class="daily-grid" id="daily-grid"></div>
+        <div id="daily-alerts-text" style="margin-top:10px;font-size:11px;color:var(--text3)"></div>
+      </div>
       <div class="stats-grid" id="stats-grid"></div>
       <div class="progress-wrap">
         <div class="progress-header">
@@ -451,7 +552,23 @@
           <select class="filter-select" id="filter-tipo" onchange="renderTabla()">
             <option value="">Todos los tipos</option>
           </select>
+          <select class="filter-select" id="filter-prio" onchange="renderTabla()">
+            <option value="">Todas las prioridades</option>
+            <option value="alta">🔴 Alta</option>
+            <option value="media">🟡 Media</option>
+            <option value="baja">🟢 Baja</option>
+          </select>
           <button class="btn btn-primary" onclick="openModal()">+ Nuevo</button>
+        </div>
+        <!-- Filtro de etiquetas -->
+        <div style="padding:8px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap">🏷️ Tags:</span>
+          <button class="tag-filter-btn active" id="tag-filter-all" onclick="setTagFilter('')">Todos</button>
+          <button class="tag-filter-btn" onclick="setTagFilter('urgente')">🔥 Urgente</button>
+          <button class="tag-filter-btn" onclick="setTagFilter('vip')">⭐ VIP</button>
+          <button class="tag-filter-btn" onclick="setTagFilter('dificil')">💀 Difícil</button>
+          <button class="tag-filter-btn" onclick="setTagFilter('revision')">🔍 Revisión</button>
+          <button class="tag-filter-btn" onclick="setTagFilter('express')">⚡ Express</button>
         </div>
         <!-- Desktop table -->
         <div style="overflow-x:auto" class="tbl-desktop">
@@ -540,37 +657,24 @@
     <div class="view" id="v-asistente">
       <div class="ai-wrap">
 
-        <!-- BADGE OFFLINE COMPACTO -->
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:7px 12px;background:#052e16;border:1px solid #166534;border-radius:20px;font-size:11px;font-weight:600;color:var(--green);cursor:pointer;user-select:none" onclick="toggleOfflineInfo()" id="offline-badge-bar">
-          <span style="width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);flex-shrink:0;display:inline-block"></span>
-          <span>Asistente Local — Offline</span>
-          <span style="margin-left:auto;font-size:13px;color:#86efac" id="offline-badge-arrow">▾</span>
-        </div>
-        <div id="offline-info-panel" style="display:none;background:#052e16;border:1px solid #166534;border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;margin-top:-4px">
-          <p style="font-size:11px;color:#86efac;line-height:1.6;margin-bottom:8px">Sin internet ni API Key. El asistente procesa tus comandos directamente en el dispositivo.<br>Usa <strong>voz 🎤</strong> o <strong>texto</strong> para crear tareas, consultar saldos y más.</p>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <span style="background:rgba(34,197,94,.15);border:1px solid #166534;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:600;color:var(--green)">✅ Sin internet</span>
-            <span style="background:rgba(34,197,94,.15);border:1px solid #166534;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:600;color:var(--green)">✅ Sin API Key</span>
-            <span style="background:rgba(34,197,94,.15);border:1px solid #166534;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:600;color:var(--green)">✅ Voz en español PE</span>
-          </div>
-        </div>
-
         <!-- CHAT -->
         <div class="ai-chat">
           <div class="ai-messages" id="ai-messages">
             <div class="ai-msg bot">
               <div class="ai-avatar bot">🤖</div>
               <div class="ai-bubble">
-                ¡Hola! Soy tu asistente <strong>local offline</strong>. Puedo ayudarte a:
-                <ul>
-                  <li>🎤 Crear tareas con <strong>voz o texto</strong></li>
-                  <li>💰 Registrar cobros y pagos</li>
-                  <li>📊 Consultar saldos y reportes</li>
-                  <li>🔄 Cambiar estados de trabajos</li>
-                  <li>⚠️ Ver alertas y vencimientos</li>
-                </ul>
-                Ejemplo: <em>"Agéndame una tarea para Juan por 900 soles en dos cuotas 10 de mayo y 30 de julio"</em><br><br>
-                Dime qué necesitas o usa los accesos rápidos de abajo 👇
+                ¡Hola! Soy tu asistente inteligente 🎓 Puedo entenderte por <strong>voz 🎤 o texto</strong>. Habla con naturalidad, como si le dijeras a un asistente real:<br><br>
+                <strong>📝 Crear tareas:</strong><br>
+                <em>"Agéndame una tarea para María por novecientos soles en tres cuotas, es un ensayo jurídico para la UCV, entrega el veinte de mayo"</em><br><br>
+                <strong>💰 Registrar cobros:</strong><br>
+                <em>"Registra un abono de trescientos soles de Juan"</em><br><br>
+                <strong>📊 Consultar información:</strong><br>
+                <em>"¿Cuánto tengo pendiente de cobrar?"</em><br>
+                <em>"Muéstrame los trabajos vencidos"</em><br>
+                <em>"¿Quién me debe más plata?"</em><br><br>
+                <strong>🔄 Cambiar estados:</strong><br>
+                <em>"Marca el trabajo de Pedro como terminado"</em><br><br>
+                Usa los accesos rápidos de abajo 👇 o dicta directo con el micrófono 🎤
               </div>
             </div>
           </div>
@@ -580,19 +684,21 @@
             <span class="ai-chip" onclick="aiChip('Dame un resumen de todos mis trabajos activos')">📋 Resumen</span>
             <span class="ai-chip" onclick="aiChip('¿Cuánto cobré este mes?')">📊 Este mes</span>
             <span class="ai-chip" onclick="aiChip('¿Qué clientes me deben más dinero?')">👥 Deudores</span>
-            <span class="ai-chip" onclick="aiAddMsg('bot','🎤 <strong>Cómo usar la voz:</strong><br>1. Toca el botón 🎤<br>2. Habla tu instrucción claramente<br>3. El asistente la procesa automáticamente<br><br>Ejemplos:<br>• <em>"Crea tarea para María por 800 soles"</em><br>• <em>"Agéndame dos cuotas para Pedro, 10 de junio y 10 de julio, 500 soles"</em><br>• <em>"Registrar cobro de 200 soles a Ana"</em>',true)">🎤 Cómo usar voz</span>
+            <span class="ai-chip" onclick="aiChip('¿Cuántos trabajos tengo en proceso ahora?')">🔄 Activos</span>
+            <span class="ai-chip" onclick="aiChip('Muéstrame la proyección de cobros de los próximos 30 días')">📅 Proyección</span>
+            <span class="ai-chip" onclick="aiChip('¿Qué comandos puedo usar?')">❓ Ayuda</span>
           </div>
           <div class="ai-input-area">
             <button class="ai-btn-mic" id="ai-mic-btn" onclick="toggleMic()" title="Activar micrófono — habla tu instrucción">🎤</button>
-            <textarea id="ai-textarea" placeholder="Escribe o dicta... ej: Crea tarea para Ana por 500 soles" rows="1"
+            <textarea id="ai-textarea" placeholder="Dicta o escribe... ej: Agéndame tarea para Ana por 500 soles en dos cuotas" rows="1"
               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiEnviar()}"
               oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
             <button class="ai-btn-send" id="ai-send-btn" onclick="aiEnviar()" title="Enviar">➤</button>
           </div>
           <div class="ai-status" id="ai-status" style="min-height:18px"></div>
           <!-- Indicador de grabación -->
-          <div id="ai-recording-bar" style="display:none;padding:8px 14px;background:#1f0505;border-top:1px solid var(--red);text-align:center;font-size:12px;color:var(--red);font-weight:600;animation:pulse 1s infinite">
-            🔴 Escuchando... habla ahora — toca 🎤 para detener
+          <div id="ai-recording-bar" style="display:none;padding:8px 14px;background:#1a0a2e;border-top:1px solid var(--accent);text-align:center;font-size:12px;color:var(--accent3);font-weight:600;animation:pulse 1s infinite">
+            🎙️ Escuchando... habla con naturalidad — toca 🎤 para detener y procesar
           </div>
         </div>
 
@@ -628,7 +734,9 @@
     <button class="mnav-btn" id="mnav-asistente" onclick="goView('asistente',this,true)">
       <span class="mnav-icon">🤖</span>Offline
     </button>
-
+    <button class="mnav-btn" onclick="abrirWaTemplates()">
+      <span class="mnav-icon">📲</span>WhatsApp
+    </button>
   </div>
 </nav>
 
@@ -655,21 +763,40 @@
         </div>
         <div class="form-group">
           <label>Tipo de Trabajo</label>
-          <select class="form-select" id="f-tipo">
-            <option>Tesis Completa</option>
-            <option>Artículo Científico</option>
-            <option>Artículo Académico</option>
-            <option>Reducción de Plagio</option>
-            <option>Bachiller / Titulación</option>
-            <option>Trabajo Académico</option>
-            <option>Soporte Técnico / Inst.</option>
-            <option>Tesis de Maestría</option>
-            <option>Otro</option>
-          </select>
+          <div style="position:relative">
+            <input class="form-input" id="f-tipo" list="tipos-trabajo-list" placeholder="Tipo de trabajo..." autocomplete="off">
+          </div>
+          <datalist id="tipos-trabajo-list">
+            <option value="Tesis Completa">
+            <option value="Tesis de Maestría">
+            <option value="Artículo Científico">
+            <option value="Artículo Académico">
+            <option value="Reducción de Plagio">
+            <option value="Bachiller / Titulación">
+            <option value="Trabajo Académico">
+            <option value="Ensayo Jurídico">
+            <option value="Informe Jurídico">
+            <option value="Foro de Debate y Argumentación">
+            <option value="Examen">
+            <option value="Cuestionario">
+            <option value="Soporte Técnico / Inst.">
+          </datalist>
         </div>
         <div class="form-group">
           <label>Universidad / Empresa</label>
-          <input class="form-input" id="f-uni" placeholder="USS, UCV, USAT...">
+          <input class="form-input" id="f-uni" list="unis-list" placeholder="USS, UCV, USAT..." autocomplete="off">
+          <datalist id="unis-list">
+            <option value="USS"><option value="UCV"><option value="USAT"><option value="UAP">
+            <option value="UPIAT"><option value="PUCP"><option value="UNT"><option value="UNPRG">
+            <option value="UNMSM"><option value="UNI"><option value="UNFV"><option value="URP">
+            <option value="USIL"><option value="UPC"><option value="ESAN"><option value="UL">
+            <option value="UDEP"><option value="ULADECH"><option value="UPN"><option value="UPAO">
+            <option value="UNS"><option value="UNACH"><option value="UNSAAC"><option value="UNAJ">
+            <option value="UNJFSC"><option value="UNCA"><option value="UNTA"><option value="UNAMAD">
+            <option value="LMP"><option value="PJ"><option value="MP"><option value="MINJUS">
+            <option value="SUNAT"><option value="MEF"><option value="MINEDU"><option value="MINSA">
+            <option value="PNP"><option value="FFAA"><option value="Independiente"><option value="Particular">
+          </datalist>
         </div>
         <div class="form-group">
           <label>Fecha Encargo</label>
@@ -705,6 +832,32 @@
           <label>Notas / Detalle</label>
           <input class="form-input" id="f-notas" placeholder="Descripción del trabajo...">
         </div>
+        <div class="form-group">
+          <label>Prioridad</label>
+          <select class="form-select" id="f-prioridad">
+            <option value="">— Sin prioridad —</option>
+            <option value="alta">🔴 Alta</option>
+            <option value="media">🟡 Media</option>
+            <option value="baja">🟢 Baja</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Etiquetas (Tags)</label>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;padding:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px" id="tags-selector">
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px"><input type="checkbox" value="urgente" id="tag-urgente" style="accent-color:var(--red)"> <span class="tag tag-urgente">🔥 Urgente</span></label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px"><input type="checkbox" value="vip" id="tag-vip" style="accent-color:#7c6fff"> <span class="tag tag-vip">⭐ VIP</span></label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px"><input type="checkbox" value="dificil" id="tag-dificil" style="accent-color:var(--orange)"> <span class="tag tag-dificil">💀 Difícil</span></label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px"><input type="checkbox" value="revision" id="tag-revision" style="accent-color:var(--blue)"> <span class="tag tag-revision">🔍 Revisión</span></label>
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px"><input type="checkbox" value="express" id="tag-express" style="accent-color:var(--green)"> <span class="tag tag-express">⚡ Express</span></label>
+          </div>
+        </div>
+        <div class="form-group form-full">
+          <label>🔔 Recordatorio Interno (opcional)</label>
+          <div style="display:flex;gap:8px">
+            <input class="form-input" id="f-reminder-date" type="date" style="flex:1">
+            <input class="form-input" id="f-reminder-text" placeholder="Qué recordar..." style="flex:2">
+          </div>
+        </div>
         <div class="form-group form-full">
           <label style="font-size:11px;color:var(--text2);font-weight:600;margin-bottom:8px">💳 Modalidad de Pago</label>
           <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
@@ -727,6 +880,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-ghost" onclick="abrirPlantillas()" style="color:var(--accent3)">📋 Plantillas</button>
       <button class="btn btn-primary" onclick="guardarTrabajo()">Guardar</button>
     </div>
   </div>
@@ -814,8 +968,173 @@
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- MODAL CLIENTE HISTORIAL COMPLETO -->
+<div class="modal-overlay" id="modal-cliente">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header" style="background:linear-gradient(135deg,var(--bg2),#1a1a2e)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>
+        <div>
+          <div class="modal-title" id="cliente-modal-nombre">Historial del Cliente</div>
+          <div id="cliente-modal-cel" style="font-size:11px;color:var(--text3)"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button id="cliente-wsp-btn" class="btn btn-sm" style="background:#25d366;color:#fff;border-color:#25d366;font-size:11px" onclick="enviarCobroWhatsApp()">📲 WhatsApp</button>
+        <button class="btn btn-ghost btn-sm" onclick="editarDatosCliente()" title="Editar nombre/celular" style="font-size:11px">✏️ Editar</button>
+        <button class="modal-close" onclick="closeClienteModal()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="cliente-modal-body" style="padding:0"></div>
+  </div>
+</div>
+
+<!-- MODAL BITÁCORA -->
+<div class="modal-overlay" id="modal-bitacora">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <span class="modal-title" id="bitacora-titulo">📓 Bitácora del Trabajo</span>
+      <button class="modal-close" onclick="closeBitacora()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div id="bitacora-entries" style="max-height:260px;overflow-y:auto"></div>
+      <div style="padding:14px 18px;border-top:1px solid var(--border)">
+        <textarea id="bitacora-input" class="form-input" placeholder="Agregar nota (ej: Cliente confirmó entrega, se revisó cap. 2...)" rows="2" style="resize:none;width:100%;font-size:13px;line-height:1.4"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button class="btn btn-primary" onclick="addBitacoraEntry()">+ Agregar nota</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PLANTILLAS -->
+<div class="modal-overlay" id="modal-plantillas">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <span class="modal-title">📋 Plantillas de Trabajo</span>
+      <button class="modal-close" onclick="closePlantillas()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:14px 18px">
+      <div id="plantillas-list"></div>
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px">Guardar configuración actual como plantilla:</div>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="plantilla-nombre" placeholder="Nombre de la plantilla..." style="flex:1">
+          <button class="btn btn-primary" onclick="guardarPlantillaActual()">💾 Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CLIENTE -->
+<div class="modal-overlay" id="modal-editar-cliente">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <span class="modal-title">✏️ Editar Datos del Cliente</span>
+      <button class="modal-close" onclick="closeEditarCliente()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" style="grid-template-columns:1fr">
+        <div class="form-group">
+          <label>Nombre del Cliente</label>
+          <input class="form-input" id="ec-nombre" placeholder="Nombre completo">
+        </div>
+        <div class="form-group">
+          <label>Celular</label>
+          <input class="form-input" id="ec-cel" placeholder="9XX XXX XXX" type="tel">
+        </div>
+        <div class="form-group">
+          <label>🔒 Nota Privada del Cliente</label>
+          <textarea class="form-input" id="ec-nota-privada" rows="3" placeholder="Ej: Paga tarde, referido por Carlos, prefiere contacto por WA..." style="resize:none;width:100%;font-size:13px"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEditarCliente()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEdicionCliente()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BÚSQUEDA GLOBAL DE CLIENTES -->
+<div class="modal-overlay" id="modal-buscar-cliente">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <span class="modal-title">🔍 Búsqueda Global de Clientes</span>
+      <button class="modal-close" onclick="document.getElementById('modal-buscar-cliente').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:14px 18px">
+      <input class="form-input" id="global-search-input" placeholder="Nombre del cliente..." oninput="renderBusquedaGlobal()" autofocus style="margin-bottom:12px">
+      <div id="global-search-results"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL WA PLANTILLAS -->
+<div class="modal-overlay" id="modal-wa-templates">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-header">
+      <span class="modal-title">📲 Plantillas de WhatsApp</span>
+      <button class="modal-close" onclick="closeWaTemplates()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:14px 18px">
+      <div id="wa-templates-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL COBRO MASIVO -->
+<div class="modal-overlay" id="modal-cobro-masivo">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <span class="modal-title">💸 Cobro Masivo a Morosos</span>
+      <button class="modal-close" onclick="closeCobrosmasivo()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div style="padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center">
+        <button class="btn btn-sm btn-ghost" onclick="selectAllMorosos(true)">Seleccionar todos</button>
+        <button class="btn btn-sm btn-ghost" onclick="selectAllMorosos(false)">Deseleccionar</button>
+        <span style="flex:1;font-size:11px;color:var(--text3);text-align:right" id="morosos-count-label"></span>
+      </div>
+      <div id="morosos-list" style="max-height:320px;overflow-y:auto"></div>
+      <div style="padding:14px 18px;border-top:1px solid var(--border)">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Selecciona la plantilla de mensaje a enviar:</div>
+        <select class="form-select" id="cobro-masivo-template" style="margin-bottom:12px"></select>
+        <button class="btn btn-primary" style="width:100%;background:#25d366;border-color:#25d366;font-size:13px" onclick="enviarCobroMasivo()">📲 Enviar WhatsApp a seleccionados</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL QR -->
+<div class="modal-overlay" id="modal-qr">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <span class="modal-title">📱 QR entre Dispositivos</span>
+      <button class="modal-close" onclick="document.getElementById('modal-qr').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div class="qr-section">
+        <div id="qr-canvas-wrap"></div>
+        <div style="font-size:12px;color:var(--text3);margin-top:12px;line-height:1.5">
+          Escanea este código QR con otro dispositivo para abrir la app.<br>
+          Luego usa <strong>Importar</strong> con el archivo de backup para transferir datos.
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="manualSync()">💾 Exportar Backup</button>
+          <button class="btn btn-ghost" onclick="importarDatos()">📥 Importar Backup</button>
+        </div>
+      </div>
+      <!-- HISTORIAL DE BACKUPS -->
+      <div style="border-top:1px solid var(--border);padding:14px 18px">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">📂 Historial de Backups</div>
+        <div id="backup-history-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL EMPRESA / DATOS COMPROBANTE -->
 <div class="modal-overlay" id="modal-empresa">
@@ -1148,7 +1467,7 @@ function renderTabla(){
     const s=semaforo(t);
     return`<tr>
       <td style="color:var(--text3)">${i+1}</td>
-      <td><strong>${t.nombre}</strong>${t.cel?`<br><span style="color:var(--text3);font-size:10px">${t.cel}</span>`:''}</td>
+      <td><strong>${t.nombre}</strong>${t.cel?`<br><span style="color:var(--text3);font-size:10px">${t.cel}</span>`:''}${renderTagsPills(t.tags)}</td>
       <td style="color:var(--text2)">${t.tipo}</td>
       <td style="color:var(--text3)">${t.uni||'—'}</td>
       <td style="color:var(--text2)">${fmt(t.fent)}</td>
@@ -1156,11 +1475,13 @@ function renderTabla(){
       <td style="color:var(--green);font-weight:600">${fmtS((t.cobrado||0))}</td>
       <td class="${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">${fmtSRaw(saldo)}</td>
       <td><div class="pct-bar"><div class="pct-fill" style="width:${pct}%"></div></div><span style="font-size:10px;color:var(--text3)">${pct}%</span></td>
-      <td>${pillEstado(t.estado)}</td>
+      <td>${pillEstado(t.estado)}${t.prioridad?'<br><span class="prio-'+t.prioridad+'" style="font-size:10px">'+(t.prioridad==='alta'?'🔴':t.prioridad==='media'?'🟡':'🟢')+' '+t.prioridad+'</span>':''}</td>
       <td><span class="semaforo ${s.cls}"></span><span style="font-size:10px;color:var(--text3)">${s.label}</span></td>
       <td><div class="actions">
+        <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" title="Ver historial del cliente" style="color:var(--accent3)">👤</button>
         <button class="btn btn-ghost btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button>
         <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" title="Historial de pagos" style="color:#60a5fa">📋</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" title="Bitácora/Log" style="color:#a78bfa">📓</button>
         <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" title="Emitir comprobante" style="color:#f59e0b">🧾</button>
         <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✎</button>
         <button class="btn btn-ghost btn-sm" onclick="duplicarTrabajo(${t.id})" title="Duplicar" style="color:var(--accent3)">⧉</button>
@@ -1189,8 +1510,10 @@ function renderTabla(){
       </div>
       <div class="pct-bar" style="margin-bottom:10px"><div class="pct-fill" style="width:${pct}%"></div></div>
       <div class="mcard-footer">
+        <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" style="color:var(--accent3);font-weight:700">👤 Ver cliente</button>
         <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})">💰 Cobrar</button>
         <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa">📋</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa">📓</button>
         <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" style="color:#f59e0b">🧾 Factura</button>
         <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})">✎ Editar</button>
         <button class="btn btn-ghost btn-sm" onclick="duplicarTrabajo(${t.id})" style="color:var(--accent3)">⧉ Dup.</button>
@@ -1397,20 +1720,31 @@ function renderAll(){
 
 // MODAL TRABAJO
 function openModal(t){
-  editId=t?t.id:null;
-  document.getElementById('modal-titulo').textContent=t?'Editar Trabajo':'Nuevo Trabajo';
-  const d=t||{};
-  document.getElementById('f-nombre').value=d.nombre||'';
-  document.getElementById('f-cel').value=d.cel||'';
-  document.getElementById('f-dni').value=d.dni||'';
-  document.getElementById('f-tipo').value=d.tipo||'Tesis Completa';
-  document.getElementById('f-uni').value=d.uni||'';
-  document.getElementById('f-fenc').value=d.fenc||todayStr();
-  document.getElementById('f-fent').value=d.fent||'';
-  document.getElementById('f-fpago').value=d.fpago||'';
-  document.getElementById('f-precio').value=d.precio||0;
-  document.getElementById('f-estado').value=d.estado||'En proceso';
-  document.getElementById('f-notas').value=d.notas||'';
+  // Soporte para prefill (objeto con nombre/cel pero sin id, para nuevo trabajo desde cliente)
+  const isPrefill = t && !t.id && (t.nombre || t.cel);
+  editId = (t && t.id) ? t.id : null;
+  document.getElementById('modal-titulo').textContent = editId ? 'Editar Trabajo' : 'Nuevo Trabajo';
+  const d = (t && t.id) ? t : {};
+  const prefill = isPrefill ? t : {};
+  document.getElementById('f-nombre').value = d.nombre || prefill.nombre || '';
+  document.getElementById('f-cel').value    = d.cel    || prefill.cel    || '';
+  document.getElementById('f-dni').value    = d.dni    || '';
+  document.getElementById('f-tipo').value   = d.tipo   || '';
+  document.getElementById('f-uni').value    = d.uni    || '';
+  document.getElementById('f-fenc').value   = d.fenc   || todayStr();
+  document.getElementById('f-fent').value   = d.fent   || '';
+  document.getElementById('f-fpago').value  = d.fpago  || '';
+  document.getElementById('f-precio').value = d.precio || 0;
+  document.getElementById('f-estado').value = d.estado || 'En proceso';
+  document.getElementById('f-notas').value  = d.notas  || '';
+  // Prioridad y tags
+  document.getElementById('f-prioridad').value = d.prioridad || '';
+  ['urgente','vip','dificil','revision','express'].forEach(tag=>{
+    const cb = document.getElementById('tag-'+tag);
+    if(cb) cb.checked = (d.tags||[]).includes(tag);
+  });
+  document.getElementById('f-reminder-date').value = d.reminderDate || '';
+  document.getElementById('f-reminder-text').value = d.reminderText || '';
   // Cargar cuotas desde el objeto guardado
   cuotasData = [];
   let modoPago = d.modoPago || 'contado';
@@ -1562,6 +1896,10 @@ function guardarTrabajo(){
     precio:parseFloat(document.getElementById('f-precio').value)||0,
     estado:document.getElementById('f-estado').value,
     notas:document.getElementById('f-notas').value.trim(),
+    prioridad:document.getElementById('f-prioridad').value||'',
+    tags:getSelectedTags(),
+    reminderDate:document.getElementById('f-reminder-date').value,
+    reminderText:document.getElementById('f-reminder-text').value.trim(),
     modoPago:modoPago,
     cuotas:cuotasGuardadas,
     ...cuotasCompat
@@ -1687,6 +2025,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
       m.classList.remove('open');
       if(m.id==='modal-cobro') cobroId=null;
       if(m.id==='modal-factura') facturaActualId=null;
+      if(m.id==='modal-cliente'){ clienteActualNombre=''; clienteActualCel=''; }
     }
   });
 });
@@ -1762,6 +2101,173 @@ function verHistorial(id){
 
 function closeHistorial(){
   document.getElementById('modal-historial').classList.remove('open');
+}
+
+// ===================== HISTORIAL DE CLIENTE =====================
+
+let clienteActualNombre = '';
+let clienteActualCel    = '';
+
+function nuevoTrabajoDesdeCliente(){
+  const nombre = clienteActualNombre;
+  const cel    = clienteActualCel;
+  closeClienteModal();
+  openModal({nombre, cel});
+}
+
+function verCliente(id){
+  const trabajoRef = DB.trabajos.find(x=>x.id===id);
+  if(!trabajoRef) return;
+  // Agrupar por nombre (y celular si existe)
+  const nombre = trabajoRef.nombre.trim().toLowerCase();
+  const cel    = (trabajoRef.cel||'').trim();
+  const trabajosCliente = DB.trabajos.filter(t=>{
+    const n = t.nombre.trim().toLowerCase();
+    if(n === nombre) return true;
+    if(cel && t.cel && t.cel.trim() === cel) return true;
+    return false;
+  });
+
+  clienteActualNombre = trabajoRef.nombre;
+  clienteActualCel    = cel;
+
+  // Totales
+  const totalGen  = trabajosCliente.reduce((a,t)=>a+(t.precio||0),0);
+  const totalPag  = trabajosCliente.reduce((a,t)=>a+(t.cobrado||0),0);
+  const totalDeud = totalGen - totalPag;
+
+  // Estado del cliente
+  let estadoCliente, estadoCls;
+  if(totalDeud <= 0){
+    estadoCliente = '✅ Buen pagador'; estadoCls = 'ce-bueno';
+  } else {
+    const pct = totalGen > 0 ? totalPag/totalGen : 0;
+    if(pct >= 0.5){ estadoCliente = '🟡 Regular'; estadoCls = 'ce-regular'; }
+    else { estadoCliente = '🔴 Moroso'; estadoCls = 'ce-moroso'; }
+  }
+
+  // Header del modal
+  document.getElementById('cliente-modal-nombre').textContent = trabajoRef.nombre;
+  document.getElementById('cliente-modal-cel').textContent = cel ? '📱 ' + cel : '';
+  const wspBtn = document.getElementById('cliente-wsp-btn');
+  if(wspBtn) wspBtn.style.display = cel ? '' : 'none';
+
+  // Cuerpo
+  let html = `
+    <!-- Resumen financiero -->
+    <div class="cliente-resumen">
+      <div class="cliente-kpi">
+        <div class="cliente-kpi-label">Total Generado</div>
+        <div class="cliente-kpi-val" style="color:var(--accent3)">${fmtS(totalGen)}</div>
+      </div>
+      <div class="cliente-kpi">
+        <div class="cliente-kpi-label">Total Pagado</div>
+        <div class="cliente-kpi-val" style="color:var(--green)">${fmtS(totalPag)}</div>
+      </div>
+      <div class="cliente-kpi">
+        <div class="cliente-kpi-label">Deuda Total</div>
+        <div class="cliente-kpi-val" style="color:${totalDeud>0?'var(--red)':'var(--green)'}">${fmtS(totalDeud)}</div>
+      </div>
+    </div>
+
+    <!-- Estado del cliente -->
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+      <span class="cliente-estado-badge ${estadoCls}">${estadoCliente}</span>
+      <span style="font-size:11px;color:var(--text3)">${trabajosCliente.length} trabajo${trabajosCliente.length!==1?'s':''} registrado${trabajosCliente.length!==1?'s':''}</span>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;background:var(--bg3)">
+      <button class="btn btn-primary btn-sm" onclick="nuevoTrabajoDesdeCliente()">➕ Nuevo trabajo</button>
+      ${cel ? `<button class="btn btn-ghost btn-sm" style="color:#25d366;border-color:#25d366" onclick="enviarCobroWhatsApp()">📲 Cobrar por WA</button>` : ''}
+    </div>
+
+    <!-- Lista de trabajos -->
+    <div style="padding:10px 16px 6px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Trabajos del Cliente</div>
+  `;
+
+  trabajosCliente.sort((a,b)=>new Date(b.fenc||0)-new Date(a.fenc||0));
+
+  trabajosCliente.forEach(t=>{
+    const saldo = (t.precio||0)-(t.cobrado||0);
+    const pct   = t.precio>0 ? Math.round((t.cobrado||0)/t.precio*100) : 0;
+    const s     = semaforo(t);
+    html += `
+    <div class="cliente-trabajo-item">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px">
+            <span class="semaforo ${s.cls}"></span>${t.tipo}
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">
+            ${t.uni ? t.uni + ' · ' : ''}${t.fent ? 'Entrega: '+fmt(t.fent) : 'Sin fecha'} · ${pillEstado(t.estado)}
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;font-weight:700;color:var(--text)">${fmtS(t.precio||0)}</div>
+          ${saldo>0?`<div style="font-size:10px;color:var(--red);font-weight:600">Debe: ${fmtSRaw(saldo)}</div>`:`<div style="font-size:10px;color:var(--green)">✅ Pagado</div>`}
+        </div>
+      </div>
+      <div style="height:4px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-bottom:8px">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:4px"></div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${saldo>0 ? `<button class="btn btn-ghost btn-sm" onclick="closeClienteModal();cobrarTrabajo(${t.id})" style="color:var(--green)">💰 Cobrar</button>` : ''}
+        <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();editarTrabajo(${t.id})">✎ Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();verHistorial(${t.id})" style="color:#60a5fa">📋 Pagos</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();verFactura(${t.id})" style="color:#f59e0b">🧾 Comp.</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarTrabajoDesdeCliente(${t.id},'${escHtml(trabajoRef.nombre)}')">✕</button>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('cliente-modal-body').innerHTML = html;
+  document.getElementById('modal-cliente').classList.add('open');
+}
+
+function eliminarTrabajoDesdeCliente(id, nombreCliente){
+  const t = DB.trabajos.find(x=>x.id===id);
+  if(!t) return;
+  if(confirm('¿Eliminar trabajo "'+t.tipo+'" de '+t.nombre+'?')){
+    DB.trabajos = DB.trabajos.filter(x=>x.id!==id);
+    save(); renderAll();
+    showToast('Trabajo eliminado');
+    // Re-abrir modal con cliente actualizado
+    const ref = DB.trabajos.find(x=>x.nombre.trim().toLowerCase()===nombreCliente.trim().toLowerCase());
+    if(ref) verCliente(ref.id);
+    else closeClienteModal();
+  }
+}
+
+function closeClienteModal(){
+  document.getElementById('modal-cliente').classList.remove('open');
+  clienteActualNombre = '';
+  clienteActualCel    = '';
+}
+
+function enviarCobroWhatsApp(){
+  // Buscar trabajos del cliente actual
+  const trabajosCliente = DB.trabajos.filter(t=>
+    t.nombre.trim().toLowerCase() === clienteActualNombre.trim().toLowerCase()
+  );
+  if(!trabajosCliente.length) return;
+  const cel = trabajosCliente[0].cel || '';
+  const totalGen  = trabajosCliente.reduce((a,t)=>a+(t.precio||0),0);
+  const totalPag  = trabajosCliente.reduce((a,t)=>a+(t.cobrado||0),0);
+  const totalDeud = totalGen - totalPag;
+
+  let detalleLineas = '';
+  trabajosCliente.forEach((t,i)=>{
+    const s = (t.precio||0)-(t.cobrado||0);
+    if(s>0) detalleLineas += `• ${t.tipo}: S/ ${s.toLocaleString()} pendiente\n`;
+  });
+
+  const msg = `Hola ${clienteActualNombre} 👋\n\nTe escribo para informarte sobre el estado de tu(s) servicio(s):\n\n${detalleLineas}\n💰 *Total pendiente: S/ ${totalDeud.toLocaleString()}*\n\nPor favor, contáctame para coordinar el pago. ¡Gracias! 🙏`;
+  const num = cel.replace(/\D/g,'');
+  const url = num
+    ? `https://wa.me/51${num}?text=${encodeURIComponent(msg)}`
+    : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
 }
 
 // ===================== FACTURA / COMPROBANTE =====================
@@ -2043,144 +2549,313 @@ function compartirWhatsAppTexto(t){
 // ===================== FIN FACTURA =====================
 
 function exportarPDF(){
-  const fecha = new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const fechaObj = new Date();
+  const fecha = fechaObj.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const fechaLarga = fechaObj.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const totalFact = DB.trabajos.reduce((a,x)=>a+(x.precio||0),0);
   const totalCob  = DB.trabajos.reduce((a,x)=>a+(x.cobrado||0),0);
   const totalSaldo= totalFact - totalCob;
   const activos   = DB.trabajos.filter(x=>x.estado==='En proceso'||x.estado==='Pendiente').length;
   const pagados   = DB.trabajos.filter(x=>x.estado==='Pagado').length;
+  const terminados= DB.trabajos.filter(x=>x.estado==='Terminado').length;
+  const cancelados= DB.trabajos.filter(x=>x.estado==='Cancelado').length;
   const vencidos  = DB.trabajos.filter(x=>{const d=diffDias(x.fent);return d!==null&&d<0&&x.estado!=='Pagado'&&x.estado!=='Cancelado';}).length;
+  const pctCobro  = totalFact>0?Math.round(totalCob/totalFact*100):0;
 
-  // Generar tabla de trabajos para el PDF
+  // Distribución por tipo de trabajo
+  const tipoMap = {};
+  DB.trabajos.forEach(t=>{ tipoMap[t.tipo]=(tipoMap[t.tipo]||0)+1; });
+  const tiposRows = Object.entries(tipoMap).sort((a,b)=>b[1]-a[1]).map(([tipo,cnt])=>
+    `<tr><td>${tipo}</td><td style="text-align:center;font-weight:700">${cnt}</td><td style="text-align:right;color:#5b21b6;font-weight:700">S/ ${DB.trabajos.filter(t=>t.tipo===tipo).reduce((a,t)=>a+(t.precio||0),0).toLocaleString()}</td></tr>`
+  ).join('');
+
+  // Distribución por universidad
+  const uniMap = {};
+  DB.trabajos.forEach(t=>{ if(t.uni){ uniMap[t.uni]=(uniMap[t.uni]||0)+1; } });
+  const uniRows = Object.entries(uniMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([uni,cnt])=>
+    `<tr><td>${uni}</td><td style="text-align:center;font-weight:700">${cnt}</td></tr>`
+  ).join('');
+
+  // Tabla principal de trabajos
   const filas = DB.trabajos.map((t,i)=>{
     const saldo = (t.precio||0)-(t.cobrado||0);
-    const pct   = t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
-    const semBg = t.estado==='Pagado'?'#d1fae5':diffDias(t.fent)<0?'#fee2e2':diffDias(t.fent)<=7?'#fef3c7':'#f0fdf4';
-    const semColor = t.estado==='Pagado'?'#065f46':diffDias(t.fent)<0?'#991b1b':diffDias(t.fent)<=7?'#92400e':'#166534';
-    const estado = t.estado==='Pagado'?'Pagado':diffDias(t.fent)<0?'Vencido':diffDias(t.fent)<=7?'Próximo':'Al día';
-    return `<tr style="background:${i%2===0?'#fff':'#fafafa'}">
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:11px">${i+1}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-weight:700;font-size:12px">${t.nombre}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:11px;color:#374151">${t.tipo}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:11px;color:#6b7280">${t.uni||'—'}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:11px">${t.fent?fmt(t.fent):'—'}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;font-weight:700;font-size:12px;text-align:right">${fmtS((t.precio||0))}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;color:#059669;font-weight:600;text-align:right;font-size:12px">${fmtS((t.cobrado||0))}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;color:${saldo>0?'#dc2626':'#059669'};font-weight:700;text-align:right;font-size:12px">${fmtS(saldo)}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:11px">
-        <span style="background:${semBg};color:${semColor};padding:2px 8px;border-radius:10px;font-weight:600;font-size:10px">${estado}</span>
-      </td>
+    const diasD = diffDias(t.fent);
+    let badge='', badgeColor='', badgeBg='';
+    if(t.estado==='Pagado'){ badge='Pagado'; badgeColor='#065f46'; badgeBg='#d1fae5'; }
+    else if(t.estado==='Cancelado'){ badge='Cancelado'; badgeColor='#6b7280'; badgeBg='#f3f4f6'; }
+    else if(diasD!==null&&diasD<0){ badge='Vencido'; badgeColor='#991b1b'; badgeBg='#fee2e2'; }
+    else if(diasD!==null&&diasD<=7){ badge='Próximo'; badgeColor='#92400e'; badgeBg='#fef3c7'; }
+    else if(t.estado==='Terminado'){ badge='Terminado'; badgeColor='#1d4ed8'; badgeBg='#dbeafe'; }
+    else { badge='Al día'; badgeColor='#166534'; badgeBg='#dcfce7'; }
+    const rowBg = i%2===0?'#ffffff':'#f9f8ff';
+    return `<tr style="background:${rowBg}">
+      <td class="t-num">${i+1}</td>
+      <td class="t-client"><strong>${escHtml(t.nombre)}</strong>${t.cel?`<span class="t-sub">${escHtml(t.cel)}</span>`:''}</td>
+      <td class="t-tipo">${escHtml(t.tipo)}</td>
+      <td class="t-uni">${escHtml(t.uni||'—')}</td>
+      <td class="t-date">${t.fent?fmt(t.fent):'—'}</td>
+      <td class="t-money t-precio">S/ ${(t.precio||0).toLocaleString()}</td>
+      <td class="t-money t-cob">S/ ${(t.cobrado||0).toLocaleString()}</td>
+      <td class="t-money t-saldo" style="color:${saldo>0?'#dc2626':'#059669'}">${saldo>0?'S/ '+saldo.toLocaleString():'—'}</td>
+      <td class="t-badge"><span style="background:${badgeBg};color:${badgeColor};padding:3px 9px;border-radius:20px;font-weight:700;font-size:9px;white-space:nowrap;border:1px solid ${badgeColor}33">${badge}</span></td>
     </tr>`;
   }).join('');
 
-  const ventana = window.open('','_blank','width=1000,height=800');
-  ventana.document.write(`<!DOCTYPE html><html><head>
+  function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  const ventana = window.open('','_blank','width=1100,height=900');
+  ventana.document.write(`<!DOCTYPE html><html lang="es"><head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Reporte Tracker Académico</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Reporte Académico — ${fecha}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
       *{box-sizing:border-box;margin:0;padding:0}
-      body{font-family:'Plus Jakarta Sans',sans-serif;background:#fff;color:#1a1a2e;padding:0}
-      .toolbar{position:sticky;top:0;z-index:100;background:#fff;border-bottom:2px solid #7c6fff;padding:8px 12px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+      :root{--purple:#5b21b6;--violet:#7c6fff;--violet-light:#ede9fe;--green:#059669;--green-light:#d1fae5;--red:#dc2626;--red-light:#fee2e2;--yellow:#d97706;--yellow-light:#fef3c7;--blue:#1d4ed8;--gray:#6b7280;--gray-light:#f9fafb;--border:#e5e7eb;--text:#111827;--text2:#374151;--text3:#6b7280}
+      body{font-family:'Inter',system-ui,sans-serif;background:#f3f4f6;color:var(--text);font-size:13px;line-height:1.5}
+      /* TOOLBAR */
+      .toolbar{position:fixed;top:0;left:0;right:0;height:52px;background:#fff;border-bottom:2px solid var(--violet);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:999;box-shadow:0 2px 8px rgba(124,111,255,.12)}
       .toolbar-left{display:flex;gap:8px;align-items:center}
-      .tbtn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid transparent;font-family:inherit}
-      .tbtn-print{background:#7c6fff;color:#fff;border-color:#7c6fff}
-      .tbtn-zoom{background:#f3f4f6;color:#374151;border-color:#d1d5db;font-size:14px;padding:6px 10px}
-      .tbtn-close{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
-      .report-wrap{padding:16px;overflow-x:auto}
-      .report-inner{min-width:700px;padding:12px 16px}
-      @media(max-width:640px){
-        .report-wrap{padding:8px}
-        .report-inner{padding:8px}
+      .tbtn{height:34px;padding:0 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid transparent;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+      .tbtn-print{background:var(--violet);color:#fff;border-color:var(--violet)}
+      .tbtn-print:hover{background:#6d5ff0}
+      .tbtn-zoom{background:#f3f4f6;color:#374151;border-color:#d1d5db;padding:0 10px}
+      .tbtn-close{background:#fee2e2;color:var(--red);border-color:#fca5a5}
+      .zoom-lbl{font-size:12px;font-weight:700;color:#6b7280;min-width:38px;text-align:center}
+      /* PAGE */
+      .page-wrap{margin-top:52px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:20px}
+      .page{width:100%;max-width:1050px;background:#fff;border-radius:0;box-shadow:0 1px 3px rgba(0,0,0,.1),0 4px 24px rgba(0,0,0,.06);transform-origin:top center}
+      /* === COVER HEADER === */
+      .cover{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#4c1d95 100%);padding:40px 48px 36px;color:#fff;position:relative;overflow:hidden}
+      .cover::before{content:'';position:absolute;top:-40px;right:-40px;width:220px;height:220px;background:radial-gradient(circle,rgba(167,139,250,.3),transparent 70%);border-radius:50%}
+      .cover::after{content:'';position:absolute;bottom:-60px;left:60px;width:280px;height:280px;background:radial-gradient(circle,rgba(124,111,255,.2),transparent 70%);border-radius:50%}
+      .cover-inner{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1}
+      .cover-brand{display:flex;align-items:center;gap:16px}
+      .cover-icon{width:60px;height:60px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;border:1px solid rgba(255,255,255,.25)}
+      .cover-titles{display:flex;flex-direction:column;gap:4px}
+      .cover-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6)}
+      .cover-h1{font-size:28px;font-weight:900;line-height:1.1;color:#fff}
+      .cover-sub{font-size:12px;color:rgba(255,255,255,.65);margin-top:2px}
+      .cover-meta{text-align:right}
+      .cover-date-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);font-weight:700}
+      .cover-date{font-size:22px;font-weight:800;color:#c4b5fd;margin:4px 0}
+      .cover-total{font-size:11px;color:rgba(255,255,255,.6)}
+      /* DIVIDER */
+      .cover-divider{height:4px;background:linear-gradient(90deg,#7c6fff,#a78bfa,#c4b5fd,transparent);margin-top:28px;border-radius:2px;position:relative;z-index:1}
+      /* === KPI STRIP === */
+      .kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:#e5e7eb;border-bottom:2px solid var(--border)}
+      .kpi{padding:18px 14px;background:#fff;text-align:center}
+      .kpi-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:6px}
+      .kpi-val{font-size:20px;font-weight:900;line-height:1;letter-spacing:-0.5px}
+      .kpi-sub{font-size:9px;color:var(--text3);margin-top:3px}
+      .kpi.k-purple .kpi-val{color:#5b21b6}
+      .kpi.k-green .kpi-val{color:#059669}
+      .kpi.k-red .kpi-val{color:#dc2626}
+      .kpi.k-yellow .kpi-val{color:#d97706}
+      .kpi.k-blue .kpi-val{color:#1d4ed8}
+      .kpi.k-gray .kpi-val{color:#374151}
+      /* PROGRESS BAR IN KPI */
+      .kpi-bar-wrap{height:4px;background:#f3f4f6;border-radius:4px;margin-top:8px;overflow:hidden}
+      .kpi-bar{height:100%;background:linear-gradient(90deg,#7c6fff,#a78bfa);border-radius:4px}
+      /* === SECTION === */
+      .section{padding:24px 32px}
+      .section+.section{border-top:1px solid var(--border)}
+      .sec-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--violet);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+      .sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--violet-light),transparent)}
+      /* === ANALYTICS GRID === */
+      .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+      .ana-box{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+      .ana-head{padding:10px 14px;background:var(--gray-light);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}
+      .ana-table{width:100%;border-collapse:collapse}
+      .ana-table td{padding:7px 14px;font-size:11px;border-bottom:1px solid #f3f4f6;color:var(--text2)}
+      .ana-table tr:last-child td{border-bottom:none}
+      .ana-table tr:hover td{background:#fafafe}
+      /* === MAIN TABLE === */
+      .main-table-wrap{overflow-x:auto}
+      table.main-tbl{width:100%;border-collapse:collapse;font-size:11px}
+      table.main-tbl thead tr{background:linear-gradient(90deg,#312e81,#4c1d95)}
+      table.main-tbl th{padding:11px 12px;text-align:left;color:rgba(255,255,255,.9);font-size:8.5px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;white-space:nowrap}
+      table.main-tbl th.t-r{text-align:right}
+      table.main-tbl td{padding:9px 12px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+      table.main-tbl tr:hover td{background:#faf8ff}
+      table.main-tbl tfoot td{padding:11px 12px;font-weight:800;border-top:2px solid var(--violet);background:var(--violet-light);font-size:12px}
+      .t-num{color:#9ca3af;font-size:10px;text-align:center;width:28px}
+      .t-client strong{font-size:12px;font-weight:700;display:block}
+      .t-sub{display:block;font-size:9px;color:#9ca3af;margin-top:1px}
+      .t-tipo,.t-uni{color:var(--text2)}
+      .t-date{color:var(--text3);white-space:nowrap}
+      .t-money{text-align:right;font-weight:700;white-space:nowrap}
+      .t-precio{color:#5b21b6}
+      .t-cob{color:#059669}
+      .t-badge{text-align:center;white-space:nowrap}
+      /* SUMMARY ROW */
+      .tfoot-label{color:#5b21b6;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+      /* FOOTER */
+      .report-footer{padding:18px 32px;background:var(--gray-light);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+      .footer-left{font-size:10px;color:var(--text3);line-height:1.7}
+      .footer-left strong{color:var(--text2)}
+      .footer-right{text-align:right;font-size:10px;color:var(--text3)}
+      .footer-badge{display:inline-block;background:var(--violet-light);color:var(--purple);border:1px solid #ddd6fe;padding:4px 10px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+      /* PRINT */
+      @page{margin:12mm;size:A4 portrait}
+      @media print{
+        body{background:#fff;font-size:11px}
+        .toolbar{display:none!important}
+        .page-wrap{margin-top:0;padding:0;gap:0}
+        .page{box-shadow:none;border-radius:0;max-width:none;width:100%}
+        .cover{padding:28px 32px 24px}
+        .cover-h1{font-size:22px}
+        .kpi .kpi-val{font-size:16px}
+        .section{padding:16px 24px}
+        table.main-tbl thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .kpi-strip{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .report-footer{-webkit-print-color-adjust:exact;print-color-adjust:exact}
       }
-      @page{margin:12mm;size:A4 landscape}
-      @media print{.toolbar{display:none!important}body{padding:0}.report-wrap{padding:0;overflow:visible}.report-inner{min-width:0;padding:28px 32px}}
+      @media(max-width:700px){.kpi-strip{grid-template-columns:repeat(3,1fr)}.cover-inner{flex-direction:column;gap:16px}.analytics-grid{grid-template-columns:1fr}.cover-h1{font-size:20px}}
     </style>
   </head><body>
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <button class="tbtn tbtn-print" onclick="window.print()">🖨️ Imprimir / PDF</button>
-        <button class="tbtn tbtn-zoom" onclick="zoomOut()" title="Reducir">−</button>
-        <span id="zoom-label" style="font-size:12px;font-weight:600;color:#6b7280;min-width:36px;text-align:center">100%</span>
-        <button class="tbtn tbtn-zoom" onclick="zoomIn()" title="Ampliar">+</button>
-      </div>
-      <button class="tbtn tbtn-close" onclick="window.close()">✕ Cerrar</button>
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button class="tbtn tbtn-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+      <button class="tbtn tbtn-zoom" onclick="zoomOut()">−</button>
+      <span class="zoom-lbl" id="zl">100%</span>
+      <button class="tbtn tbtn-zoom" onclick="zoomIn()">+</button>
     </div>
-    <div class="report-wrap">
-    <div class="report-inner" id="report-inner">
-    <!-- CABECERA -->
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #7c6fff">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:48px;height:48px;background:linear-gradient(135deg,#7c6fff,#a78bfa);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px">📚</div>
-        <div>
-          <div style="font-size:20px;font-weight:800;color:#1a1a2e">Reporte General</div>
-          <div style="font-size:11px;color:#6b7280">Tracker Académico — Servicios Freelance</div>
+    <button class="tbtn tbtn-close" onclick="window.close()">✕ Cerrar</button>
+  </div>
+
+  <div class="page-wrap">
+  <div class="page" id="page">
+
+    <!-- COVER HEADER -->
+    <div class="cover">
+      <div class="cover-inner">
+        <div class="cover-brand">
+          <div class="cover-icon">📚</div>
+          <div class="cover-titles">
+            <div class="cover-eyebrow">Informe Financiero</div>
+            <div class="cover-h1">Reporte General</div>
+            <div class="cover-sub">Tracker Académico · Servicios Freelance Académicos</div>
+          </div>
+        </div>
+        <div class="cover-meta">
+          <div class="cover-date-label">Generado el</div>
+          <div class="cover-date">${fecha}</div>
+          <div class="cover-total">${DB.trabajos.length} trabajos registrados</div>
         </div>
       </div>
-      <div style="text-align:right">
-        <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.6px">Generado</div>
-        <div style="font-size:15px;font-weight:700;color:#7c6fff">${fecha}</div>
-        <div style="font-size:10px;color:#9ca3af">${DB.trabajos.length} trabajos registrados</div>
+      <div class="cover-divider"></div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="kpi-strip">
+      <div class="kpi k-purple">
+        <div class="kpi-label">Total Facturado</div>
+        <div class="kpi-val">S/ ${totalFact.toLocaleString()}</div>
+        <div class="kpi-bar-wrap"><div class="kpi-bar" style="width:100%"></div></div>
+      </div>
+      <div class="kpi k-green">
+        <div class="kpi-label">Total Cobrado</div>
+        <div class="kpi-val">S/ ${totalCob.toLocaleString()}</div>
+        <div class="kpi-bar-wrap"><div class="kpi-bar" style="width:${pctCobro}%;background:linear-gradient(90deg,#059669,#34d399)"></div></div>
+      </div>
+      <div class="kpi k-red">
+        <div class="kpi-label">Saldo Pendiente</div>
+        <div class="kpi-val">S/ ${totalSaldo.toLocaleString()}</div>
+        <div class="kpi-sub">${100-pctCobro}% por cobrar</div>
+      </div>
+      <div class="kpi k-yellow">
+        <div class="kpi-label">En Proceso</div>
+        <div class="kpi-val">${activos}</div>
+        <div class="kpi-sub">activos</div>
+      </div>
+      <div class="kpi k-blue">
+        <div class="kpi-label">Completados</div>
+        <div class="kpi-val">${pagados+terminados}</div>
+        <div class="kpi-sub">${pagados} pagados · ${terminados} terminados</div>
+      </div>
+      <div class="kpi k-red">
+        <div class="kpi-label">Vencidos</div>
+        <div class="kpi-val">${vencidos}</div>
+        <div class="kpi-sub">${cancelados} cancelados</div>
       </div>
     </div>
 
-    <!-- KPIs -->
-    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px">
-      ${[
-        ['Total Facturado','S/ '+totalFact.toLocaleString(),'#7c6fff','#ede9fe'],
-        ['Total Cobrado','S/ '+totalCob.toLocaleString(),'#059669','#d1fae5'],
-        ['Saldo Pendiente','S/ '+totalSaldo.toLocaleString(),'#dc2626','#fee2e2'],
-        ['Activos',activos+'','#d97706','#fef3c7'],
-        ['Pagados',pagados+'','#059669','#d1fae5'],
-        ['Vencidos',vencidos+'','#dc2626','#fee2e2'],
-      ].map(([l,v,c,bg])=>`<div style="background:${bg};border-radius:10px;padding:14px 12px;text-align:center">
-        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:${c};font-weight:700;margin-bottom:4px">${l}</div>
-        <div style="font-size:18px;font-weight:800;color:${c}">${v}</div>
-      </div>`).join('')}
+    <!-- ANALYTICS -->
+    <div class="section">
+      <div class="sec-title">📊 Análisis por Categoría</div>
+      <div class="analytics-grid">
+        <div class="ana-box">
+          <div class="ana-head">Por Tipo de Trabajo</div>
+          <table class="ana-table">
+            <tr style="background:#f9f8ff"><td style="font-weight:700">Tipo</td><td style="text-align:center;font-weight:700">Qty</td><td style="text-align:right;font-weight:700">Facturado</td></tr>
+            ${tiposRows}
+          </table>
+        </div>
+        <div class="ana-box">
+          <div class="ana-head">Por Universidad / Empresa</div>
+          <table class="ana-table">
+            <tr style="background:#f9f8ff"><td style="font-weight:700">Institución</td><td style="text-align:center;font-weight:700">Trabajos</td></tr>
+            ${uniRows||'<tr><td colspan="2" style="color:#9ca3af;text-align:center">Sin datos</td></tr>'}
+          </table>
+        </div>
+      </div>
     </div>
 
-    <!-- TABLA -->
-    <table style="width:100%;border-collapse:collapse">
-      <thead>
-        <tr style="background:#7c6fff">
-          <th style="padding:9px 10px;text-align:left;color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">#</th>
-          <th style="padding:9px 10px;text-align:left;color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Cliente</th>
-          <th style="padding:9px 10px;text-align:left;color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Tipo</th>
-          <th style="padding:9px 10px;text-align:left;color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Uni</th>
-          <th style="padding:9px 10px;text-align:left;color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">F. Entrega</th>
-          <th style="padding:9px 10px;text-align:right;color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Precio</th>
-          <th style="padding:9px 10px;text-align:right;color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Cobrado</th>
-          <th style="padding:9px 10px;text-align:right;color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Saldo</th>
-          <th style="padding:9px 10px;text-align:center;color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Estado</th>
-        </tr>
-      </thead>
-      <tbody>${filas}</tbody>
-      <tfoot>
-        <tr style="background:#f8f7ff">
-          <td colspan="5" style="padding:10px;font-weight:800;font-size:12px;border-top:2px solid #7c6fff">TOTAL</td>
-          <td style="padding:10px;font-weight:800;font-size:13px;text-align:right;border-top:2px solid #7c6fff">${fmtS(totalFact)}</td>
-          <td style="padding:10px;font-weight:800;font-size:13px;text-align:right;color:#059669;border-top:2px solid #7c6fff">${fmtS(totalCob)}</td>
-          <td style="padding:10px;font-weight:800;font-size:13px;text-align:right;color:#dc2626;border-top:2px solid #7c6fff">${fmtS(totalSaldo)}</td>
-          <td style="border-top:2px solid #7c6fff"></td>
-        </tr>
-      </tfoot>
-    </table>
-
-    <div style="margin-top:20px;text-align:center;font-size:10px;color:#9ca3af;border-top:1px solid #e5e7eb;padding-top:12px">
-      Reporte generado el ${fecha} · Tracker Académico · Datos almacenados localmente en este dispositivo
+    <!-- MAIN TABLE -->
+    <div class="section">
+      <div class="sec-title">📋 Detalle de Todos los Trabajos</div>
+      <div class="main-table-wrap">
+        <table class="main-tbl">
+          <thead>
+            <tr>
+              <th class="t-num">#</th>
+              <th>Cliente</th>
+              <th>Tipo de Trabajo</th>
+              <th>Univ.</th>
+              <th>F. Entrega</th>
+              <th class="t-r">Precio S/.</th>
+              <th class="t-r">Cobrado S/.</th>
+              <th class="t-r">Saldo S/.</th>
+              <th style="text-align:center">Estado</th>
+            </tr>
+          </thead>
+          <tbody>${filas}</tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5"><span class="tfoot-label">TOTALES GENERALES — ${DB.trabajos.length} trabajos</span></td>
+              <td class="t-money t-precio">S/ ${totalFact.toLocaleString()}</td>
+              <td class="t-money t-cob">S/ ${totalCob.toLocaleString()}</td>
+              <td class="t-money" style="color:#dc2626">S/ ${totalSaldo.toLocaleString()}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
     </div>
-    </div></div>
-    <script>
-      var zoomLevel = 100;
-      function zoomIn(){ zoomLevel = Math.min(zoomLevel+10, 200); applyZoom(); }
-      function zoomOut(){ zoomLevel = Math.max(zoomLevel-10, 40); applyZoom(); }
-      function applyZoom(){
-        document.getElementById('report-inner').style.transform = 'scale('+zoomLevel/100+')';
-        document.getElementById('report-inner').style.transformOrigin = 'top left';
-        document.getElementById('zoom-label').textContent = zoomLevel+'%';
-      }
-    <\/script>
+
+    <!-- FOOTER -->
+    <div class="report-footer">
+      <div class="footer-left">
+        Generado el <strong>${fechaLarga}</strong><br>
+        <strong>Tracker Académico</strong> · Servicios Freelance Académicos · Uso interno<br>
+        Este documento no constituye comprobante tributario.
+      </div>
+      <div class="footer-right">
+        <div class="footer-badge">📄 Confidencial</div>
+        <div style="margin-top:6px">Cobro: <strong style="color:#059669">${pctCobro}%</strong> completado</div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+  </div><!-- /page-wrap -->
+
+  <script>
+    var z=100;
+    function applyZoom(){ var p=document.getElementById('page'); p.style.transform='scale('+z/100+')'; p.style.marginBottom=(z-100)*5+'px'; document.getElementById('zl').textContent=z+'%'; }
+    function zoomIn(){ z=Math.min(z+10,180); applyZoom(); }
+    function zoomOut(){ z=Math.max(z-10,50); applyZoom(); }
+  <\/script>
   </body></html>`);
   ventana.document.close();
 }
@@ -2396,6 +3071,7 @@ function buildTrackerContext(){
 
 // ============================================================
 // PROCESADOR LOCAL DE COMANDOS — sin internet, sin API
+// VERSIÓN EXTENDIDA — máxima comprensión de lenguaje natural
 // ============================================================
 
 /* ------ UTILIDADES DE EXTRACCIÓN ------ */
@@ -2407,73 +3083,137 @@ function norm(s){
     .replace(/[¿?¡!.,;:]/g,' ').replace(/\s+/g,' ').trim();
 }
 
-// Detecta intención principal del texto
+// Convierte números escritos en letras a dígitos
+function numerosEnLetras(t){
+  const mapa = {
+    'cero':0,'un':1,'uno':1,'una':1,'dos':2,'tres':3,'cuatro':4,'cinco':5,
+    'seis':6,'siete':7,'ocho':8,'nueve':9,'diez':10,'once':11,'doce':12,
+    'trece':13,'catorce':14,'quince':15,'dieciseis':16,'diecisiete':17,
+    'dieciocho':18,'diecinueve':19,'veinte':20,'veintiuno':21,'veintidos':22,
+    'veintitres':23,'veinticuatro':24,'veinticinco':25,'veintiseis':26,
+    'veintisiete':27,'veintiocho':28,'veintinueve':29,'treinta':30,
+    'cuarenta':40,'cincuenta':50,'sesenta':60,'setenta':70,'ochenta':80,
+    'noventa':90,'cien':100,'ciento':100,'doscientos':200,'trescientos':300,
+    'cuatrocientos':400,'quinientos':500,'seiscientos':600,'setecientos':700,
+    'ochocientos':800,'novecientos':900,'mil':1000,'millon':1000000
+  };
+  // Reemplazar compuestos como "dos mil quinientos"
+  let resultado = norm(t);
+  // Procesar "X mil Y"
+  resultado = resultado.replace(/(\w+)\s+mil(?:\s+(\w+))?/g, (match, miles, resto) => {
+    const v1 = mapa[miles] || parseInt(miles) || 0;
+    const v2 = mapa[resto] || parseInt(resto) || 0;
+    return (v1 * 1000 + v2).toString();
+  });
+  // Reemplazar palabras sueltas
+  for(const [palabra, valor] of Object.entries(mapa)){
+    resultado = resultado.replace(new RegExp('\\b'+palabra+'\\b','g'), valor.toString());
+  }
+  return resultado;
+}
+
+// Detecta intención principal del texto — muy amplia
 function detectarIntencion(txt){
   const t = norm(txt);
+  const tN = numerosEnLetras(t);
+
+  // Ayuda / guía
+  if(/\b(ayuda|ayudame|que puedes|que sabes|como funciona|instrucciones|comandos|ejemplos?|que haces|capacidades)\b/.test(t))
+    return 'ayuda';
+
+  // Saludo / chit-chat
+  if(/^(hola|buenos dias|buenas|hey|ola|qué tal|que tal|buen dia|buenas tardes|buenas noches|hi)\b/.test(t))
+    return 'saludo';
+
+  // Gracias
+  if(/^(gracias|gracia|thanks|perfecto|listo|ok|okey|bien|excelente|genial|de nada)\b/.test(t))
+    return 'gracias';
+
   // Consultas tienen prioridad si hay signo de pregunta o palabras interrogativas
-  if(/[¿?]/.test(txt) || /^\s*(?:cuanto|cuánto|cuál|cual|qué|que|quien|quién|dame|dime|muestra|hay|tienes|tienen)\b/.test(t))
+  if(/[¿?]/.test(txt) || /^\s*(?:cuanto|cuánto|cuál|cual|qué|que|quien|quién|dame|dime|muestra|hay|tienes|tienen|como|cómo|cuales|cuántos|cuantos)\b/.test(t))
     return 'consulta';
-  // Crear
-  if(/\b(agrega|agregar|crea|crear|nueva|nuevo|agendame|agenda|registra|anota|pon|añade)\b/.test(t))
+
+  // Crear / agendar
+  if(/\b(agrega|agregar|crea|crear|nueva|nuevo|agendame|agenda|registra(?!\s+cobro)|anota|pon|añade|ingresa|ingrese|añadir|nueva tarea|nuevo trabajo|hacer tarea)\b/.test(t))
     return 'crear';
-  // Cobrar — solo si hay verbo de acción explícito de cobro (NO si es pregunta sobre saldo)
-  if(/\b(cobra(?!r\s+(?:cuanto|cuánto))|cobrar\s+\d|cobro de|registrar cobro|registra cobro|abono de|abona)\b/.test(t))
+
+  // Cobrar — solo si hay verbo de acción explícito de cobro
+  if(/\b(cobra(?!r\s+(?:cuanto|cuánto))|cobrar\s+\d|cobro de|registrar cobro|registra cobro|abono de|abona|me pagaron|pagaron|pago de|recibi|recibí|recibie)\b/.test(t))
     return 'cobrar';
+
   // Cambiar estado
-  if(/\b(cambia|cambiar|actualiza|pon estado|marca|marcalo)\b/.test(t) && !/\b(cuanto|cuánto)\b/.test(t))
+  if(/\b(cambia|cambiar|actualiza|pon estado|marca(?!\s*r)|ponlo|marcalo|cambialo|poner estado|estado a|pasar a)\b/.test(t) && !/\b(cuanto|cuánto)\b/.test(t))
     return 'estado';
-  // Eliminar
-  if(/\b(elimina|eliminar|borra|borrar|quita(?!\s+cuota)|suprime)\b/.test(t))
+
+  // Eliminar / borrar
+  if(/\b(elimina|eliminar|borra|borrar|quita(?!\s+cuota)|suprime|suprime|bórra|elimínalo|quítalo|borrar|borralos)\b/.test(t))
     return 'eliminar';
+
+  // Buscar cliente específico
+  if(/\b(busca|buscar|muestra(?:me)?|ver|mostrar|info(?:rmacion)?|datos de|trabajos de|historial de)\b/.test(t) && extraerCliente(txt))
+    return 'buscar';
+
   // Consulta por palabras clave de reporte
-  if(/\b(cuanto|cuánto|pendiente|saldo|resumen|reporte|informe|vencid|alerta|quien|deber|mes|semana|activo|listar|lista|total|cobré|cobre)\b/.test(t))
+  if(/\b(cuanto|cuánto|pendiente|saldo|resumen|reporte|informe|vencid|alerta|quien|deber|mes|semana|activo|listar|lista|total|cobré|cobre|proceso|pagado|cancelado|terminado|estadistica|cuotas?|plan de pago|proyeccion|proyección|deudor|distribucion|ganare|ingreso|tipo)\b/.test(t))
     return 'consulta';
+
   return 'desconocido';
 }
 
-// Extrae nombre de cliente: "para Juan", "de Juan", "a Juan", "cliente Juan", "nombre Juan"
+// Extrae nombre de cliente con múltiples patrones y fuzzy
 function extraerCliente(txt){
   const t = txt.replace(/\s+/g,' ');
+  const EXCLUIR = /^(sol|soles|cuota|cuotas|mayo|junio|julio|agosto|enero|febrero|marzo|abril|septiembre|octubre|noviembre|diciembre|dos|tres|cuatro|cinco|seis|siete|un|una|este|esa|ese|esto|eso|trabajo|tarea|el|la|lo|en|de|para|con|por|que|como)$/i;
+
   const patrones = [
-    /\bpara\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*)/,
-    /\bcliente\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*)/,
-    /\bde\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*)/,
-    /\ba\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*)/,
-    /\bnombre\s+(?:de\s+)?([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*)/,
+    /\bpara\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
+    /\bcliente\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
+    /\ba\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
+    /\bde\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
+    /\bnombre\s+(?:de\s+)?([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
+    /\b(?:el trabajo de|la tarea de|info de|datos de|trabajos de|historial de)\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
   ];
   for(const p of patrones){
     const m = t.match(p);
     if(m && m[1]){
-      // Excluir palabras clave que no son nombres
-      const excluir = /^(sol|soles|cuota|cuotas|mayo|junio|julio|agosto|enero|febrero|marzo|abril|septiembre|octubre|noviembre|diciembre|dos|tres|cuatro|cinco|seis)$/i;
-      if(!excluir.test(m[1].split(' ')[0])) return m[1];
+      const palabras = m[1].trim().split(' ');
+      const validas = [];
+      for(const pal of palabras){
+        if(EXCLUIR.test(pal)) break;
+        validas.push(pal);
+      }
+      if(validas.length > 0) return validas.join(' ');
     }
   }
   return null;
 }
 
-// Extrae monto: "900 soles", "S/ 900", "500", "mil doscientos"
+// Extrae monto numérico o en letras
 function extraerMonto(txt){
   const t = norm(txt);
+  const tN = numerosEnLetras(t);
   // "S/ 900" o "s/900"
-  let m = t.match(/s\/\s*(\d+(?:[.,]\d+)?)/);
+  let m = tN.match(/s\/\s*(\d+(?:[.,]\d+)?)/);
   if(m) return parseFloat(m[1].replace(',','.'));
-  // "900 soles" o "900 sol"
-  m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:sol(?:es)?|s\/)?/);
+  // "900 soles" / "900 sol"
+  m = tN.match(/(\d{2,}(?:[.,]\d+)?)\s*(?:sol(?:es)?|nuevo sol(?:es)?)?/);
   if(m && parseFloat(m[1])>0) return parseFloat(m[1].replace(',','.'));
+  // Número solo seguido de "soles"
+  m = t.match(/(\d+)\s*soles?/);
+  if(m) return parseInt(m[1]);
   return null;
 }
 
-// Extrae número de cuotas: "dos cuotas", "3 cuotas", "2 pagos"
+// Extrae número de cuotas (dígitos o letras)
 function extraerNumeroCuotas(txt){
   const t = norm(txt);
-  const palabras = {una:1,un:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6};
-  let m = t.match(/(\d+)\s*(?:cuotas?|pagos?|partes?|plazos?)/);
+  const tN = numerosEnLetras(t);
+  const palabras = {una:1,un:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10};
+  let m = tN.match(/(\d+)\s*(?:cuotas?|pagos?|partes?|plazos?|armadas?|letras?)/);
   if(m) return parseInt(m[1]);
   for(const [p,n] of Object.entries(palabras)){
-    if(new RegExp('\\b'+p+'\\b\\s*(?:cuotas?|pagos?|partes?|plazos?)').test(t)) return n;
+    if(new RegExp('\\b'+p+'\\s*(?:cuotas?|pagos?|partes?|plazos?|armadas?|letras?)').test(t)) return n;
   }
-  // Si hay múltiples fechas, inferir cuotas por cantidad de fechas
   return null;
 }
 
@@ -2483,45 +3223,82 @@ const MESES = {
   julio:7,agosto:8,septiembre:9,octubre:10,noviembre:11,diciembre:12
 };
 
-// Extrae todas las fechas tipo "10 de mayo", "30 de julio", "el 15 de marzo"
+// Extrae fechas en múltiples formatos
 function extraerFechas(txt){
   const t = norm(txt);
+  const tN = numerosEnLetras(t);
   const resultados = [];
-  const re = /(\d{1,2})\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)(?:\s+(?:de\s+)?(\d{4}))?/g;
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+
+  // Formato "10 de mayo [de 2026]"
+  const re1 = /(\d{1,2})\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)(?:\s+(?:de\s+)?(\d{4}))?/g;
   let m;
-  while((m = re.exec(t)) !== null){
+  while((m = re1.exec(tN)) !== null){
     const dia = parseInt(m[1]);
     const mes = MESES[m[2]];
-    const anio = m[3] ? parseInt(m[3]) : new Date().getFullYear();
-    // Si la fecha ya pasó este año, usar el siguiente
+    const anio = m[3] ? parseInt(m[3]) : hoy.getFullYear();
     const fecha = new Date(anio, mes-1, dia);
-    const hoy = new Date(); hoy.setHours(0,0,0,0);
     const anioFinal = (!m[3] && fecha < hoy) ? anio+1 : anio;
-    const fechaStr = `${anioFinal}-${String(mes).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
-    resultados.push(fechaStr);
+    resultados.push(`${anioFinal}-${String(mes).padStart(2,'0')}-${String(dia).padStart(2,'0')}`);
   }
+
+  // Formato "próximo lunes/martes/etc."
+  const diasSemana = {lunes:1,martes:2,miercoles:3,jueves:4,viernes:5,sabado:6,domingo:0};
+  const reProximo = /pr[oó]ximo\s+(lunes|martes|miercoles|jueves|viernes|sabado|domingo)/g;
+  while((m = reProximo.exec(t)) !== null){
+    const diaObj = diasSemana[m[1]];
+    const fechaBase = new Date(hoy);
+    const diff = (diaObj - hoy.getDay() + 7) % 7 || 7;
+    fechaBase.setDate(hoy.getDate() + diff);
+    resultados.push(fechaBase.toISOString().slice(0,10));
+  }
+
+  // "la próxima semana" / "en una semana"
+  if(/\b(pr[oó]xima semana|en una semana|la semana que viene)\b/.test(t) && resultados.length === 0){
+    const f = new Date(hoy); f.setDate(hoy.getDate()+7);
+    resultados.push(f.toISOString().slice(0,10));
+  }
+
+  // "el mes que viene" / "próximo mes"
+  if(/\b(pr[oó]ximo mes|el mes que viene|mes siguiente)\b/.test(t) && resultados.length === 0){
+    const f = new Date(hoy); f.setMonth(hoy.getMonth()+1);
+    resultados.push(f.toISOString().slice(0,10));
+  }
+
   return resultados;
 }
 
-// Extrae tipo de trabajo
+// Extrae tipo de trabajo — coincide con la lista exacta del formulario
 function extraerTipo(txt){
   const t = norm(txt);
   const tipos = [
-    {k:'tesis completa', v:'Tesis Completa'},
+    {k:'foro de debate y argumentacion', v:'Foro de Debate y Argumentación'},
+    {k:'foro de debate', v:'Foro de Debate y Argumentación'},
+    {k:'foro debate', v:'Foro de Debate y Argumentación'},
+    {k:'foro argumentacion', v:'Foro de Debate y Argumentación'},
+    {k:'foro', v:'Foro de Debate y Argumentación'},
+    {k:'ensayo juridico', v:'Ensayo Jurídico'},
+    {k:'ensayo', v:'Ensayo Jurídico'},
+    {k:'cuestionario', v:'Cuestionario'},
+    {k:'examen', v:'Examen'},
     {k:'tesis de maestria', v:'Tesis de Maestría'},
     {k:'tesis maestria', v:'Tesis de Maestría'},
     {k:'maestria', v:'Tesis de Maestría'},
+    {k:'tesis completa', v:'Tesis Completa'},
     {k:'articulo cientifico', v:'Artículo Científico'},
     {k:'articulo academico', v:'Artículo Académico'},
     {k:'articulo', v:'Artículo Académico'},
     {k:'reduccion de plagio', v:'Reducción de Plagio'},
+    {k:'reduccion plagio', v:'Reducción de Plagio'},
+    {k:'antiplagios', v:'Reducción de Plagio'},
+    {k:'antiplagio', v:'Reducción de Plagio'},
     {k:'plagio', v:'Reducción de Plagio'},
     {k:'bachiller', v:'Bachiller / Titulación'},
     {k:'titulacion', v:'Bachiller / Titulación'},
     {k:'trabajo academico', v:'Trabajo Académico'},
-    {k:'soporte tecnico', v:'Soporte Técnico / Inst.'},
-    {k:'instalacion', v:'Soporte Técnico / Inst.'},
-    {k:'soporte', v:'Soporte Técnico / Inst.'},
+    {k:'soporte tecnico', v:'Soporte Técnico'},
+    {k:'instalacion', v:'Soporte Técnico'},
+    {k:'soporte', v:'Soporte Técnico'},
     {k:'tesis', v:'Tesis Completa'},
   ];
   for(const {k,v} of tipos){
@@ -2530,29 +3307,64 @@ function extraerTipo(txt){
   return 'Trabajo Académico';
 }
 
-// Extrae universidad
+// Extrae universidad — lista ampliada
 function extraerUniversidad(txt){
   const t = txt.toUpperCase();
-  const unis = ['USS','UCV','USAT','UPIAT','UDCH','UNFV','UNMSM','PUCP','UPC','UPN','UP','USMP','UTP'];
+  const unis = [
+    'USS','UCV','USAT','UPIAT','UDCH','UNFV','UNMSM','PUCP','UPC','UPN','UP',
+    'USMP','UTP','ULADECH','UNPRG','UNACH','UPAO','UNT','UNSA','UNA','UNSAAC',
+    'UNHEVAL','UNAJMA','UANCV','UNJBG','UNSM','UNAMBA','UNH','UNASAM',
+  ];
   for(const u of unis){
-    if(t.includes(u)) return u;
+    const re = new RegExp('\\b'+u+'\\b');
+    if(re.test(t)) return u;
+  }
+  // Buscar nombre completo de universidades comunes
+  const nombresLargos = [
+    ['UNIVERSIDAD SEÑOR DE SIPAN','USS'],['UNIVERSIDAD CESAR VALLEJO','UCV'],
+    ['UNIVERSIDAD ALAS PERUANAS','UAP'],['UNIVERSIDAD DE LIMA','UL'],
+    ['PONTIFICIA UNIVERSIDAD','PUCP'],
+  ];
+  const tUp = txt.toUpperCase();
+  for(const [nombre, sigla] of nombresLargos){
+    if(tUp.includes(nombre)) return sigla;
   }
   return '';
 }
 
-// Busca trabajos por nombre (fuzzy básico)
+// Busca trabajos por nombre (fuzzy mejorado)
 function buscarTrabajoPorNombre(nombre){
   if(!nombre) return null;
   const n = norm(nombre);
-  // Coincidencia exacta
+  // Exacto
   let t = DB.trabajos.find(x => norm(x.nombre) === n);
   if(t) return t;
-  // Coincidencia parcial
+  // Parcial
   t = DB.trabajos.find(x => norm(x.nombre).includes(n) || n.includes(norm(x.nombre)));
+  if(t) return t;
+  // Fuzzy: al menos la mitad de las palabras coinciden
+  const palabrasN = n.split(' ');
+  t = DB.trabajos.find(x => {
+    const xN = norm(x.nombre).split(' ');
+    const coincidencias = palabrasN.filter(p => xN.some(xp => xp.includes(p) || p.includes(xp)));
+    return coincidencias.length >= Math.ceil(palabrasN.length / 2);
+  });
   return t || null;
 }
 
-// Formatea una fecha YYYY-MM-DD a texto legible
+// Busca TODOS los trabajos de un cliente (varios registros)
+function buscarTodosDeCliente(nombre){
+  if(!nombre) return [];
+  const n = norm(nombre);
+  return DB.trabajos.filter(x => {
+    const xN = norm(x.nombre);
+    const palabrasN = n.split(' ');
+    const coincidencias = palabrasN.filter(p => xN.includes(p));
+    return xN.includes(n) || n.includes(xN) || coincidencias.length >= Math.ceil(palabrasN.length/2);
+  });
+}
+
+// Formatea fecha YYYY-MM-DD a texto
 function fmtFechaTxt(f){
   if(!f) return '—';
   const [a,m,d] = f.split('-');
@@ -2560,36 +3372,112 @@ function fmtFechaTxt(f){
   return `${parseInt(d)} ${mNom[parseInt(m)-1]} ${a}`;
 }
 
+// Respuestas conversacionales variadas — tono amigable peruano
+const SALUDOS_BOT = [
+  '¡Hola! 👋 Claro, aquí estoy. ¿En qué te puedo ayudar?',
+  '¡Buenas! 😊 Listo para apoyarte. ¿Qué necesitas?',
+  '¡Qué tal! Enseguida te ayudo. Cuéntame qué necesitas.',
+  '¡Hola! Dime pe, ¿en qué te apoyo hoy?',
+  '¡Buenas! A tus órdenes. ¿Qué trabajamos?',
+];
+const GRACIAS_BOT = [
+  '¡Con gusto! 😊 Si necesitas algo más, aquí estoy.',
+  '¡Para eso estoy! Dime si necesitas algo más.',
+  'Claro que sí, a la orden. ¿Algo más en lo que te pueda apoyar?',
+  '¡Listo! Para lo que gustes. 👍',
+  '¡Perfecto! Cualquier cosita más me avisas.',
+];
+
+/* ------ UTILIDAD: conector conversacional variado ------ */
+function conector(){
+  const c=['Claro','Mira','Te cuento que','Enseguida','Con gusto','Aquí tienes'];
+  return c[Math.floor(Math.random()*c.length)];
+}
+
 /* ------ PROCESADOR PRINCIPAL ------ */
 function procesarComandoLocal(texto){
   const intencion = detectarIntencion(texto);
+  const tn = norm(texto);
+
+  // ── SALUDO ──
+  if(intencion === 'saludo'){
+    return {tipo:'html', msg: SALUDOS_BOT[Math.floor(Math.random()*SALUDOS_BOT.length)]};
+  }
+
+  // ── GRACIAS ──
+  if(intencion === 'gracias'){
+    return {tipo:'html', msg: GRACIAS_BOT[Math.floor(Math.random()*GRACIAS_BOT.length)]};
+  }
+
+  // ── AYUDA COMPLETA ──
+  if(intencion === 'ayuda'){
+    return {tipo:'html', msg:`🤖 <strong>Guía completa del Asistente</strong><br><br>
+<div class="ai-result-card">
+<div class="arc-title">📝 Crear Trabajos</div>
+<div class="arc-row"><span style="color:var(--text3)">Simple</span><span>"Crea tarea para Juan por quinientos soles"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Con tipo</span><span>"Agrégame un ensayo jurídico para María, ochocientos soles, USS"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Con cuotas</span><span>"Agéndame tarea para Pedro, novecientos soles en tres cuotas, entrega veinte de mayo"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Con fechas</span><span>"Registra tesis para Ana, dos mil soles, cuotas 10 mayo y 10 junio"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Con uni</span><span>"Nueva tesis de maestría para Lucía, UCV, dos mil soles"</span></div>
+</div>
+<div class="ai-result-card" style="margin-top:8px">
+<div class="arc-title">🏷️ Tipos de trabajo que reconozco</div>
+<div class="arc-row"><span style="color:var(--text3)">Por voz</span><span>tesis, artículo científico, artículo académico, reducción de plagio, bachiller, trabajo académico, soporte técnico, tesis de maestría, ensayo jurídico, foro de debate, examen, cuestionario</span></div>
+</div>
+<div class="ai-result-card" style="margin-top:8px">
+<div class="arc-title">💰 Cobros y Pagos</div>
+<div class="arc-row"><span style="color:var(--text3)">Cobrar</span><span>"Cobré doscientos soles de Juan"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Abono</span><span>"Pedro me abonó trescientos soles"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Pago total</span><span>"Registra cobro de quinientos a María"</span></div>
+</div>
+<div class="ai-result-card" style="margin-top:8px">
+<div class="arc-title">🔄 Cambiar Estado</div>
+<div class="arc-row"><span style="color:var(--text3)">Terminar</span><span>"Marca el trabajo de Juan como terminado"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Pagar</span><span>"Pon el trabajo de Ana como pagado"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Cancelar</span><span>"Cancela el trabajo de Pedro"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">En proceso</span><span>"Cambia el estado de María a en proceso"</span></div>
+</div>
+<div class="ai-result-card" style="margin-top:8px">
+<div class="arc-title">📊 Consultas</div>
+<div class="arc-row"><span style="color:var(--text3)">Saldo</span><span>"¿Cuánto tengo pendiente de cobrar?"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Mes</span><span>"¿Cuánto cobré este mes?"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Deudores</span><span>"¿Quién me debe más dinero?"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Alertas</span><span>"¿Qué trabajos vencen esta semana?"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Cliente</span><span>"Muéstrame los trabajos de Enzo"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Resumen</span><span>"Dame un resumen general"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Cuotas</span><span>"¿Qué cuotas vencen esta semana?"</span></div>
+</div>
+<div class="ai-result-card" style="margin-top:8px">
+<div class="arc-title">🗑️ Eliminar</div>
+<div class="arc-row"><span style="color:var(--text3)">Eliminar</span><span>"Elimina el trabajo de Juan"</span></div>
+</div>
+<br>💡 <em>Entiendo números en letras (novecientos → 900, dos cuotas → 2), fechas habladas (veinte de mayo, próximo lunes) y nombres completos.</em>`};
+  }
 
   // ── CREAR TRABAJO ──
   if(intencion === 'crear'){
     const cliente = extraerCliente(texto);
     if(!cliente){
-      return {tipo:'error', msg:'⚠️ No pude identificar el nombre del cliente.\n\nPrueba: <em>"Crear tarea para <strong>Juan</strong> por 900 soles"</em>'};
+      return {tipo:'error', msg:'⚠️ No pude identificar el nombre del cliente.<br><br>Prueba así: <em>"Crear tarea para <strong>Juan</strong> por 900 soles"</em><br>O: <em>"Agéndame una tarea para <strong>María López</strong>"</em>'};
     }
-    const monto = extraerMonto(texto);
+    const monto  = extraerMonto(texto);
     const fechas = extraerFechas(texto);
     const numCuotas = extraerNumeroCuotas(texto);
-    const tipo = extraerTipo(texto);
-    const uni  = extraerUniversidad(texto);
+    const tipo   = extraerTipo(texto);
+    const uni    = extraerUniversidad(texto);
 
-    // Determinar modalidad de pago
     const tNorm = norm(texto);
-    const esCuotas = numCuotas || fechas.length >= 2 ||
-      /\b(cuotas?|pagos?|partes?|plazos?)\b/.test(tNorm);
+    const esCuotas = !!(numCuotas || fechas.length >= 2 ||
+      /\b(cuotas?|pagos?|partes?|plazos?|armadas?|letras?)\b/.test(tNorm));
 
     let cuotasArr = [];
-    let modoPago = 'contado';
+    let modoPago  = 'contado';
 
     if(esCuotas && fechas.length > 0){
       modoPago = 'cuotas';
       const totalCuotas = numCuotas || fechas.length;
-      const montoCuota = monto ? Math.round(monto / totalCuotas) : 0;
+      const montoCuota  = monto ? Math.round(monto / totalCuotas) : 0;
       cuotasArr = fechas.map(f => ({f, m: montoCuota, estado:'pendiente'}));
-      // Si quedan cuotas sin fecha, agregarlas sin fecha
       if(numCuotas && numCuotas > fechas.length){
         for(let i = fechas.length; i < numCuotas; i++){
           cuotasArr.push({f:'', m: montoCuota, estado:'pendiente'});
@@ -2598,19 +3486,16 @@ function procesarComandoLocal(texto){
     } else if(esCuotas){
       modoPago = 'cuotas';
       const totalCuotas = numCuotas || 2;
-      const montoCuota = monto ? Math.round(monto / totalCuotas) : 0;
+      const montoCuota  = monto ? Math.round(monto / totalCuotas) : 0;
       cuotasArr = Array.from({length:totalCuotas}, ()=>({f:'', m:montoCuota, estado:'pendiente'}));
     }
 
-    // Construir objeto trabajo
     const hoy = todayStr();
     const nuevo = {
       id: DB.nextId++,
       nombre: cliente,
-      cel: '',
-      dni: '',
-      tipo,
-      uni,
+      cel: '', dni: '',
+      tipo, uni,
       fenc: hoy,
       fent: fechas.length > 0 ? fechas[fechas.length-1] : '',
       fpago: fechas.length > 0 ? fechas[fechas.length-1] : '',
@@ -2621,33 +3506,30 @@ function procesarComandoLocal(texto){
       modoPago,
       cuotas: cuotasArr
     };
-    // Compat formato antiguo
     cuotasArr.forEach((c,i)=>{ nuevo['c'+(i+1)+'f']=c.f||''; nuevo['c'+(i+1)+'m']=c.m||0; });
-
     DB.trabajos.push(nuevo);
     save(); renderAll();
 
-    // Construir resumen
-    let resumen = `✅ <strong>Tarea creada exitosamente</strong>
+    const CONECTORES_OK = ['¡Listo!','¡Claro!','¡Enseguida!','¡Hecho!','¡Ya está!'];
+    const conector = CONECTORES_OK[Math.floor(Math.random()*CONECTORES_OK.length)];
+    let resumen = `✅ <strong>${conector} Tarea creada exitosamente</strong>
 <div class="ai-result-card">
   <div class="arc-title">Nuevo Trabajo #${nuevo.id}</div>
   <div class="arc-row"><span>Cliente</span><span><strong>${nuevo.nombre}</strong></span></div>
   <div class="arc-row"><span>Tipo</span><span>${nuevo.tipo}</span></div>
   ${uni ? `<div class="arc-row"><span>Universidad</span><span>${uni}</span></div>` : ''}
-  <div class="arc-row"><span>Precio</span><span style="color:var(--accent3)"><strong>${fmtS((nuevo.precio||0))}</strong></span></div>
-  <div class="arc-row"><span>Modalidad</span><span>${modoPago==='cuotas'?'En Cuotas':'Al Contado'}</span></div>
+  <div class="arc-row"><span>Precio</span><span style="color:var(--accent3)"><strong>${fmtS(nuevo.precio||0)}</strong></span></div>
+  <div class="arc-row"><span>Modalidad</span><span>${modoPago==='cuotas'?'📅 En Cuotas':'💵 Al Contado'}</span></div>
   ${nuevo.fent ? `<div class="arc-row"><span>F. Entrega</span><span>${fmtFechaTxt(nuevo.fent)}</span></div>` : ''}
-  <div class="arc-row"><span>Estado</span><span>${nuevo.estado}</span></div>
+  <div class="arc-row"><span>Estado</span><span>🔵 ${nuevo.estado}</span></div>
 </div>`;
     if(cuotasArr.length > 0){
       resumen += `<br>📅 <strong>${cuotasArr.length} cuota(s) programada(s):</strong><br>`;
       cuotasArr.forEach((c,i)=>{
-        resumen += `&nbsp;&nbsp;• Cuota ${i+1}: ${fmtSRaw(c.m)} ${c.f ? '— '+fmtFechaTxt(c.f) : '(sin fecha)'}<br>`;
+        resumen += `&nbsp;• Cuota ${i+1}: <strong>${fmtSRaw(c.m)}</strong> ${c.f ? '— '+fmtFechaTxt(c.f) : '<span style="color:var(--text3)">(sin fecha)</span>'}<br>`;
       });
     }
-    if(!monto){
-      resumen += `<br>⚠️ <em>No detecté un monto. Edita el trabajo para agregar el precio.</em>`;
-    }
+    if(!monto) resumen += `<br>💡 <em>No detecté un monto. Puedes editar el trabajo para agregar el precio.</em>`;
     return {tipo:'html', msg: resumen};
   }
 
@@ -2655,58 +3537,109 @@ function procesarComandoLocal(texto){
   if(intencion === 'cobrar'){
     const cliente = extraerCliente(texto);
     const monto   = extraerMonto(texto);
-    const t = cliente ? buscarTrabajoPorNombre(cliente) : null;
+
+    // Si no hay cliente mencionado, buscar el último trabajo activo
+    let t = cliente ? buscarTrabajoPorNombre(cliente) : null;
+
+    if(!t && !cliente){
+      return {tipo:'error', msg:'⚠️ Indica a quién le cobraste. Ejemplo: <em>"Cobré 200 soles a Juan"</em>'};
+    }
     if(!t){
-      return {tipo:'error', msg:'⚠️ No encontré el cliente. Indica el nombre: <em>"Cobrar 200 soles a Juan"</em>'};
+      // Sugerir nombres parecidos
+      const similares = DB.trabajos.filter(x => (x.precio||0)-(x.cobrado||0)>0).slice(0,3);
+      let sugs = '';
+      if(similares.length>0) sugs = '<br>¿Quizás quisiste decir: '+similares.map(x=>`<strong>${x.nombre}</strong>`).join(', ')+'?';
+      return {tipo:'error', msg:`⚠️ No encontré al cliente "<strong>${cliente}</strong>" en tus registros.${sugs}`};
     }
     if(!monto){
       const saldo = (t.precio||0)-(t.cobrado||0);
-      return {tipo:'error', msg:`⚠️ Encontré a <strong>${t.nombre}</strong> (saldo: ${fmtSRaw(saldo)}), pero no vi el monto.\nEjemplo: <em>"Cobrar 200 soles a ${t.nombre}"</em>`};
+      return {tipo:'error', msg:`⚠️ Encontré a <strong>${t.nombre}</strong> (saldo pendiente: <strong style="color:var(--red)">${fmtSRaw(saldo)}</strong>), pero no vi el monto a cobrar.<br>Ejemplo: <em>"Cobré <strong>200 soles</strong> de ${t.nombre}"</em>`};
     }
     const saldoAntes = (t.precio||0)-(t.cobrado||0);
     if(monto > saldoAntes){
-      return {tipo:'error', msg:`❌ El monto ${fmtSRaw(monto)} supera el saldo de ${fmtSRaw(saldoAntes)} de <strong>${t.nombre}</strong>.`};
+      return {tipo:'error', msg:`❌ El monto ${fmtSRaw(monto)} supera el saldo pendiente de ${fmtSRaw(saldoAntes)} de <strong>${t.nombre}</strong>. Verifica el monto.`};
     }
     t.cobrado = (t.cobrado||0) + monto;
     if(t.cobrado >= t.precio){ t.cobrado = t.precio; t.estado = 'Pagado'; }
     save(); renderAll();
-    return {tipo:'html', msg:`✅ <strong>Cobro registrado</strong>
+    const CONECTORES_COB = ['¡Listo!','¡Registrado!','¡Perfecto!','¡Hecho!'];
+    const conectCob = CONECTORES_COB[Math.floor(Math.random()*CONECTORES_COB.length)];
+    const saldoNuevo = t.precio - t.cobrado;
+    return {tipo:'html', msg:`✅ <strong>${conectCob} Cobro registrado correctamente</strong>
 <div class="ai-result-card">
-  <div class="arc-row"><span>Cliente</span><span>${t.nombre}</span></div>
-  <div class="arc-row"><span>Cobrado ahora</span><span style="color:var(--green)">+${fmtSRaw(monto)}</span></div>
-  <div class="arc-row"><span>Nuevo saldo</span><span style="color:${t.precio-t.cobrado>0?'var(--red)':'var(--green)'}">${fmtSRaw(t.precio-t.cobrado)}</span></div>
-  <div class="arc-row"><span>Estado</span><span>${t.estado}</span></div>
-</div>`};
+  <div class="arc-row"><span>Cliente</span><span><strong>${t.nombre}</strong></span></div>
+  <div class="arc-row"><span>Cobrado ahora</span><span style="color:var(--green);font-weight:700">+${fmtSRaw(monto)}</span></div>
+  <div class="arc-row"><span>Total cobrado</span><span style="color:var(--green)">${fmtSRaw(t.cobrado)}</span></div>
+  <div class="arc-row"><span>Saldo restante</span><span style="font-weight:700;color:${saldoNuevo>0?'var(--red)':'var(--green)'}">${fmtSRaw(saldoNuevo)}</span></div>
+  <div class="arc-row"><span>Estado</span><span>${t.estado==='Pagado'?'🟢':'🔵'} ${t.estado}</span></div>
+</div>
+${saldoNuevo<=0?'<br>🎉 <strong>¡Trabajo completamente pagado!</strong>':''}`};
+  }
+
+  // ── BUSCAR CLIENTE ──
+  if(intencion === 'buscar'){
+    const cliente = extraerCliente(texto);
+    const trabajos = buscarTodosDeCliente(cliente);
+    if(trabajos.length === 0){
+      return {tipo:'error', msg:`⚠️ No encontré trabajos para "<strong>${cliente}</strong>".`};
+    }
+    let resp = `🔍 <strong>Trabajos de ${trabajos[0].nombre}</strong> (${trabajos.length} registro${trabajos.length>1?'s':''})<br><br>`;
+    let totalCliente = 0, cobradoCliente = 0;
+    trabajos.forEach((t,i)=>{
+      const sal = (t.precio||0)-(t.cobrado||0);
+      totalCliente += (t.precio||0);
+      cobradoCliente += (t.cobrado||0);
+      resp += `<div class="ai-result-card" style="margin-bottom:6px">
+        <div class="arc-row"><span>#${t.id} ${t.tipo}</span><span>${pillEstado(t.estado)}</span></div>
+        <div class="arc-row"><span>Precio</span><span><strong>${fmtSRaw(t.precio||0)}</strong></span></div>
+        <div class="arc-row"><span>Cobrado</span><span style="color:var(--green)">${fmtSRaw(t.cobrado||0)}</span></div>
+        <div class="arc-row"><span>Saldo</span><span style="color:${sal>0?'var(--red)':'var(--green)'}">${fmtSRaw(sal)}</span></div>
+        ${t.fent?`<div class="arc-row"><span>Entrega</span><span>${fmtFechaTxt(t.fent)}</span></div>`:''}
+        ${t.uni?`<div class="arc-row"><span>Universidad</span><span>${t.uni}</span></div>`:''}
+      </div>`;
+    });
+    if(trabajos.length>1){
+      resp += `<div class="ai-result-card" style="background:var(--bg4)">
+        <div class="arc-row"><span>Total facturado</span><span><strong>${fmtSRaw(totalCliente)}</strong></span></div>
+        <div class="arc-row"><span>Total cobrado</span><span style="color:var(--green)">${fmtSRaw(cobradoCliente)}</span></div>
+        <div class="arc-row"><span>Deuda total</span><span style="color:var(--red)">${fmtSRaw(totalCliente-cobradoCliente)}</span></div>
+      </div>`;
+    }
+    return {tipo:'html', msg: resp};
   }
 
   // ── CAMBIAR ESTADO ──
   if(intencion === 'estado'){
     const estadosList = ['En proceso','Pendiente','Terminado','Pagado','Cancelado'];
-    const tn = norm(texto);
     let estadoNuevo = null;
     for(const e of estadosList){
       if(tn.includes(norm(e))){ estadoNuevo = e; break; }
     }
     if(/\b(pagad[oa]|pago completo)\b/.test(tn)) estadoNuevo = 'Pagado';
+    // Detectores adicionales de estado por lenguaje natural
     if(/\b(cancel[ao]|cancelad[oa])\b/.test(tn)) estadoNuevo = 'Cancelado';
-    if(/\b(terminad[oa]|complet[ao]|listo|entregad[oa])\b/.test(tn)) estadoNuevo = 'Terminado';
+    if(/\b(terminad[oa]|complet[ao]|listo|entregad[oa]|finaliz)\b/.test(tn)) estadoNuevo = 'Terminado';
+    if(/\b(pagad[oa]|cobrad[oa]|saldad[oa])\b/.test(tn)) estadoNuevo = 'Pagado';
+    if(/\b(en proceso|activo|retom[ao]|reanudar)\b/.test(tn)) estadoNuevo = 'En proceso';
+    if(/\b(pendiente|en espera|pausad[oa])\b/.test(tn) && !estadoNuevo) estadoNuevo = 'Pendiente';
 
     const cliente = extraerCliente(texto);
     const t = cliente ? buscarTrabajoPorNombre(cliente) : null;
     if(!t){
-      return {tipo:'error', msg:'⚠️ No encontré el cliente. Indica: <em>"Cambiar estado de Juan a Pagado"</em>'};
+      return {tipo:'error', msg:'⚠️ No encontré el cliente. Indica el nombre claramente:<br><em>"Cambia el estado de <strong>Juan</strong> a Pagado"</em><br><em>"Marca el trabajo de <strong>María</strong> como terminado"</em>'};
     }
     if(!estadoNuevo){
-      return {tipo:'error', msg:`⚠️ No identifiqué el nuevo estado para <strong>${t.nombre}</strong>.\nEstados disponibles: En proceso, Pendiente, Terminado, Pagado, Cancelado.`};
+      return {tipo:'error', msg:`⚠️ No identifiqué el nuevo estado para <strong>${t.nombre}</strong>.<br>Estados disponibles: <strong>En proceso</strong>, <strong>Pendiente</strong>, <strong>Terminado</strong>, <strong>Pagado</strong>, <strong>Cancelado</strong>.`};
     }
     const antes = t.estado;
     t.estado = estadoNuevo;
     save(); renderAll();
-    return {tipo:'html', msg:`✅ <strong>Estado actualizado</strong>
+    return {tipo:'html', msg:`✅ <strong>Estado actualizado correctamente</strong>
 <div class="ai-result-card">
-  <div class="arc-row"><span>Cliente</span><span>${t.nombre}</span></div>
-  <div class="arc-row"><span>Antes</span><span>${antes}</span></div>
-  <div class="arc-row"><span>Ahora</span><span style="color:var(--accent3)">${estadoNuevo}</span></div>
+  <div class="arc-row"><span>Cliente</span><span><strong>${t.nombre}</strong></span></div>
+  <div class="arc-row"><span>Estado anterior</span><span style="color:var(--text3)">${antes}</span></div>
+  <div class="arc-row"><span>Estado nuevo</span><span style="color:var(--accent3);font-weight:700">${estadoNuevo}</span></div>
+  ${estadoNuevo==='Pagado'?'<div class="arc-row"><span>Saldo</span><span style="color:var(--green)">Completamente pagado ✅</span></div>':''}
 </div>`};
   }
 
@@ -2715,14 +3648,14 @@ function procesarComandoLocal(texto){
     const cliente = extraerCliente(texto);
     const t = cliente ? buscarTrabajoPorNombre(cliente) : null;
     if(!t){
-      return {tipo:'error', msg:'⚠️ No encontré el trabajo a eliminar. Indica el nombre del cliente.'};
+      return {tipo:'error', msg:'⚠️ No encontré el trabajo a eliminar. Indica el nombre del cliente:<br><em>"Elimina el trabajo de <strong>Juan</strong>"</em>'};
     }
-    if(!confirm(`¿Eliminar el trabajo de ${t.nombre}?`)){
-      return {tipo:'texto', msg:'🚫 Eliminación cancelada.'};
+    if(!confirm(`¿Eliminar el trabajo de ${t.nombre} (${t.tipo} — ${fmtSRaw(t.precio||0)})?`)){
+      return {tipo:'html', msg:'🚫 Eliminación cancelada. El trabajo sigue registrado.'};
     }
     DB.trabajos = DB.trabajos.filter(x=>x.id!==t.id);
     save(); renderAll();
-    return {tipo:'html', msg:`✅ Trabajo de <strong>${t.nombre}</strong> eliminado.`};
+    return {tipo:'html', msg:`✅ Trabajo de <strong>${t.nombre}</strong> (${t.tipo}) eliminado correctamente.`};
   }
 
   // ── CONSULTAS ──
@@ -2730,44 +3663,113 @@ function procesarComandoLocal(texto){
     return generarRespuestaConsulta(texto);
   }
 
-  // ── DESCONOCIDO ──
-  return {tipo:'texto', msg:`🤔 No entendí bien esa instrucción. Prueba con:\n• "Crear tarea para [nombre] por [monto] soles"\n• "Cobrar [monto] soles a [nombre]"\n• "¿Cuánto tengo pendiente?"\n• "Dame un resumen de mis trabajos"`};
+  // ── DESCONOCIDO — respuesta amigable con sugerencias ──
+  const sugerencias = [
+    '"Crea tarea para [nombre] por [monto] soles"',
+    '"Cobré [monto] soles de [nombre]"',
+    '"¿Cuánto tengo pendiente de cobrar?"',
+    '"Muéstrame los trabajos de [nombre]"',
+    '"Cambia el estado de [nombre] a Terminado"',
+    '"¿Qué puedes hacer?" para ver toda la guía',
+  ];
+  return {tipo:'html', msg:`🤔 No entendí bien esa instrucción. Intenta con alguna de estas:<br><br>${sugerencias.map(s=>`• <em>${s}</em>`).join('<br>')}<br><br>También puedes tocar <strong>"❓ Ayuda completa"</strong> para ver todos los comandos.`};
 }
 
-/* ------ RESPUESTAS A CONSULTAS ------ */
+/* ------ RESPUESTAS A CONSULTAS — mejoradas ------ */
 function generarRespuestaConsulta(texto){
   const {t, totalFact, totalCob, saldoPend, activos, vencidos, proximos} = buildTrackerContext();
   const tn = norm(texto);
 
-  // Saldo / pendiente
-  if(/\b(saldo|pendiente|cobrar|debo|cobr)\b/.test(tn)){
+  // Buscar por cliente específico mencionado en consulta
+  const clienteMenc = extraerCliente(texto);
+  if(clienteMenc && /\b(trabajos?|tareas?|info|datos|historial|cuanto|saldo)\b/.test(tn)){
+    const trabajos = buscarTodosDeCliente(clienteMenc);
+    if(trabajos.length > 0){
+      let totalC = 0, cobC = 0;
+      let resp = `🔍 <strong>${conector()}, ${trabajos[0].nombre} tiene ${trabajos.length} registro${trabajos.length>1?'s':''}:</strong><br><br>`;
+      trabajos.forEach(tj=>{
+        const sal=(tj.precio||0)-(tj.cobrado||0);
+        totalC+=(tj.precio||0); cobC+=(tj.cobrado||0);
+        resp+=`<div class="ai-result-card" style="margin-bottom:6px">
+          <div class="arc-row"><span>${tj.tipo}</span><span>${pillEstado(tj.estado)}</span></div>
+          <div class="arc-row"><span>Precio</span><span>${fmtSRaw(tj.precio||0)}</span></div>
+          <div class="arc-row"><span>Cobrado</span><span style="color:var(--green)">${fmtSRaw(tj.cobrado||0)}</span></div>
+          <div class="arc-row"><span>Saldo</span><span style="color:${sal>0?'var(--red)':'var(--green)'}">${fmtSRaw(sal)}</span></div>
+          ${tj.fent?`<div class="arc-row"><span>Entrega</span><span>${fmtFechaTxt(tj.fent)}</span></div>`:''}
+          ${tj.uni?`<div class="arc-row"><span>Universidad</span><span>${tj.uni}</span></div>`:''}
+        </div>`;
+      });
+      if(trabajos.length>1){
+        resp+=`<div class="ai-result-card" style="background:var(--bg4)">
+          <div class="arc-row"><span>Total</span><span>${fmtSRaw(totalC)}</span></div>
+          <div class="arc-row"><span>Cobrado</span><span style="color:var(--green)">${fmtSRaw(cobC)}</span></div>
+          <div class="arc-row"><span>Deuda total</span><span style="color:${(totalC-cobC)>0?'var(--red)':'var(--green)'}">${fmtSRaw(totalC-cobC)}</span></div>
+        </div>`;
+      }
+      return {tipo:'html', msg: resp};
+    }
+  }
+
+  // Cuotas próximas / plan de pagos
+  if(/\b(cuotas?|cuota|pagos programados?|plan de pago)\b/.test(tn)){
+    const cuotasAlerta = [];
+    DB.trabajos.forEach(tj=>{
+      const arr = tj.cuotas && tj.cuotas.length>0 ? tj.cuotas : [];
+      arr.forEach((c,i)=>{
+        if((c.estado||'pendiente')==='pendiente' && c.f){
+          const d = diffDias(c.f);
+          if(d !== null && d <= 14){
+            cuotasAlerta.push({nombre:tj.nombre,tipo:tj.tipo,cuota:i+1,fecha:c.f,monto:c.m||0,dias:d,id:tj.id});
+          }
+        }
+      });
+    });
+    cuotasAlerta.sort((a,b)=>a.dias-b.dias);
+    if(cuotasAlerta.length===0){
+      return {tipo:'html', msg:'✅ <strong>¡Tranquilo!</strong> No tienes cuotas pendientes en los próximos 14 días. Todo bajo control.'};
+    }
+    let resp = `📅 <strong>${conector()}, hay ${cuotasAlerta.length} cuota${cuotasAlerta.length>1?'s':''} próxima${cuotasAlerta.length>1?'s':''} a vencer:</strong><br><br>`;
+    cuotasAlerta.forEach((c,i)=>{
+      const dTxt = c.dias<0?`venció hace ${Math.abs(c.dias)}d`:c.dias===0?'<strong style="color:var(--red)">HOY</strong>':c.dias===1?'<strong style="color:var(--yellow)">mañana</strong>':`en ${c.dias} días`;
+      resp += `${i+1}. <strong>${c.nombre}</strong> — Cuota ${c.cuota}: <strong style="color:var(--accent3)">${fmtSRaw(c.monto)}</strong> — ${dTxt}<br>`;
+    });
+    return {tipo:'html', msg: resp};
+  }
+
+  // Saldo / pendiente / cobrar
+  if(/\b(saldo|pendiente|cobrar|debo|cobr|cuanto\s+me|cuanto\s+falta|cuanto\s+queda)\b/.test(tn)){
+    const otrosPend = DB.ingresos.reduce((a,x)=>a+(x.monto-x.cobrado||0),0);
+    const totalConOtros = saldoPend + otrosPend;
     const deudores = DB.trabajos
       .filter(x=>(x.precio||0)-(x.cobrado||0)>0)
       .sort((a,b)=>((b.precio||0)-(b.cobrado||0))-((a.precio||0)-(a.cobrado||0)));
-    let resp = `💰 <strong>Saldo pendiente de cobro</strong>
+    let resp = `💰 <strong>${conector()}, acá está tu saldo pendiente de cobro:</strong>
 <div class="ai-result-card">
-  <div class="arc-row"><span>Total facturado</span><span>${fmtS(totalFact)}</span></div>
-  <div class="arc-row"><span>Total cobrado</span><span style="color:var(--green)">${fmtS(totalCob)}</span></div>
-  <div class="arc-row"><span>Por cobrar</span><span style="color:var(--red);font-weight:700">${fmtS(saldoPend)}</span></div>
+  <div class="arc-row"><span>📊 Total facturado</span><span>${fmtS(totalFact)}</span></div>
+  <div class="arc-row"><span>✅ Total cobrado</span><span style="color:var(--green)">${fmtS(totalCob)}</span></div>
+  <div class="arc-row"><span>⏳ Por cobrar (académico)</span><span style="color:var(--red);font-weight:700">${fmtS(saldoPend)}</span></div>
+  ${otrosPend>0?`<div class="arc-row"><span>⏳ Otros ingresos pend.</span><span style="color:var(--red)">${fmtS(otrosPend)}</span></div>`:''}
+  ${otrosPend>0?`<div class="arc-row"><span>🔴 <strong>TOTAL GLOBAL</strong></span><span style="color:var(--red);font-weight:700">${fmtS(totalConOtros)}</span></div>`:''}
 </div>`;
     if(deudores.length > 0){
       resp += `<br>👥 <strong>Top deudores:</strong><br>`;
-      deudores.slice(0,5).forEach(x=>{
+      deudores.slice(0,5).forEach((x,i)=>{
         const sal = (x.precio||0)-(x.cobrado||0);
-        resp += `&nbsp;• <strong>${x.nombre}</strong>: ${fmtSRaw(sal)} <span style="color:var(--text3);font-size:11px">(${x.estado})</span><br>`;
+        resp += `${i+1}. <strong>${x.nombre}</strong>: <span style="color:var(--red)">${fmtSRaw(sal)}</span> <span style="color:var(--text3);font-size:11px">· ${x.tipo} · ${x.estado}</span><br>`;
       });
     }
     return {tipo:'html', msg: resp};
   }
 
   // Vencidos / alertas
-  if(/\b(vencid|alerta|urgente|esta semana|semana)\b/.test(tn)){
-    let resp = `⚠️ <strong>Alertas y vencimientos</strong>\n\n`;
+  if(/\b(vencid|alerta|urgente|esta\s+semana|semana|proximo|próximo|atrasad)\b/.test(tn)){
+    let resp = `⚠️ <strong>Te cuento el estado de alertas y vencimientos:</strong><br><br>`;
     if(vencidos.length > 0){
       resp += `🔴 <strong>Vencidos (${vencidos.length}):</strong><br>`;
       vencidos.forEach(x=>{
         const d = diffDias(x.fent);
-        resp += `&nbsp;• ${x.nombre} — venció hace ${Math.abs(d)} día(s) | Saldo: ${fmtSRaw((x.precio||0)-(x.cobrado||0))}<br>`;
+        const sal = (x.precio||0)-(x.cobrado||0);
+        resp += `&nbsp;• <strong>${x.nombre}</strong> — venció hace <span style="color:var(--red)">${Math.abs(d)} día${Math.abs(d)!==1?'s':''}</span> | Saldo: ${fmtSRaw(sal)} | ${x.tipo}<br>`;
       });
       resp += '<br>';
     }
@@ -2775,36 +3777,55 @@ function generarRespuestaConsulta(texto){
       resp += `🟡 <strong>Vencen esta semana (${proximos.length}):</strong><br>`;
       proximos.forEach(x=>{
         const d = diffDias(x.fent);
-        resp += `&nbsp;• ${x.nombre} — en ${d===0?'hoy':d===1?'mañana':d+' días'} | ${fmtSRaw((x.precio||0)-(x.cobrado||0))}<br>`;
+        const sal = (x.precio||0)-(x.cobrado||0);
+        resp += `&nbsp;• <strong>${x.nombre}</strong> — ${d===0?'<span style="color:var(--yellow)">vence HOY</span>':d===1?'mañana':'en '+d+' días'} | ${fmtSRaw(sal)} | ${x.tipo}<br>`;
       });
     }
     if(vencidos.length===0 && proximos.length===0){
-      resp = '✅ ¡Todo al día! No tienes trabajos vencidos ni con vencimiento próximo.';
+      resp = '✅ ¡Excelente! Todo al día. No tienes trabajos vencidos ni con vencimiento en los próximos 7 días. Sigue así 💪';
     }
     return {tipo:'html', msg: resp};
   }
 
-  // Resumen / activos
-  if(/\b(resumen|activos|lista|listar|todos|general)\b/.test(tn)){
-    let resp = `📋 <strong>Resumen de trabajos activos (${activos.length})</strong>
+  // Resumen / activos / general
+  if(/\b(resumen|activos|lista|listar|todos|general|cuantos\s+(?:trabajo|registro)|mis\s+trabajo|total\s+de\s+trabajo)\b/.test(tn)){
+    const pagados = t.filter(x=>x.estado==='Pagado').length;
+    const terminados = t.filter(x=>x.estado==='Terminado').length;
+    const enProceso = t.filter(x=>x.estado==='En proceso').length;
+    const pendientes = t.filter(x=>x.estado==='Pendiente').length;
+    const cancelados = t.filter(x=>x.estado==='Cancelado').length;
+    const pct = totalFact>0 ? Math.round(totalCob/totalFact*100) : 0;
+    let resp = `📋 <strong>${conector()}, aquí tienes el resumen completo:</strong>
 <div class="ai-result-card">
-  <div class="arc-row"><span>Total trabajos</span><span>${t.length}</span></div>
-  <div class="arc-row"><span>En proceso</span><span>${t.filter(x=>x.estado==='En proceso').length}</span></div>
-  <div class="arc-row"><span>Pendientes</span><span>${t.filter(x=>x.estado==='Pendiente').length}</span></div>
-  <div class="arc-row"><span>Terminados</span><span>${t.filter(x=>x.estado==='Terminado').length}</span></div>
-  <div class="arc-row"><span>Pagados</span><span style="color:var(--green)">${t.filter(x=>x.estado==='Pagado').length}</span></div>
-  <div class="arc-row"><span>Total facturado</span><span>${fmtS(totalFact)}</span></div>
-  <div class="arc-row"><span>Por cobrar</span><span style="color:var(--red)">${fmtS(saldoPend)}</span></div>
+  <div class="arc-title">RESUMEN GENERAL</div>
+  <div class="arc-row"><span>📁 Total de registros</span><span><strong>${t.length}</strong></span></div>
+  <div class="arc-row"><span>🔵 En proceso</span><span>${enProceso}</span></div>
+  <div class="arc-row"><span>🟠 Pendientes</span><span>${pendientes}</span></div>
+  <div class="arc-row"><span>🟣 Terminados</span><span>${terminados}</span></div>
+  <div class="arc-row"><span>🟢 Pagados</span><span style="color:var(--green)">${pagados}</span></div>
+  <div class="arc-row"><span>⚫ Cancelados</span><span style="color:var(--text3)">${cancelados}</span></div>
+</div>
+<div class="ai-result-card">
+  <div class="arc-title">FINANZAS</div>
+  <div class="arc-row"><span>💵 Total facturado</span><span>${fmtS(totalFact)}</span></div>
+  <div class="arc-row"><span>✅ Total cobrado</span><span style="color:var(--green)">${fmtS(totalCob)}</span></div>
+  <div class="arc-row"><span>⏳ Por cobrar</span><span style="color:var(--red);font-weight:700">${fmtS(saldoPend)}</span></div>
+  <div class="arc-row"><span>📈 % Cobrado</span><span style="color:var(--accent3);font-weight:700">${pct}%</span></div>
 </div>`;
+    if(vencidos.length>0 || proximos.length>0){
+      resp += `<br>⚠️ <span style="color:var(--yellow)"><strong>${vencidos.length} vencidos</strong> y <strong>${proximos.length} próximos</strong> a vencer esta semana.</span>`;
+    }
     return {tipo:'html', msg: resp};
   }
 
-  // Este mes
-  if(/\b(mes|mensual|este mes)\b/.test(tn)){
+  // Este mes / mes pasado
+  if(/\b(mes|mensual|este\s+mes|mes\s+pasado|ultimo\s+mes|último\s+mes|cuanto\s+(?:gane|cobré|cobre|ingresó))\b/.test(tn)){
     const ahora = new Date();
-    const mesActual = ahora.getMonth();
-    const anioActual = ahora.getFullYear();
-    // cobros basados en fecha de encargo este mes
+    const esMesPasado = /\b(mes\s+pasado|ultimo\s+mes|último\s+mes)\b/.test(tn);
+    const mesRef = esMesPasado ? new Date(ahora.getFullYear(), ahora.getMonth()-1, 1) : ahora;
+    const mesActual = mesRef.getMonth();
+    const anioActual = mesRef.getFullYear();
+    const mNom = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     const esteMes = t.filter(x=>{
       if(!x.fenc) return false;
       const fd = new Date(x.fenc+'T00:00:00');
@@ -2812,31 +3833,90 @@ function generarRespuestaConsulta(texto){
     });
     const cobEsteMes = esteMes.reduce((a,x)=>a+(x.cobrado||0), 0);
     const factEsteMes = esteMes.reduce((a,x)=>a+(x.precio||0), 0);
-    const mNom = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    return {tipo:'html', msg:`📊 <strong>Trabajos de ${mNom[mesActual]} ${anioActual}</strong>
+    const pagadosMes = t.filter(x=>{
+      if(x.estado!=='Pagado') return false;
+      const fd = new Date((x.fenc||todayStr())+'T00:00:00');
+      return fd.getMonth()===mesActual && fd.getFullYear()===anioActual;
+    });
+    return {tipo:'html', msg:`📊 <strong>${esMesPasado?'Mes pasado':'Este mes'}: ${mNom[mesActual]} ${anioActual}</strong>
 <div class="ai-result-card">
-  <div class="arc-row"><span>Trabajos nuevos</span><span>${esteMes.length}</span></div>
-  <div class="arc-row"><span>Facturado</span><span>${fmtS(factEsteMes)}</span></div>
-  <div class="arc-row"><span>Cobrado</span><span style="color:var(--green)">${fmtS(cobEsteMes)}</span></div>
-  <div class="arc-row"><span>Pendiente</span><span style="color:var(--red)">${fmtS((factEsteMes-cobEsteMes))}</span></div>
+  <div class="arc-row"><span>📁 Trabajos nuevos</span><span><strong>${esteMes.length}</strong></span></div>
+  <div class="arc-row"><span>💵 Facturado</span><span>${fmtS(factEsteMes)}</span></div>
+  <div class="arc-row"><span>✅ Cobrado</span><span style="color:var(--green);font-weight:700">${fmtS(cobEsteMes)}</span></div>
+  <div class="arc-row"><span>⏳ Pendiente</span><span style="color:var(--red)">${fmtS(factEsteMes-cobEsteMes)}</span></div>
+  <div class="arc-row"><span>🟢 Pagados completamente</span><span>${pagadosMes.length}</span></div>
 </div>`};
   }
 
-  // Deudores
-  if(/\b(quien|quién|deb[ei]|deudor|mas dinero)\b/.test(tn)){
+  // Deudores / quien debe más
+  if(/\b(quien|quién|deb[ei]|deudor|mas\s+dinero|mas\s+plata|más\s+plata|me\s+debe)\b/.test(tn)){
     const deudores = DB.trabajos
       .filter(x=>(x.precio||0)-(x.cobrado||0)>0)
       .sort((a,b)=>((b.precio||0)-(b.cobrado||0))-((a.precio||0)-(a.cobrado||0)));
-    if(deudores.length===0) return {tipo:'texto', msg:'✅ No tienes clientes con saldo pendiente.'};
-    let resp = `👥 <strong>Clientes con mayor saldo pendiente:</strong><br><br>`;
+    if(deudores.length===0) return {tipo:'html', msg:'🎉 <strong>¡Excelente!</strong> No tienes ningún cliente con saldo pendiente. ¡Estás al día con todos los cobros!'};
+    let resp = `👥 <strong>${conector()}, estos son tus clientes con mayor saldo pendiente:</strong><br><br>`;
     deudores.slice(0,8).forEach((x,i)=>{
       const sal = (x.precio||0)-(x.cobrado||0);
-      resp += `${i+1}. <strong>${x.nombre}</strong>: <span style="color:var(--red)">${fmtSRaw(sal)}</span> <span style="color:var(--text3);font-size:11px">— ${x.tipo}</span><br>`;
+      const pct = x.precio>0 ? Math.round((x.cobrado||0)/x.precio*100) : 0;
+      resp += `${i+1}. <strong>${x.nombre}</strong>: <span style="color:var(--red);font-weight:700">${fmtSRaw(sal)}</span> <span style="color:var(--text3);font-size:11px">— ${x.tipo} · ${pct}% cobrado · ${x.estado}</span><br>`;
     });
     return {tipo:'html', msg: resp};
   }
 
-  // Respuesta genérica de resumen
+  // Proyección de cobros
+  if(/\b(proyeccion|proyección|proximo|próximo|ganare|voy\s+a\s+cobrar|esperado|cuanto\s+entra)\b/.test(tn)){
+    const proy30 = t.filter(x=>{const s=(x.precio||0)-(x.cobrado||0);const d=diffDias(x.fpago);return s>0&&d!==null&&d>=0&&d<=30}).reduce((a,x)=>a+(x.precio||0)-(x.cobrado||0),0);
+    const proy60 = t.filter(x=>{const s=(x.precio||0)-(x.cobrado||0);const d=diffDias(x.fpago);return s>0&&d!==null&&d>=0&&d<=60}).reduce((a,x)=>a+(x.precio||0)-(x.cobrado||0),0);
+    return {tipo:'html', msg:`📅 <strong>Proyección de cobros esperados:</strong>
+<div class="ai-result-card">
+  <div class="arc-row"><span>📆 Próximos 30 días</span><span style="color:var(--green);font-weight:700">${fmtS(proy30)}</span></div>
+  <div class="arc-row"><span>📆 Próximos 60 días</span><span style="color:var(--yellow);font-weight:700">${fmtS(proy60)}</span></div>
+  <div class="arc-row"><span>⏳ Total global pendiente</span><span style="color:var(--red);font-weight:700">${fmtS(saldoPend)}</span></div>
+</div>
+<span style="font-size:11px;color:var(--text3)">💡 Ve a la pestaña Proyección para ver el detalle por cuotas.</span>`};
+  }
+
+  // Estadísticas / distribución por tipo
+  if(/\b(estadistica|estadística|tipo|tipos\s+de|categoria|que\s+tipo|distribucion|cuantas\s+tesis|cuantos\s+articulos)\b/.test(tn)){
+    const porTipo = {};
+    t.forEach(x=>{ porTipo[x.tipo] = (porTipo[x.tipo]||0)+1; });
+    const sorted = Object.entries(porTipo).sort((a,b)=>b[1]-a[1]);
+    let resp = `📈 <strong>Distribución por tipo de trabajo:</strong><div class="ai-result-card">`;
+    sorted.forEach(([tipo,count])=>{
+      resp += `<div class="arc-row"><span>${tipo}</span><span style="font-weight:700">${count} trabajo${count!==1?'s':''}</span></div>`;
+    });
+    resp += '</div>';
+    return {tipo:'html', msg: resp};
+  }
+
+  // Pagados
+  if(/\b(pagados?|completados?|finalizados?)\b/.test(tn)){
+    const pagadosArr = t.filter(x=>x.estado==='Pagado');
+    const totalPagado = pagadosArr.reduce((a,x)=>a+(x.cobrado||0),0);
+    if(pagadosArr.length===0) return {tipo:'html', msg:'ℹ️ Aún no tienes trabajos completamente pagados.'};
+    let resp = `🟢 <strong>Trabajos pagados: ${pagadosArr.length}</strong><br><br>`;
+    pagadosArr.slice(0,8).forEach((x,i)=>{
+      resp += `${i+1}. <strong>${x.nombre}</strong>: ${fmtSRaw(x.cobrado||0)} <span style="color:var(--text3);font-size:10px">— ${x.tipo}</span><br>`;
+    });
+    resp += `<br>💰 <strong>Total recaudado: ${fmtS(totalPagado)}</strong> 🎉`;
+    return {tipo:'html', msg: resp};
+  }
+
+  // En proceso / activos
+  if(/\b(en proceso|proceso|activos?|vigentes?)\b/.test(tn)){
+    const enProceso = t.filter(x=>x.estado==='En proceso');
+    if(enProceso.length===0) return {tipo:'html', msg:'ℹ️ No hay trabajos en proceso actualmente.'};
+    let resp = `🔵 <strong>Trabajos en proceso (${enProceso.length}):</strong><br><br>`;
+    enProceso.forEach((x,i)=>{
+      const sal = (x.precio||0)-(x.cobrado||0);
+      resp += `${i+1}. <strong>${x.nombre}</strong> — ${x.tipo} <span style="color:var(--red)">(saldo: ${fmtSRaw(sal)})</span><br>`;
+      if(x.fent) resp += `&nbsp;&nbsp;&nbsp;📅 Entrega: ${fmtFechaTxt(x.fent)}<br>`;
+      if(x.uni) resp += `&nbsp;&nbsp;&nbsp;🏫 ${x.uni}<br>`;
+    });
+    return {tipo:'html', msg: resp};
+  }
+
+  // Respuesta genérica → resumen
   return generarRespuestaConsulta('resumen');
 }
 
@@ -2921,7 +4001,7 @@ function iniciarRecognition(){
   recognition.lang            = 'es-PE';
   recognition.continuous      = true;   // no se detiene por silencio
   recognition.interimResults  = true;
-  recognition.maxAlternatives = 1;
+  recognition.maxAlternatives = 3;
 
   const btn = document.getElementById('ai-mic-btn');
   const ta  = document.getElementById('ai-textarea');
@@ -2933,7 +4013,7 @@ function iniciarRecognition(){
     btn.textContent = '⏹️';
     btn.title = 'Grabando — toca para DETENER y enviar';
     if(bar) bar.style.display = 'block';
-    ta.placeholder = '🎙️ Escuchando... habla cuando quieras';
+    ta.placeholder = '🎙️ Te escucho... habla con naturalidad';
   };
 
   recognition.onresult = (e)=>{
@@ -2959,7 +4039,7 @@ function iniciarRecognition(){
       btn.textContent = '🎤';
       btn.title = 'Activar micrófono';
       if(bar) bar.style.display = 'none';
-      ta.placeholder = 'Escribe o dicta... ej: Crea tarea para Ana por 500 soles';
+      ta.placeholder = 'Dicta o escribe... ej: Agéndame tarea para Ana por 500 soles en dos cuotas';
       if(ta.value.trim()) setTimeout(aiEnviar, 200);
     } else {
       // Fin automático por timeout del browser → reiniciar sin interrumpir
@@ -2980,7 +4060,7 @@ function iniciarRecognition(){
     btn.classList.remove('recording');
     btn.textContent = '🎤';
     if(bar) bar.style.display = 'none';
-    ta.placeholder = 'Escribe o dicta... ej: Crea tarea para Ana por 500 soles';
+    ta.placeholder = 'Dicta o escribe... ej: Agéndame tarea para Ana por 500 soles en dos cuotas';
     if(e.error === 'not-allowed')
       aiAddMsg('bot','⚠️ <strong>Permiso de micrófono denegado.</strong> Ve a configuración del navegador y permite el micrófono para esta página.', true);
     else
@@ -2992,6 +4072,875 @@ function iniciarRecognition(){
 
 // ===================== FIN ASISTENTE LOCAL =====================
 
+// ===================== BLOQUE 1 — TAGS / ETIQUETAS / PRIORIDAD =====================
+
+function getSelectedTags(){
+  return ['urgente','vip','dificil','revision','express'].filter(tag=>{
+    const cb = document.getElementById('tag-'+tag);
+    return cb && cb.checked;
+  });
+}
+
+let activeTagFilter = '';
+function setTagFilter(tag){
+  activeTagFilter = tag;
+  document.querySelectorAll('.tag-filter-btn').forEach(b=>b.classList.remove('active'));
+  if(!tag){
+    document.getElementById('tag-filter-all').classList.add('active');
+  } else {
+    document.querySelectorAll('.tag-filter-btn').forEach(b=>{
+      if(b.textContent.toLowerCase().includes(tag)) b.classList.add('active');
+    });
+  }
+  renderTabla();
+}
+
+function renderTagsPills(tags){
+  if(!tags||tags.length===0) return '';
+  const icons={urgente:'🔥',vip:'⭐',dificil:'💀',revision:'🔍',express:'⚡'};
+  const cls={urgente:'tag-urgente',vip:'tag-vip',dificil:'tag-dificil',revision:'tag-revision',express:'tag-express'};
+  return '<br>'+tags.map(t=>`<span class="tag ${cls[t]||'tag-personalizado'}">${icons[t]||''}${t}</span>`).join(' ');
+}
+
+// ===================== BLOQUE 1 — BITÁCORA / LOG =====================
+
+function getBitacoras(){
+  try{ return JSON.parse(localStorage.getItem('tracker_bitacoras')||'{}'); }catch(e){return {};}
+}
+function saveBitacoras(obj){
+  localStorage.setItem('tracker_bitacoras', JSON.stringify(obj));
+}
+
+let bitacoraActualId = null;
+
+function abrirBitacora(id){
+  const t = DB.trabajos.find(x=>x.id===id);
+  if(!t) return;
+  bitacoraActualId = id;
+  document.getElementById('bitacora-titulo').textContent = '📓 Bitácora — '+t.nombre+' ('+t.tipo+')';
+  renderBitacoraEntries();
+  document.getElementById('modal-bitacora').classList.add('open');
+}
+
+function renderBitacoraEntries(){
+  const all = getBitacoras();
+  const entries = (all[bitacoraActualId]||[]).slice().reverse();
+  const el = document.getElementById('bitacora-entries');
+  if(!el) return;
+  if(entries.length===0){
+    el.innerHTML='<div class="empty" style="padding:20px">Sin notas aún. Agrega la primera 👇</div>';
+    return;
+  }
+  el.innerHTML = entries.map((e,i)=>`
+    <div class="log-entry">
+      <div class="log-date">${e.fecha} — ${e.hora}</div>
+      <div class="log-text">${escHtml(e.text)}</div>
+      <button onclick="deleteBitacoraEntry(${entries.length-1-i})" style="background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;margin-top:4px">✕ Eliminar</button>
+    </div>`).join('');
+}
+
+function addBitacoraEntry(){
+  const inp = document.getElementById('bitacora-input');
+  const text = (inp.value||'').trim();
+  if(!text) return;
+  const all = getBitacoras();
+  if(!all[bitacoraActualId]) all[bitacoraActualId]=[];
+  const now = new Date();
+  const dias=['dom','lun','mar','mié','jue','vie','sáb'];
+  const fecha = `${dias[now.getDay()]} ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+  const hora = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  all[bitacoraActualId].push({text, fecha, hora});
+  saveBitacoras(all);
+  inp.value='';
+  renderBitacoraEntries();
+  showToast('Nota agregada ✅');
+}
+
+function deleteBitacoraEntry(idx){
+  const all = getBitacoras();
+  if(!all[bitacoraActualId]) return;
+  all[bitacoraActualId].splice(idx,1);
+  saveBitacoras(all);
+  renderBitacoraEntries();
+}
+
+function closeBitacora(){
+  document.getElementById('modal-bitacora').classList.remove('open');
+  bitacoraActualId=null;
+}
+
+// ===================== BLOQUE 1 — PLANTILLAS DE TRABAJO =====================
+
+function getPlantillas(){
+  try{ return JSON.parse(localStorage.getItem('tracker_plantillas')||'[]'); }catch(e){return [];}
+}
+function savePlantillas(arr){
+  localStorage.setItem('tracker_plantillas', JSON.stringify(arr));
+}
+
+function abrirPlantillas(){
+  renderPlantillasList();
+  document.getElementById('modal-plantillas').classList.add('open');
+}
+function closePlantillas(){
+  document.getElementById('modal-plantillas').classList.remove('open');
+}
+
+function renderPlantillasList(){
+  const arr = getPlantillas();
+  const el = document.getElementById('plantillas-list');
+  if(!el) return;
+  if(arr.length===0){
+    el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:10px 0">Sin plantillas guardadas. Crea una llenando el formulario de nuevo trabajo y guardándola.</div>';
+    return;
+  }
+  el.innerHTML = arr.map((p,i)=>`
+    <div class="template-card">
+      <div>
+        <div class="template-name">${p.nombre}</div>
+        <div class="template-sub">${p.tipo||''} ${p.uni?'· '+p.uni:''} ${p.precio?'· S/'+p.precio:''}</div>
+      </div>
+      <div style="display:flex;gap:5px">
+        <button class="btn btn-primary btn-sm" onclick="usarPlantilla(${i})">Usar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarPlantilla(${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function guardarPlantillaActual(){
+  const nombre = (document.getElementById('plantilla-nombre').value||'').trim();
+  if(!nombre){ showToast('Escribe un nombre para la plantilla'); return; }
+  const arr = getPlantillas();
+  const obj = {
+    nombre,
+    tipo: document.getElementById('f-tipo').value,
+    uni: document.getElementById('f-uni').value,
+    precio: parseFloat(document.getElementById('f-precio').value)||0,
+    notas: document.getElementById('f-notas').value,
+    estado: document.getElementById('f-estado').value,
+    prioridad: document.getElementById('f-prioridad').value,
+    tags: getSelectedTags(),
+    modoPago: document.getElementById('f-modo-pago').value
+  };
+  arr.push(obj);
+  savePlantillas(arr);
+  document.getElementById('plantilla-nombre').value='';
+  renderPlantillasList();
+  showToast('Plantilla "'+nombre+'" guardada ✅');
+}
+
+function usarPlantilla(i){
+  const p = getPlantillas()[i];
+  if(!p) return;
+  if(document.getElementById('f-tipo')) document.getElementById('f-tipo').value = p.tipo||'';
+  if(document.getElementById('f-uni')) document.getElementById('f-uni').value = p.uni||'';
+  if(document.getElementById('f-precio')) document.getElementById('f-precio').value = p.precio||0;
+  if(document.getElementById('f-notas')) document.getElementById('f-notas').value = p.notas||'';
+  if(document.getElementById('f-estado')) document.getElementById('f-estado').value = p.estado||'En proceso';
+  if(document.getElementById('f-prioridad')) document.getElementById('f-prioridad').value = p.prioridad||'';
+  ['urgente','vip','dificil','revision','express'].forEach(tag=>{
+    const cb = document.getElementById('tag-'+tag);
+    if(cb) cb.checked = (p.tags||[]).includes(tag);
+  });
+  closePlantillas();
+  showToast('Plantilla "'+p.nombre+'" aplicada ✅');
+}
+
+function eliminarPlantilla(i){
+  const arr = getPlantillas();
+  arr.splice(i,1);
+  savePlantillas(arr);
+  renderPlantillasList();
+  showToast('Plantilla eliminada');
+}
+
+// ===================== BLOQUE 1 — RECORDATORIOS =====================
+
+function getRecordatoriosVencidos(){
+  const hoy = todayStr();
+  return DB.trabajos.filter(t=>
+    t.reminderDate && t.reminderDate <= hoy && t.reminderText &&
+    t.estado!=='Pagado' && t.estado!=='Cancelado'
+  );
+}
+
+// ===================== BLOQUE 2 — CLIENTES =====================
+
+function getClienteNotes(){
+  try{ return JSON.parse(localStorage.getItem('tracker_client_notes')||'{}'); }catch(e){return {};}
+}
+function saveClienteNotes(obj){
+  localStorage.setItem('tracker_client_notes', JSON.stringify(obj));
+}
+
+function editarDatosCliente(){
+  const t = DB.trabajos.find(x=>x.nombre.trim().toLowerCase()===clienteActualNombre.trim().toLowerCase());
+  if(!t) return;
+  const notes = getClienteNotes();
+  document.getElementById('ec-nombre').value = clienteActualNombre;
+  document.getElementById('ec-cel').value = clienteActualCel;
+  document.getElementById('ec-nota-privada').value = notes[clienteActualNombre.trim().toLowerCase()]||'';
+  document.getElementById('modal-editar-cliente').classList.add('open');
+}
+
+function closeEditarCliente(){
+  document.getElementById('modal-editar-cliente').classList.remove('open');
+}
+
+function guardarEdicionCliente(){
+  const nuevoNombre = document.getElementById('ec-nombre').value.trim();
+  const nuevoCel = document.getElementById('ec-cel').value.trim();
+  const notaPrivada = document.getElementById('ec-nota-privada').value.trim();
+  if(!nuevoNombre){ showToast('El nombre es obligatorio'); return; }
+  // Actualizar todos los trabajos del cliente
+  DB.trabajos.forEach(t=>{
+    if(t.nombre.trim().toLowerCase()===clienteActualNombre.trim().toLowerCase()){
+      t.nombre = nuevoNombre;
+      if(nuevoCel) t.cel = nuevoCel;
+    }
+  });
+  // Guardar nota privada
+  const notes = getClienteNotes();
+  notes[nuevoNombre.trim().toLowerCase()] = notaPrivada;
+  saveClienteNotes(notes);
+  clienteActualNombre = nuevoNombre;
+  clienteActualCel = nuevoCel;
+  save();
+  closeEditarCliente();
+  renderAll();
+  // Reabrir modal del cliente actualizado
+  const ref = DB.trabajos.find(x=>x.nombre.trim().toLowerCase()===nuevoNombre.trim().toLowerCase());
+  if(ref) verCliente(ref.id);
+  showToast('Datos del cliente actualizados ✅');
+}
+
+// Agregar nota privada en modal de cliente
+function buildClienteNotaPrivada(nombre){
+  const notes = getClienteNotes();
+  const nota = notes[nombre.trim().toLowerCase()]||'';
+  if(!nota) return '';
+  return `<div class="client-note">
+    <div class="client-note-label">🔒 Nota Privada</div>
+    ${escHtml(nota)}
+  </div>`;
+}
+
+// Búsqueda global de clientes
+function abrirBusquedaGlobal(){
+  document.getElementById('global-search-input').value='';
+  document.getElementById('global-search-results').innerHTML='<div style="font-size:12px;color:var(--text3);padding:10px 0">Escribe el nombre del cliente para buscar...</div>';
+  document.getElementById('modal-buscar-cliente').classList.add('open');
+  setTimeout(()=>document.getElementById('global-search-input').focus(),200);
+}
+
+function renderBusquedaGlobal(){
+  const q = (document.getElementById('global-search-input').value||'').toLowerCase().trim();
+  const el = document.getElementById('global-search-results');
+  if(!q){ el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:10px 0">Escribe el nombre del cliente para buscar...</div>'; return; }
+  // Agrupar por cliente
+  const clientes = {};
+  DB.trabajos.forEach(t=>{
+    const clave = t.nombre.trim().toLowerCase();
+    if(!clave.includes(q)) return;
+    if(!clientes[clave]) clientes[clave]={nombre:t.nombre,cel:t.cel||'',trabajos:[],id:t.id};
+    clientes[clave].trabajos.push(t);
+  });
+  const lista = Object.values(clientes);
+  if(lista.length===0){ el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:10px 0">Sin resultados para "'+q+'"</div>'; return; }
+  el.innerHTML = lista.map(c=>{
+    const totalGen = c.trabajos.reduce((a,t)=>a+(t.precio||0),0);
+    const totalPag = c.trabajos.reduce((a,t)=>a+(t.cobrado||0),0);
+    const deuda = totalGen-totalPag;
+    return `<div style="border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:background .15s" onclick="document.getElementById('modal-buscar-cliente').classList.remove('open');verCliente(${c.id})">
+      <div style="font-weight:700;font-size:13px;color:var(--text)">${c.nombre}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">${c.cel?'📱 '+c.cel+' · ':''} ${c.trabajos.length} trabajo${c.trabajos.length!==1?'s':''}</div>
+      <div style="font-size:11px;margin-top:4px">
+        <span style="color:var(--green)">Pagado: ${fmtS(totalPag)}</span>
+        ${deuda>0?`<span style="color:var(--red);margin-left:10px">Debe: ${fmtS(deuda)}</span>`:'<span style="color:var(--green);margin-left:10px">✅ Al día</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===================== BLOQUE 3 — RESUMEN DIARIO =====================
+
+function renderDailySummary(){
+  const el = document.getElementById('daily-summary-box');
+  const dismissed = localStorage.getItem('daily_dismissed_'+todayStr());
+  if(dismissed){ if(el) el.style.display='none'; return; }
+  if(el) el.style.display='';
+  const fechaEl = document.getElementById('daily-fecha');
+  if(fechaEl){
+    const d = new Date();
+    const meses=['enero','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    fechaEl.textContent = d.getDate()+' de '+meses[d.getMonth()];
+  }
+  const t = DB.trabajos;
+  const totalCob = t.reduce((a,x)=>a+(x.cobrado||0),0);
+  const saldoPend = t.reduce((a,x)=>a+(x.precio||0),0)-totalCob;
+  const vencidos = t.filter(x=>{const d=diffDias(x.fent);return d!==null&&d<0&&x.estado!=='Pagado'&&x.estado!=='Cancelado';}).length;
+  const hoy7 = t.filter(x=>{const d=diffDias(x.fent);return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado'&&x.estado!=='Cancelado';}).length;
+  const activos = t.filter(x=>x.estado==='En proceso'||x.estado==='Pendiente').length;
+  // Recordatorios hoy
+  const remHoy = getRecordatoriosVencidos();
+  const grid = document.getElementById('daily-grid');
+  if(grid) grid.innerHTML = `
+    <div class="daily-kpi"><div class="daily-kpi-val" style="color:var(--green)">${fmtS(totalCob)}</div><div class="daily-kpi-label">Total Cobrado</div></div>
+    <div class="daily-kpi"><div class="daily-kpi-val" style="color:var(--red)">${fmtS(saldoPend)}</div><div class="daily-kpi-label">Por Cobrar</div></div>
+    <div class="daily-kpi"><div class="daily-kpi-val">${activos}</div><div class="daily-kpi-label">Activos</div></div>
+    <div class="daily-kpi"><div class="daily-kpi-val" style="color:${vencidos>0?'var(--red)':'var(--green)'}">${vencidos}</div><div class="daily-kpi-label">Vencidos</div></div>
+    <div class="daily-kpi"><div class="daily-kpi-val" style="color:${hoy7>0?'var(--yellow)':'var(--green)'}">${hoy7}</div><div class="daily-kpi-label">Vencen 7d</div></div>`;
+  const alertsText = document.getElementById('daily-alerts-text');
+  if(alertsText){
+    let msgs=[];
+    if(vencidos>0) msgs.push(`🔴 <strong>${vencidos} trabajo${vencidos>1?'s':''} vencido${vencidos>1?'s':''}</strong> requieren atención`);
+    if(hoy7>0) msgs.push(`🟡 <strong>${hoy7} trabajo${hoy7>1?'s':''}</strong> vencen esta semana`);
+    if(remHoy.length>0) msgs.push(`🔔 <strong>${remHoy.length} recordatorio${remHoy.length>1?'s':''}</strong> para hoy: `+remHoy.map(r=>r.nombre+' — '+r.reminderText).join(', '));
+    alertsText.innerHTML = msgs.length>0 ? msgs.join(' &nbsp;·&nbsp; ') : '✅ <strong>¡Todo en orden!</strong> No hay alertas urgentes para hoy.';
+  }
+}
+
+function closeDailySummary(){
+  localStorage.setItem('daily_dismissed_'+todayStr(), '1');
+  const el = document.getElementById('daily-summary-box');
+  if(el) el.style.display='none';
+}
+
+// ===================== BLOQUE 3 — QR + BACKUP =====================
+
+function abrirQR(){
+  renderBackupHistory();
+  const qrWrap = document.getElementById('qr-canvas-wrap');
+  if(qrWrap){
+    const url = location.href.split('?')[0];
+    qrWrap.innerHTML = '';
+    // Load qrcode.js if not already loaded
+    function renderQR(){
+      try {
+        const qrDiv = document.createElement('div');
+        qrDiv.id = 'qr-real-canvas';
+        qrWrap.appendChild(qrDiv);
+        new QRCode(qrDiv, {
+          text: url,
+          width: 200, height: 200,
+          colorDark: '#1a1a2e', colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+        qrDiv.style.cssText = 'background:#fff;border-radius:12px;padding:12px;display:inline-block;border:4px solid var(--accent)';
+        // URL label below
+        const urlLabel = document.createElement('div');
+        urlLabel.style.cssText = 'font-size:10px;color:var(--text3);word-break:break-all;max-width:220px;text-align:center;margin-top:8px;padding:6px 8px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)';
+        urlLabel.textContent = url;
+        qrWrap.appendChild(urlLabel);
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn btn-ghost btn-sm';
+        copyBtn.style.cssText = 'margin-top:8px;font-size:11px';
+        copyBtn.textContent = '📋 Copiar URL';
+        copyBtn.onclick = ()=>{ navigator.clipboard&&navigator.clipboard.writeText(url).then(()=>showToast('URL copiada ✅')); };
+        qrWrap.appendChild(copyBtn);
+      } catch(e) {
+        qrWrap.innerHTML = `<div style="font-size:11px;color:var(--text3);padding:16px">No se pudo generar el QR.<br><small>${url}</small></div>`;
+      }
+    }
+    if(typeof QRCode === 'undefined'){
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      s.onload = renderQR;
+      document.head.appendChild(s);
+    } else { renderQR(); }
+  }
+  document.getElementById('modal-qr').classList.add('open');
+}
+
+function getBackupHistory(){
+  try{ return JSON.parse(localStorage.getItem('tracker_backup_history')||'[]'); }catch(e){return [];}
+}
+function addBackupToHistory(size){
+  const arr = getBackupHistory();
+  const now = new Date();
+  arr.unshift({date:now.toLocaleString('es-PE'),size});
+  const trimmed = arr.slice(0,5); // últimos 5
+  localStorage.setItem('tracker_backup_history', JSON.stringify(trimmed));
+}
+function renderBackupHistory(){
+  const arr = getBackupHistory();
+  const el = document.getElementById('backup-history-list');
+  if(!el) return;
+  if(arr.length===0){ el.innerHTML='<div style="font-size:11px;color:var(--text3)">Sin backups registrados aún.</div>'; return; }
+  el.innerHTML = arr.map(b=>`
+    <div class="backup-item">
+      <div class="backup-date">💾 ${b.date}</div>
+      <div class="backup-size">${b.size}</div>
+    </div>`).join('');
+}
+
+// Override manualSync to track history
+const _origManualSync = manualSync;
+
+// ===================== BLOQUE 4 — WA PLANTILLAS =====================
+
+function getWaTemplates(){
+  try{
+    const stored = JSON.parse(localStorage.getItem('tracker_wa_templates')||'null');
+    if(stored) return stored;
+  }catch(e){}
+  return [
+    {id:'cobro',nombre:'💰 Recordatorio de Cobro',body:'Hola {nombre} 👋\n\nTe escribo para recordarte que tienes un saldo pendiente de *S/ {saldo}* por el servicio de {tipo}.\n\nPor favor, contáctame para coordinar el pago. ¡Gracias! 🙏'},
+    {id:'listo',nombre:'✅ Trabajo Listo',body:'Hola {nombre} 👋\n\nTe informo que tu trabajo de *{tipo}* ya está listo para entrega.\n\nCuando puedas revisarlo y coordinar el pago restante de *S/ {saldo}*, me avisas. ¡Saludos!'},
+    {id:'cuota',nombre:'📅 Recordatorio de Cuota',body:'Hola {nombre}! 👋\n\nTe recuerdo que tienes una cuota próxima a vencer por el trabajo de *{tipo}*.\n\nSaldo pendiente: *S/ {saldo}*\n\n¿Cuándo puedes hacer el pago? ¡Gracias!'},
+    {id:'inicio',nombre:'🚀 Inicio de Trabajo',body:'Hola {nombre}! 👋\n\nConfirmo que hemos iniciado el trabajo de *{tipo}*.\n\nFecha de entrega estimada: *{fent}*\nMonto acordado: *S/ {precio}*\n\nCualquier consulta, escríbeme. ¡Éxitos!'},
+  ];
+}
+function saveWaTemplates(arr){
+  localStorage.setItem('tracker_wa_templates', JSON.stringify(arr));
+}
+
+function abrirWaTemplates(){
+  renderWaTemplatesList();
+  document.getElementById('modal-wa-templates').classList.add('open');
+}
+function closeWaTemplates(){
+  document.getElementById('modal-wa-templates').classList.remove('open');
+}
+
+function renderWaTemplatesList(){
+  const arr = getWaTemplates();
+  const el = document.getElementById('wa-templates-list');
+  if(!el) return;
+  el.innerHTML = arr.map((tpl,i)=>`
+    <div class="wa-template-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div style="font-size:12px;font-weight:700;color:var(--text)">${tpl.nombre}</div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          <button class="btn btn-ghost btn-sm" onclick="editarWaTemplate(${i})" title="Editar">✎</button>
+          ${i>=4?`<button class="btn btn-danger btn-sm" onclick="eliminarWaTemplate(${i})">✕</button>`:''}
+        </div>
+      </div>
+      <div class="wa-template-preview">${escHtml(tpl.body).replace(/\n/g,'<br>')}</div>
+      <div class="wa-template-actions">
+        <button class="btn btn-sm" style="background:#25d366;color:#fff;border-color:#25d366" onclick="usarWaTemplateConCliente(${i})">📲 Usar con cliente</button>
+      </div>
+    </div>
+  `).join('')+`
+  <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+    <button class="btn btn-ghost" onclick="abrirNuevaWaTemplate()">+ Nueva Plantilla WA</button>
+    <button class="btn btn-primary" style="margin-left:8px" onclick="closeWaTemplates();abrirCobrosmasivo()">💸 Cobro Masivo</button>
+  </div>`;
+}
+
+let editingWaIdx = null;
+function editarWaTemplate(i){
+  const tpl = getWaTemplates()[i];
+  if(!tpl) return;
+  const nombre = prompt('Nombre de la plantilla:', tpl.nombre);
+  if(!nombre) return;
+  const body = prompt('Mensaje (usa {nombre}, {saldo}, {tipo}, {fent}, {precio}):', tpl.body);
+  if(!body) return;
+  const arr = getWaTemplates();
+  arr[i] = {id:tpl.id||'custom_'+i, nombre, body};
+  saveWaTemplates(arr);
+  renderWaTemplatesList();
+  showToast('Plantilla actualizada ✅');
+}
+
+function abrirNuevaWaTemplate(){
+  const nombre = prompt('Nombre de la nueva plantilla WA:');
+  if(!nombre) return;
+  const body = prompt('Mensaje (usa {nombre}, {saldo}, {tipo}, {fent}, {precio}):');
+  if(!body) return;
+  const arr = getWaTemplates();
+  arr.push({id:'custom_'+Date.now(), nombre, body});
+  saveWaTemplates(arr);
+  renderWaTemplatesList();
+  showToast('Plantilla creada ✅');
+}
+
+function eliminarWaTemplate(i){
+  if(!confirm('¿Eliminar esta plantilla?')) return;
+  const arr = getWaTemplates();
+  arr.splice(i,1);
+  saveWaTemplates(arr);
+  renderWaTemplatesList();
+}
+
+function buildWaMessage(tpl, t){
+  const saldo = (t.precio||0)-(t.cobrado||0);
+  return tpl.body
+    .replace(/\{nombre\}/g, t.nombre)
+    .replace(/\{saldo\}/g, saldo.toLocaleString())
+    .replace(/\{tipo\}/g, t.tipo||'')
+    .replace(/\{fent\}/g, t.fent ? fmt(t.fent) : 'por coordinar')
+    .replace(/\{precio\}/g, (t.precio||0).toLocaleString())
+    .replace(/\{uni\}/g, t.uni||'');
+}
+
+function usarWaTemplateConCliente(i){
+  const tpl = getWaTemplates()[i];
+  if(!tpl) return;
+  // Pedir nombre del cliente
+  const nombre = prompt('¿Para qué cliente? (nombre del trabajo):');
+  if(!nombre) return;
+  const t = buscarTrabajoPorNombre(nombre);
+  if(!t){ showToast('Cliente no encontrado: '+nombre); return; }
+  const msg = buildWaMessage(tpl, t);
+  const num = (t.cel||'').replace(/\D/g,'');
+  const url = num ? `https://wa.me/51${num}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
+  closeWaTemplates();
+}
+
+// ===================== BLOQUE 4 — COBRO MASIVO =====================
+
+function abrirCobrosmasivo(){
+  renderMorososList();
+  // Populate template selector
+  const sel = document.getElementById('cobro-masivo-template');
+  if(sel){
+    const arr = getWaTemplates();
+    sel.innerHTML = arr.map((t,i)=>`<option value="${i}">${t.nombre}</option>`).join('');
+  }
+  document.getElementById('modal-cobro-masivo').classList.add('open');
+}
+function closeCobrosmasivo(){
+  document.getElementById('modal-cobro-masivo').classList.remove('open');
+}
+
+function renderMorososList(){
+  const morosos = DB.trabajos.filter(t=>{
+    const sal = (t.precio||0)-(t.cobrado||0);
+    return sal>0 && t.estado!=='Cancelado' && t.cel;
+  }).sort((a,b)=>((b.precio||0)-(b.cobrado||0))-((a.precio||0)-(a.cobrado||0)));
+  const el = document.getElementById('morosos-list');
+  const label = document.getElementById('morosos-count-label');
+  if(label) label.textContent = morosos.length+' clientes con saldo y celular';
+  if(!el) return;
+  if(morosos.length===0){ el.innerHTML='<div class="empty">No hay clientes morosos con celular registrado.</div>'; return; }
+  el.innerHTML = morosos.map((t,i)=>{
+    const sal = (t.precio||0)-(t.cobrado||0);
+    return `<div class="moroso-row">
+      <input type="checkbox" class="moroso-check" data-id="${t.id}" checked>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">${t.nombre}</div>
+        <div style="font-size:10px;color:var(--text3)">${t.tipo} · 📱 ${t.cel}</div>
+      </div>
+      <div style="font-weight:700;color:var(--red);font-size:13px">${fmtS(sal)}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectAllMorosos(val){
+  document.querySelectorAll('.moroso-check').forEach(cb=>cb.checked=val);
+}
+
+function enviarCobroMasivo(){
+  const tplIdx = parseInt(document.getElementById('cobro-masivo-template').value)||0;
+  const tpl = getWaTemplates()[tplIdx];
+  if(!tpl){ showToast('Selecciona una plantilla'); return; }
+  const checked = [...document.querySelectorAll('.moroso-check:checked')].map(cb=>parseInt(cb.dataset.id));
+  if(checked.length===0){ showToast('Selecciona al menos un cliente'); return; }
+  checked.forEach((id,i)=>{
+    const t = DB.trabajos.find(x=>x.id===id);
+    if(!t||!t.cel) return;
+    const msg = buildWaMessage(tpl, t);
+    const num = t.cel.replace(/\D/g,'');
+    setTimeout(()=>{
+      window.open(`https://wa.me/51${num}?text=${encodeURIComponent(msg)}`,'_blank');
+    }, i*600);
+  });
+  closeCobrosmasivo();
+  showToast(`Enviando WhatsApp a ${checked.length} clientes...`);
+}
+
+// ===================== BLOQUE 4 — HISTORIAL CHAT ASISTENTE =====================
+
+function getChatHistory(){
+  try{ return JSON.parse(localStorage.getItem('tracker_chat_history')||'[]'); }catch(e){return [];}
+}
+function saveChatHistory(arr){
+  try{ localStorage.setItem('tracker_chat_history', JSON.stringify(arr.slice(-60))); }catch(e){}
+}
+function appendChatMessage(role, text){
+  const arr = getChatHistory();
+  arr.push({role, text, ts: Date.now()});
+  saveChatHistory(arr);
+}
+function loadChatHistory(){
+  const cont = document.getElementById('ai-messages');
+  if(!cont) return;
+  const arr = getChatHistory();
+  if(arr.length===0) return;
+  // Add a session divider
+  const div = document.createElement('div');
+  div.className = 'chat-session-divider';
+  div.textContent = 'Conversaciones anteriores';
+  cont.insertBefore(div, cont.firstChild.nextSibling);
+  arr.forEach(msg=>{
+    const el = document.createElement('div');
+    el.className = 'ai-msg '+msg.role;
+    const avatar = msg.role==='bot' ? '<div class="ai-avatar bot">🤖</div>' : '<div class="ai-avatar user">👤</div>';
+    const bubble = `<div class="ai-bubble">${msg.role==='bot'?msg.text:escHtml(msg.text)}</div>`;
+    el.innerHTML = msg.role==='user' ? bubble+avatar : avatar+bubble;
+    cont.insertBefore(el, div);
+  });
+}
+
+// ===================== PATCH: manualSync con historial =====================
+function manualSync() {
+  try {
+    const dataStr = JSON.stringify(DB, null, 2);
+    const blob = new Blob([dataStr], {type: 'application/json;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const fecha = new Date().toISOString().slice(0,10);
+    a.download = 'tracker_backup_' + fecha + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    const kb = Math.round(dataStr.length/1024*10)/10;
+    addBackupToHistory(kb+' KB · '+DB.trabajos.length+' trabajos');
+    showToast('Backup descargado. Importalo en otro dispositivo con el botón Importar.');
+  } catch(e) {
+    showToast('Error al exportar');
+  }
+}
+
+// ===================== PATCH: aiEnviar con historial de chat =====================
+const _origAiEnviar = aiEnviar;
+function aiEnviar(){
+  const ta = document.getElementById('ai-textarea');
+  const texto = (ta.value||'').trim();
+  if(!texto) return;
+  appendChatMessage('user', escHtml(texto));
+  ta.value='';
+  ta.style.height='auto';
+  const sendBtn = document.getElementById('ai-send-btn');
+  sendBtn.disabled = true;
+  aiSetStatus('⚙️ Procesando...');
+  // rebuild user bubble manually
+  const cont = document.getElementById('ai-messages');
+  const udiv = document.createElement('div');
+  udiv.className = 'ai-msg user';
+  udiv.innerHTML = `<div class="ai-bubble">${escHtml(texto)}</div><div class="ai-avatar user">👤</div>`;
+  cont.appendChild(udiv);
+  cont.scrollTop = cont.scrollHeight;
+  setTimeout(()=>{
+    const resultado = procesarComandoLocal(texto);
+    const bdiv = document.createElement('div');
+    bdiv.className = 'ai-msg bot';
+    const bubbleHtml = resultado.tipo==='html' ? resultado.msg : escHtml(resultado.msg).replace(/\n/g,'<br>');
+    bdiv.innerHTML = `<div class="ai-avatar bot">🤖</div><div class="ai-bubble${resultado.tipo==='error'?' style="border-color:var(--red)"':''}"> ${bubbleHtml}</div>`;
+    cont.appendChild(bdiv);
+    if(resultado.tipo==='error') bdiv.querySelector('.ai-bubble').style.borderColor='var(--red)';
+    appendChatMessage('bot', bubbleHtml);
+    aiSetStatus('');
+    sendBtn.disabled = false;
+    cont.scrollTop = cont.scrollHeight;
+  },120);
+}
+
+// ===================== PATCH: renderTabla con tag/priority filter =====================
+const _origRenderTabla = renderTabla;
+function renderTabla(){
+  const q=(document.getElementById('search-input').value||'').toLowerCase();
+  const fe=document.getElementById('filter-estado').value;
+  const ft=document.getElementById('filter-tipo').value;
+  const fp=(document.getElementById('filter-prio')||{value:''}).value;
+
+  const baseEstados=['En proceso','Pagado','Pendiente','Terminado','Cancelado'];
+  const customEstados=getEstadosCustom();
+  const allEstados=[...baseEstados,...customEstados];
+  const selEst=document.getElementById('filter-estado');
+  const curEst=selEst.value;
+  selEst.innerHTML='<option value="">Todos los estados</option>'+allEstados.map(e=>`<option ${e===curEst?'selected':''}>${e}</option>`).join('');
+
+  let rows=DB.trabajos.filter(t=>{
+    if(q&&!(t.nombre.toLowerCase().includes(q)||t.tipo.toLowerCase().includes(q)||(t.uni||'').toLowerCase().includes(q)))return false;
+    if(fe&&t.estado!==fe)return false;
+    if(ft&&t.tipo!==ft)return false;
+    if(fp&&(t.prioridad||'')!==fp)return false;
+    if(activeTagFilter&&!(t.tags||[]).includes(activeTagFilter))return false;
+    return true;
+  });
+
+  // Sort by priority: alta first, then media, then baja, then none
+  const prioOrder = {alta:0,media:1,baja:2,'':3};
+  rows.sort((a,b)=>(prioOrder[a.prioridad||'']||3)-(prioOrder[b.prioridad||'']||3));
+
+  const tipos=[...new Set(DB.trabajos.map(t=>t.tipo))].sort();
+  const sel=document.getElementById('filter-tipo');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Todos los tipos</option>'+tipos.map(t=>`<option ${t===cur?'selected':''}>${t}</option>`).join('');
+
+  const tbody=document.getElementById('tabla-body');
+  if(rows.length===0){
+    tbody.innerHTML='<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--text3)">Sin resultados</td></tr>';
+    document.getElementById('mobile-cards').innerHTML='<div class="empty">Sin resultados</div>';
+    return;
+  }
+
+  tbody.innerHTML=rows.map((t,i)=>{
+    const saldo=(t.precio||0)-(t.cobrado||0);
+    const pct=t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
+    const s=semaforo(t);
+    const prioHtml = t.prioridad ? '<br><span class="prio-'+t.prioridad+'" style="font-size:10px">'+(t.prioridad==='alta'?'🔴':t.prioridad==='media'?'🟡':'🟢')+' '+t.prioridad+'</span>' : '';
+    return`<tr>
+      <td style="color:var(--text3)">${i+1}</td>
+      <td><strong>${t.nombre}</strong>${t.cel?`<br><span style="color:var(--text3);font-size:10px">${t.cel}</span>`:''}${renderTagsPills(t.tags)}</td>
+      <td style="color:var(--text2)">${t.tipo}</td>
+      <td style="color:var(--text3)">${t.uni||'—'}</td>
+      <td style="color:var(--text2)">${fmt(t.fent)}</td>
+      <td style="font-weight:600">${fmtS((t.precio||0))}</td>
+      <td style="color:var(--green);font-weight:600">${fmtS((t.cobrado||0))}</td>
+      <td class="${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">${fmtSRaw(saldo)}</td>
+      <td><div class="pct-bar"><div class="pct-fill" style="width:${pct}%"></div></div><span style="font-size:10px;color:var(--text3)">${pct}%</span></td>
+      <td>${pillEstado(t.estado)}${prioHtml}</td>
+      <td><span class="semaforo ${s.cls}"></span><span style="font-size:10px;color:var(--text3)">${s.label}</span></td>
+      <td><div class="actions">
+        <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" title="Ver historial del cliente" style="color:var(--accent3)">👤</button>
+        <button class="btn btn-ghost btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button>
+        <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" title="Historial de pagos" style="color:#60a5fa">📋</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" title="Bitácora" style="color:#a78bfa">📓</button>
+        <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" title="Emitir comprobante" style="color:#f59e0b">🧾</button>
+        <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✎</button>
+        <button class="btn btn-ghost btn-sm" onclick="duplicarTrabajo(${t.id})" title="Duplicar" style="color:var(--accent3)">⧉</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('mobile-cards').innerHTML=rows.map((t,i)=>{
+    const saldo=(t.precio||0)-(t.cobrado||0);
+    const pct=t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
+    const s=semaforo(t);
+    const prioHtml = t.prioridad ? '<span class="prio-'+t.prioridad+'" style="font-size:10px;margin-left:6px">'+(t.prioridad==='alta'?'🔴':t.prioridad==='media'?'🟡':'🟢')+' '+t.prioridad+'</span>' : '';
+    return`<div class="mcard">
+      <div class="mcard-header">
+        <div class="mcard-nombre"><span class="semaforo ${s.cls}"></span>${t.nombre}${prioHtml}${renderTagsPills(t.tags)}</div>
+        ${pillEstado(t.estado)}
+      </div>
+      <div class="mcard-body">
+        <div class="mcard-field"><div class="mcard-field-label">Tipo</div><div class="mcard-field-val">${t.tipo}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">Universidad</div><div class="mcard-field-val">${t.uni||'—'}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">F. Entrega</div><div class="mcard-field-val">${fmt(t.fent)}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">Precio</div><div class="mcard-field-val" style="font-weight:700">${fmtS((t.precio||0))}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">Cobrado</div><div class="mcard-field-val" style="color:var(--green);font-weight:700">${fmtS((t.cobrado||0))}</div></div>
+        <div class="mcard-field"><div class="mcard-field-label">Saldo</div><div class="mcard-field-val ${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:700">${fmtSRaw(saldo)}</div></div>
+      </div>
+      <div class="pct-bar" style="margin-bottom:10px"><div class="pct-fill" style="width:${pct}%"></div></div>
+      <div class="mcard-footer">
+        <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" style="color:var(--accent3);font-weight:700">👤 Cliente</button>
+        <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})">💰 Cobrar</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa">📓</button>
+        <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa">📋</button>
+        <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" style="color:#f59e0b">🧾</button>
+        <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})">✎</button>
+        <button class="btn btn-ghost btn-sm" onclick="duplicarTrabajo(${t.id})" style="color:var(--accent3)">⧉</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===================== PATCH: verCliente con nota privada y clasificación real =====================
+const _origVerCliente = verCliente;
+function verCliente(id){
+  const trabajoRef = DB.trabajos.find(x=>x.id===id);
+  if(!trabajoRef) return;
+  const nombre = trabajoRef.nombre.trim().toLowerCase();
+  const cel    = (trabajoRef.cel||'').trim();
+  const trabajosCliente = DB.trabajos.filter(t=>{
+    const n = t.nombre.trim().toLowerCase();
+    if(n === nombre) return true;
+    if(cel && t.cel && t.cel.trim() === cel) return true;
+    return false;
+  });
+  clienteActualNombre = trabajoRef.nombre;
+  clienteActualCel    = cel;
+  const totalGen  = trabajosCliente.reduce((a,t)=>a+(t.precio||0),0);
+  const totalPag  = trabajosCliente.reduce((a,t)=>a+(t.cobrado||0),0);
+  const totalDeud = totalGen - totalPag;
+  // Clasificación basada en historial REAL de pagos
+  const pagados = trabajosCliente.filter(t=>t.estado==='Pagado').length;
+  const total = trabajosCliente.length;
+  let estadoCliente, estadoCls;
+  if(totalDeud<=0){ estadoCliente='✅ Buen pagador'; estadoCls='ce-bueno'; }
+  else {
+    const pct = totalGen>0 ? totalPag/totalGen : 0;
+    const tieneVencidos = trabajosCliente.some(t=>{const d=diffDias(t.fent);return d!==null&&d<0&&t.estado!=='Pagado'&&t.estado!=='Cancelado';});
+    if(tieneVencidos){ estadoCliente='🔴 Moroso'; estadoCls='ce-moroso'; }
+    else if(pct>=0.5){ estadoCliente='🟡 Pago parcial'; estadoCls='ce-regular'; }
+    else { estadoCliente='🔴 Moroso'; estadoCls='ce-moroso'; }
+  }
+  document.getElementById('cliente-modal-nombre').textContent = trabajoRef.nombre;
+  document.getElementById('cliente-modal-cel').textContent = cel ? '📱 ' + cel : '';
+  const wspBtn = document.getElementById('cliente-wsp-btn');
+  if(wspBtn) wspBtn.style.display = cel ? '' : 'none';
+  const notaPrivadaHtml = buildClienteNotaPrivada(trabajoRef.nombre);
+  let html = `
+    <div class="cliente-resumen">
+      <div class="cliente-kpi"><div class="cliente-kpi-label">Total Generado</div><div class="cliente-kpi-val" style="color:var(--accent3)">${fmtS(totalGen)}</div></div>
+      <div class="cliente-kpi"><div class="cliente-kpi-label">Total Pagado</div><div class="cliente-kpi-val" style="color:var(--green)">${fmtS(totalPag)}</div></div>
+      <div class="cliente-kpi"><div class="cliente-kpi-label">Deuda Total</div><div class="cliente-kpi-val" style="color:${totalDeud>0?'var(--red)':'var(--green)'}">${fmtS(totalDeud)}</div></div>
+    </div>
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+      <div>
+        <span class="cliente-estado-badge ${estadoCls}">${estadoCliente}</span>
+        <span style="font-size:11px;color:var(--text3);margin-left:8px">${pagados}/${total} trabajos pagados</span>
+      </div>
+      <span style="font-size:11px;color:var(--text3)">${trabajosCliente.length} trabajo${trabajosCliente.length!==1?'s':''}</span>
+    </div>
+    ${notaPrivadaHtml ? `<div style="padding:10px 16px;border-bottom:1px solid var(--border)">${notaPrivadaHtml}</div>` : ''}
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;background:var(--bg3)">
+      <button class="btn btn-primary btn-sm" onclick="nuevoTrabajoDesdeCliente()">➕ Nuevo trabajo</button>
+      ${cel ? `<button class="btn btn-ghost btn-sm" style="color:#25d366;border-color:#25d366" onclick="enviarCobroWhatsApp()">📲 Cobrar por WA</button>` : ''}
+      <button class="btn btn-ghost btn-sm" onclick="editarDatosCliente()" style="color:var(--accent3)">✏️ Editar datos</button>
+    </div>
+    <div style="padding:10px 16px 6px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Trabajos del Cliente</div>
+  `;
+  trabajosCliente.sort((a,b)=>new Date(b.fenc||0)-new Date(a.fenc||0));
+  trabajosCliente.forEach(t=>{
+    const saldo=(t.precio||0)-(t.cobrado||0);
+    const pct=t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
+    const s=semaforo(t);
+    html+=`<div class="cliente-trabajo-item">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px">
+            <span class="semaforo ${s.cls}"></span>${t.tipo}${renderTagsPills(t.tags)}
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${t.uni?t.uni+' · ':''}${t.fent?'Entrega: '+fmt(t.fent):'Sin fecha'} · ${pillEstado(t.estado)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;font-weight:700;color:var(--text)">${fmtS(t.precio||0)}</div>
+          ${saldo>0?`<div style="font-size:10px;color:var(--red);font-weight:600">Debe: ${fmtSRaw(saldo)}</div>`:`<div style="font-size:10px;color:var(--green)">✅ Pagado</div>`}
+        </div>
+      </div>
+      <div style="height:4px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-bottom:8px">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:4px"></div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${saldo>0?`<button class="btn btn-ghost btn-sm" onclick="closeClienteModal();cobrarTrabajo(${t.id})" style="color:var(--green)">💰 Cobrar</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();editarTrabajo(${t.id})">✎ Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa">📓</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();verHistorial(${t.id})" style="color:#60a5fa">📋 Pagos</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();verFactura(${t.id})" style="color:#f59e0b">🧾 Comp.</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarTrabajoDesdeCliente(${t.id},'${escHtml(trabajoRef.nombre)}')">✕</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('cliente-modal-body').innerHTML = html;
+  document.getElementById('modal-cliente').classList.add('open');
+}
+
+// ===================== PATCH: Modal plantillas desde formulario =====================
+function abrirPlantillasDesdeModal(){
+  abrirPlantillas();
+}
+
+// ===================== FIN NUEVOS BLOQUES =====================
+
 function init(){
   const hasLocal = loadLocal();
   if(!hasLocal) seedData();
@@ -2999,6 +4948,13 @@ function init(){
   setSyncStatus('synced', 'Guardado');
   actualizarSelectEstados();
   aiCheckKey();
+  renderDailySummary();
+  loadChatHistory();
+  // Wire up send button and textarea to patched aiEnviar
+  const sendBtn = document.getElementById('ai-send-btn');
+  if(sendBtn) sendBtn.onclick = aiEnviar;
+  const ta = document.getElementById('ai-textarea');
+  if(ta) ta.onkeydown = function(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();aiEnviar();} };
 }
 
 init();
