@@ -36,12 +36,14 @@
   .app{display:flex;flex-direction:column;min-height:100vh}
 
   /* HEADER */
-  .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
-  .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--text)}
+  .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 8px 0 10px;display:flex;align-items:center;gap:6px;height:50px;position:sticky;top:0;z-index:100}
+  .logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:var(--text);flex-shrink:0}
   .logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-  .header-right{display:flex;align-items:center;gap:6px}
+  .header-right{display:flex;align-items:center;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1;min-width:0}
+  .header-right::-webkit-scrollbar{display:none}
+  .header-right .btn,.header-right .sync-status,.header-right .drive-status{flex-shrink:0}
   @media(max-width:400px){
-    .header-right .btn:not(:last-child):not(:nth-last-child(2)):not(:nth-last-child(3)){display:none}
+    /* header buttons always visible */
   }
   .header-date{font-size:11px;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:20px;border:1px solid var(--border);white-space:nowrap}
   .sync-status{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .2s;white-space:nowrap}
@@ -59,11 +61,12 @@
   .nav-btn.active{color:var(--accent3);border-bottom-color:var(--accent)}
 
   /* MOBILE NAV BAR (bottom) */
-  .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:100;padding:6px 0 env(safe-area-inset-bottom)}
-  .mobile-nav-inner{display:flex;justify-content:space-around}
-  .mnav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;font-size:10px;font-weight:500;color:var(--text3);background:none;border:none;cursor:pointer;font-family:inherit;transition:all .2s;min-width:56px}
-  .mnav-btn.active{color:var(--accent3)}
-  .mnav-icon{font-size:18px;line-height:1}
+  .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:100;padding:0 0 env(safe-area-inset-bottom)}
+  .mobile-nav-inner{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 6px 6px}
+  .mobile-nav-inner::-webkit-scrollbar{display:none}
+  .mnav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 12px;font-size:9px;font-weight:600;color:var(--text3);background:none;border:none;cursor:pointer;font-family:inherit;transition:all .2s;min-width:58px;flex-shrink:0;border-radius:8px;white-space:nowrap}
+  .mnav-btn.active{color:var(--accent3);background:rgba(124,111,255,.15)}
+  .mnav-icon{font-size:20px;line-height:1}
 
   /* MAIN */
   .main{flex:1;padding:16px;max-width:1200px;width:100%;margin:0 auto}
@@ -220,15 +223,14 @@
   /* ===== MOBILE RESPONSIVE — COMPLETO ===== */
   @media(max-width:768px){
     /* Layout base */
-    .main{padding:10px 10px 76px}
-    .header{padding:0 10px;height:50px}
+    .main{padding:10px 10px 80px}
+    .header{padding:0 8px;height:50px}
     .header-date{display:none}
     .nav{display:none}
     .mobile-nav{display:block}
-    .logo span{display:none}
+    .logo span{font-size:12px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .btn-hide-only-desktop{display:none!important}
-    .btn-importar-mobile{display:none!important}
-    .btn-pdf-mobile{display:none!important}
+    /* importar y PDF visibles en movil */
 
     /* Dashboard stats */
     .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
@@ -333,8 +335,7 @@
     .stats-grid{grid-template-columns:1fr}
     .daily-grid{grid-template-columns:1fr 1fr}
     .mcard-body{grid-template-columns:1fr}
-    .header-right .btn{display:none}
-    .header-right .btn:last-child,.header-right .btn:nth-last-child(2){display:flex}
+    /* header buttons always visible */
   }
 
   @media print {
@@ -357,6 +358,31 @@
     .print-header{display:block!important}
   }
   .print-header{display:none;text-align:center;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #333}
+
+
+  /* ===== ARCHIVOS DRIVE ===== */
+  .archivos-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .archivos-title{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+  .archivos-subtitle{font-size:11px;color:var(--text3);margin-top:2px}
+  .archivos-search{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;margin-bottom:12px}
+  .archivos-search:focus{border-color:var(--accent)}
+  .archivo-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+  .archivo-card:hover{border-color:var(--accent);background:rgba(124,111,255,.06)}
+  .archivo-icon{font-size:28px;flex-shrink:0;width:44px;height:44px;background:var(--bg3);border-radius:10px;display:flex;align-items:center;justify-content:center}
+  .archivo-info{flex:1;min-width:0}
+  .archivo-nombre{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .archivo-meta{font-size:10px;color:var(--text3);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap}
+  .archivo-meta span{display:flex;align-items:center;gap:3px}
+  .archivo-actions{display:flex;gap:6px;flex-shrink:0}
+  .archivos-empty{text-align:center;padding:40px 20px;color:var(--text3)}
+  .archivos-empty-icon{font-size:48px;margin-bottom:12px}
+  .archivos-empty-title{font-size:14px;font-weight:700;color:var(--text2);margin-bottom:6px}
+  .archivos-empty-desc{font-size:12px;line-height:1.6}
+  .archivos-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+  .archivo-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center}
+  .archivo-stat-val{font-size:20px;font-weight:700;color:var(--accent3)}
+  .archivo-stat-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+  .archivo-no-drive{background:linear-gradient(135deg,#1a1a2e,#1e1b3a);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;text-align:center;margin-bottom:16px}
 
   /* ===== FACTURA ===== */
   .factura-wrap{font-family:'Plus Jakarta Sans',sans-serif;color:#1a1a2e;background:#fff;padding:28px 28px 20px}
@@ -666,6 +692,7 @@
     <button class="nav-btn" onclick="goView('productividad',this)">⚙️ Productividad</button>
     <button class="nav-btn" onclick="abrirWaTemplates()">📲 WhatsApp</button>
     <button class="nav-btn" onclick="goView('asistente',this)">🤖 Asistente Offline</button>
+    <button class="nav-btn" onclick="goView('archivos',this)">📁 Archivos</button>
   </div>
 
   <div class="main">
@@ -870,6 +897,12 @@
   </div>
 </div>
 
+
+    <!-- ARCHIVOS DRIVE -->
+    <div class="view" id="v-archivos">
+      <div id="archivos-content"></div>
+    </div>
+
 <!-- FAB BUTTON (mobile) -->
 <button class="fab" id="fab-btn" onclick="openModal()" title="Nuevo trabajo">＋</button>
 
@@ -896,6 +929,9 @@
     </button>
     <button class="mnav-btn" id="mnav-asistente" onclick="goView('asistente',this,true)">
       <span class="mnav-icon">🤖</span>Offline
+    </button>
+    <button class="mnav-btn" id="mnav-archivos" onclick="goView('archivos',this,true)">
+      <span class="mnav-icon">📁</span>Archivos
     </button>
     <button class="mnav-btn" onclick="abrirWaTemplates()">
       <span class="mnav-icon">📲</span>WhatsApp
@@ -1288,9 +1324,14 @@
             Sincroniza tus datos automáticamente con Google Drive.<br>
             Accede desde cualquier dispositivo y nunca pierdas tu información.
           </div>
-          <div id="google-signin-btn-wrap" style="display:flex;justify-content:center;margin-bottom:14px"></div>
-          <div style="font-size:11px;color:var(--text3);line-height:1.7">
-            ⚠️ <strong>Importante:</strong> Necesitas configurar tu Client ID de Google. 
+          <div id="google-signin-btn-wrap" style="display:flex;justify-content:center;margin-bottom:14px">
+            <button id="drive-connect-btn-static" onclick="driveConectarClick()" style="display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;justify-content:center;transition:background .2s">
+              <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Conectar con Google
+            </button>
+          </div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.7;margin-bottom:8px">
+            ⚠️ <strong>Importante:</strong> Necesitas tu Client ID de Google.
             <a href="#" onclick="mostrarDriveConfig();return false" style="color:var(--accent3)">Ver instrucciones</a>
           </div>
         </div>
@@ -5660,6 +5701,255 @@ if('serviceWorker' in navigator){
       window.location.reload();
     });
   });
+}
+</script>
+<script>
+// DRIVE PERSISTENTE
+(function(){
+  window.addEventListener("load",function(){
+    setTimeout(function(){
+      if(!window.DRIVE||!DRIVE.CLIENT_ID)return;
+      var token=localStorage.getItem(DRIVE.TOKEN_KEY);
+      var exp=parseInt(localStorage.getItem(DRIVE.TOKEN_EXP_KEY)||"0");
+      if(token&&Date.now()>exp-60000){
+        var tries=0,iv=setInterval(function(){
+          tries++;
+          if(typeof google!=="undefined"&&google.accounts&&DRIVE.tokenClient){
+            clearInterval(iv);try{DRIVE.tokenClient.requestAccessToken({prompt:""});}catch(e){}
+          }
+          if(tries>20)clearInterval(iv);
+        },600);
+      }
+    },2000);
+  });
+  document.addEventListener("visibilitychange",function(){
+    if(document.visibilityState==="visible"&&window.DRIVE&&DRIVE.tokenClient){
+      var exp=parseInt(localStorage.getItem(DRIVE.TOKEN_EXP_KEY)||"0");
+      if(Date.now()>exp-120000){try{DRIVE.tokenClient.requestAccessToken({prompt:""});}catch(e){}}
+    }
+  });
+})();
+// HOOK guardarTrabajo -> carpeta Drive
+(function(){
+  window.addEventListener("load",function(){
+    setTimeout(function(){
+      document.addEventListener("click",function(e){
+        var btn=e.target.closest("button");
+        if(!btn)return;
+        var oc=btn.getAttribute("onclick")||"";
+        if(oc.indexOf("guardarTrabajo")===-1)return;
+        var esNuevo=!window.editId;
+        var countAntes=(window.DB&&DB.trabajos)?DB.trabajos.length:0;
+        setTimeout(function(){
+          if(!esNuevo||!window.DRIVE||!DRIVE.isConnected)return;
+          if(!window.DB||DB.trabajos.length<=countAntes)return;
+          var nt=DB.trabajos[DB.trabajos.length-1];
+          if(!nt||!window.crearCarpetaYDocEnDrive)return;
+          showToast("Creando carpeta en Drive...");
+          crearCarpetaYDocEnDrive(nt).then(function(r){
+            if(!r){showToast("Drive no disponible.");return;}
+            var idx=DB.trabajos.findIndex(function(t){return t.id===nt.id;});
+            if(idx>=0){
+              DB.trabajos[idx].driveDocUrl=r.docUrl;
+              DB.trabajos[idx].driveCarpetaUrl=r.carpetaUrl;
+              DB.trabajos[idx].driveCarpetaNombre=r.nombreCarpeta;
+              if(typeof save==="function")save();
+              if(typeof renderAll==="function")renderAll();
+            }
+            showToast("Carpeta y Doc creados en Drive");
+            setTimeout(function(){
+              if(confirm("Abrir el documento ahora?\n"+r.nombreCarpeta))
+                window.open(r.docUrl,"_blank");
+            },400);
+          }).catch(function(err){showToast("Error Drive: "+(err.message||err));});
+        },150);
+      },true);
+    },1500);
+  });
+})();
+</script>
+
+<script>
+// ===== VISTA ARCHIVOS DRIVE =====
+function renderArchivos() {
+  var el = document.getElementById('archivos-content');
+  if (!el) return;
+
+  // Todos los trabajos que tienen driveDocUrl
+  var conDrive = DB.trabajos.filter(function(t){ return t.driveDocUrl; });
+  var sinDrive  = DB.trabajos.filter(function(t){ return !t.driveDocUrl; });
+  var q = (document.getElementById('archivos-search-input') ? document.getElementById('archivos-search-input').value : '').toLowerCase();
+  if(q) conDrive = conDrive.filter(function(t){ return t.nombre.toLowerCase().includes(q) || (t.tipo||'').toLowerCase().includes(q); });
+
+  var iconoTipo = function(tipo){
+    if(!tipo) return '📄';
+    var t = tipo.toLowerCase();
+    if(t.includes('tesis')) return '🎓';
+    if(t.includes('monograf')) return '📖';
+    if(t.includes('ensayo')) return '✍️';
+    if(t.includes('informe')||t.includes('practic')) return '📋';
+    if(t.includes('artículo')||t.includes('articulo')||t.includes('paper')) return '🔬';
+    return '📄';
+  };
+
+  var html = '';
+
+  // Header
+  html += '<div class="archivos-header">';
+  html += '<div><div class="archivos-title">📁 Archivos Drive</div>';
+  html += '<div class="archivos-subtitle">Carpetas y documentos creados automáticamente</div></div>';
+  if(DRIVE.isConnected) {
+    html += '<button class="btn btn-ghost btn-sm" onclick="renderArchivos()" style="color:var(--accent3)">↻ Actualizar</button>';
+  }
+  html += '</div>';
+
+  // Buscador
+  html += '<input class="archivos-search" id="archivos-search-input" placeholder="🔍 Buscar por cliente o tipo..." oninput="renderArchivos()" value="'+q+'">';
+
+  // Drive no conectado
+  if(!DRIVE.isConnected) {
+    html += '<div class="archivo-no-drive">';
+    html += '<div style="font-size:40px;margin-bottom:12px">🔗</div>';
+    html += '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">Drive no conectado</div>';
+    html += '<div style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.6">Conecta tu Google Drive para ver y acceder a todas las carpetas de tus trabajos.</div>';
+    html += '<button class="btn btn-primary" onclick="abrirDrive()">Conectar Drive</button>';
+    html += '</div>';
+  }
+
+  // Stats
+  html += '<div class="archivos-stats">';
+  html += '<div class="archivo-stat"><div class="archivo-stat-val">'+conDrive.length+'</div><div class="archivo-stat-label">Con carpeta</div></div>';
+  html += '<div class="archivo-stat"><div class="archivo-stat-val" style="color:var(--yellow)">'+sinDrive.length+'</div><div class="archivo-stat-label">Sin carpeta</div></div>';
+  html += '<div class="archivo-stat"><div class="archivo-stat-val" style="color:var(--green)">'+DB.trabajos.length+'</div><div class="archivo-stat-label">Total</div></div>';
+  html += '</div>';
+
+  // Lista de archivos con Drive
+  if(conDrive.length > 0) {
+    html += '<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Con carpeta en Drive ('+conDrive.length+')</div>';
+    conDrive.forEach(function(t){
+      var saldo = (t.precio||0)-(t.cobrado||0);
+      var saldoColor = saldo > 0 ? 'color:var(--red)' : 'color:var(--green)';
+      var saldoTxt   = saldo > 0 ? 'Debe S/'+saldo : 'Pagado';
+      html += '<div class="archivo-card">';
+      html += '<div class="archivo-icon">'+iconoTipo(t.tipo)+'</div>';
+      html += '<div class="archivo-info">';
+      html += '<div class="archivo-nombre">'+t.nombre+'</div>';
+      html += '<div class="archivo-meta">';
+      html += '<span>📋 '+(t.tipo||'Trabajo')+'</span>';
+      if(t.uni) html += '<span>🏫 '+t.uni+'</span>';
+      html += '<span style="'+saldoColor+'">💰 '+saldoTxt+'</span>';
+      html += '</div>';
+      if(t.driveCarpetaNombre) html += '<div style="font-size:10px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📂 '+t.driveCarpetaNombre+'</div>';
+      html += '</div>';
+      html += '<div class="archivo-actions">';
+      html += '<button class="btn btn-primary btn-sm" onclick="window.open(''+t.driveDocUrl+'','_blank')" title="Abrir documento">📄 Doc</button>';
+      if(t.driveCarpetaUrl) html += '<button class="btn btn-ghost btn-sm" onclick="window.open(''+t.driveCarpetaUrl+'','_blank')" title="Abrir carpeta" style="color:#34a853">📂</button>';
+      html += '</div>';
+      html += '</div>';
+    });
+  }
+
+  // Trabajos sin Drive
+  if(sinDrive.length > 0 && !q) {
+    html += '<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">Sin carpeta aún ('+sinDrive.length+')</div>';
+    sinDrive.slice(0, 5).forEach(function(t){
+      html += '<div class="archivo-card" style="opacity:.6;border-style:dashed">';
+      html += '<div class="archivo-icon" style="opacity:.5">'+iconoTipo(t.tipo)+'</div>';
+      html += '<div class="archivo-info">';
+      html += '<div class="archivo-nombre">'+t.nombre+'</div>';
+      html += '<div class="archivo-meta"><span>📋 '+(t.tipo||'Trabajo')+'</span></div>';
+      html += '</div>';
+      if(DRIVE.isConnected) {
+        html += '<button class="btn btn-ghost btn-sm" style="font-size:10px;color:var(--accent3);flex-shrink:0" onclick="crearCarpetaManual('+t.id+')">📂 Crear</button>';
+      }
+      html += '</div>';
+    });
+    if(sinDrive.length > 5) html += '<div style="text-align:center;font-size:11px;color:var(--text3);padding:8px">... y '+(sinDrive.length-5)+' más sin carpeta</div>';
+  }
+
+  if(conDrive.length === 0 && !DRIVE.isConnected) {
+    // already shown connect message
+  } else if(conDrive.length === 0 && q) {
+    html += '<div class="archivos-empty"><div class="archivos-empty-icon">🔍</div><div class="archivos-empty-title">Sin resultados</div><div class="archivos-empty-desc">No hay archivos que coincidan con "'+q+'"</div></div>';
+  }
+
+  el.innerHTML = html;
+}
+
+// Crear carpeta manualmente para un trabajo existente
+async function crearCarpetaManual(id) {
+  var t = DB.trabajos.find(function(x){ return x.id === id; });
+  if(!t) return;
+  if(!DRIVE.isConnected){ showToast('Conecta Drive primero'); return; }
+  showToast('Creando carpeta...');
+  try {
+    var r = await crearCarpetaYDocEnDrive(t);
+    if(!r){ showToast('Error al crear carpeta'); return; }
+    var idx = DB.trabajos.findIndex(function(x){ return x.id === id; });
+    if(idx >= 0){
+      DB.trabajos[idx].driveDocUrl = r.docUrl;
+      DB.trabajos[idx].driveCarpetaUrl = r.carpetaUrl;
+      DB.trabajos[idx].driveCarpetaNombre = r.nombreCarpeta;
+      if(typeof save==='function') save();
+    }
+    showToast('Carpeta creada');
+    renderArchivos();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+// Patch goView to render archivos when switching to it
+var _origGoViewArchivos = goView;
+function goView(name, btn, isMobile){
+  _origGoViewArchivos(name, btn, isMobile);
+  if(name === 'archivos') setTimeout(renderArchivos, 50);
+}
+</script>
+
+
+<script>
+// BOTÓN CONECTAR DRIVE - siempre funciona
+function driveConectarClick() {
+  var btn = document.getElementById('drive-connect-btn-static');
+  
+  // Si no hay Client ID, mostrar el campo
+  if (!DRIVE.CLIENT_ID) {
+    mostrarDriveConfig();
+    showToast('Primero ingresa tu Client ID');
+    return;
+  }
+  
+  // Si Google API no cargó aún, esperar
+  if (typeof google === 'undefined' || !google.accounts) {
+    if(btn) { btn.textContent = '⏳ Cargando Google...'; }
+    var tries = 0;
+    var iv = setInterval(function(){
+      tries++;
+      if (typeof google !== 'undefined' && google.accounts) {
+        clearInterval(iv);
+        if(btn) btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Conectar con Google';
+        initDriveAuth(false);
+        setTimeout(driveConectarClick, 300);
+      }
+      if(tries > 15) { clearInterval(iv); showToast('Error: no cargó Google API. Recarga la página.'); }
+    }, 500);
+    return;
+  }
+  
+  // Si no hay tokenClient, inicializar primero
+  if (!DRIVE.tokenClient) {
+    initDriveAuth(false);
+    setTimeout(function(){
+      if (DRIVE.tokenClient) {
+        DRIVE.tokenClient.requestAccessToken({prompt: 'select_account'});
+      } else {
+        showToast('Error al inicializar Drive. Verifica tu Client ID.');
+      }
+    }, 800);
+    return;
+  }
+  
+  // Todo listo, pedir autorización
+  DRIVE.tokenClient.requestAccessToken({prompt: 'select_account'});
 }
 </script>
 </body>
