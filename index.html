@@ -166,8 +166,17 @@
   .p-pagado{background:#052e16;color:var(--green);border:1px solid #166534}
   .p-pendiente{background:#1c0f00;color:var(--orange);border:1px solid #7c2d12}
   .p-vencido{background:#1f0505;color:var(--red);border:1px solid #7f1d1d}
-  .p-cancelado{background:var(--bg3);color:var(--text3);border:1px solid var(--border2)}
+  .p-cancelado{background:#1a1a1a;color:#666;border:1px solid #333;text-decoration:line-through}
   .p-terminado{background:#1c0a1c;color:#d946ef;border:1px solid #701a75}
+  .p-entregado{background:#0a1c1c;color:#22d3ee;border:1px solid #0e7490}
+  .p-prepagado{background:#1a1200;color:#f59e0b;border:1px solid #92400e}
+  /* Cancelado tachado en tarjetas */
+  .tbl tr.estado-cancelado td{text-decoration:line-through;opacity:0.55}
+  .mcard.estado-cancelado{opacity:0.55;border-style:dashed}
+  .mcard.estado-cancelado .mcard-nombre span{text-decoration:line-through}
+  .mcard.estado-cancelado .mcard-field-val{text-decoration:line-through}
+  .mcard.estado-cancelado .mcard-cel{text-decoration:line-through}
+  .mcard.estado-cancelado .mcard-field{text-decoration:line-through}
 
   /* MODAL */
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
@@ -360,29 +369,56 @@
   .print-header{display:none;text-align:center;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #333}
 
 
-  /* ===== ARCHIVOS DRIVE ===== */
+  /* ===== ARCHIVOS DRIVE — NUEVO DISEÑO ===== */
   .archivos-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
   .archivos-title{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
   .archivos-subtitle{font-size:11px;color:var(--text3);margin-top:2px}
-  .archivos-search{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;margin-bottom:12px}
+  .archivos-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .archivos-search{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;font-family:inherit;outline:none;flex:1;min-width:140px}
   .archivos-search:focus{border-color:var(--accent)}
-  .archivo-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
-  .archivo-card:hover{border-color:var(--accent);background:rgba(124,111,255,.06)}
-  .archivo-icon{font-size:28px;flex-shrink:0;width:44px;height:44px;background:var(--bg3);border-radius:10px;display:flex;align-items:center;justify-content:center}
-  .archivo-info{flex:1;min-width:0}
-  .archivo-nombre{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .archivo-meta{font-size:10px;color:var(--text3);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap}
-  .archivo-meta span{display:flex;align-items:center;gap:3px}
-  .archivo-actions{display:flex;gap:6px;flex-shrink:0}
-  .archivos-empty{text-align:center;padding:40px 20px;color:var(--text3)}
-  .archivos-empty-icon{font-size:48px;margin-bottom:12px}
-  .archivos-empty-title{font-size:14px;font-weight:700;color:var(--text2);margin-bottom:6px}
-  .archivos-empty-desc{font-size:12px;line-height:1.6}
   .archivos-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
   .archivo-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center}
   .archivo-stat-val{font-size:20px;font-weight:700;color:var(--accent3)}
   .archivo-stat-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
-  .archivo-no-drive{background:linear-gradient(135deg,#1a1a2e,#1e1b3a);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;text-align:center;margin-bottom:16px}
+
+  /* TARJETA DE ARCHIVO */
+  .archivo-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;transition:all .2s}
+  .archivo-card:hover{border-color:var(--border2)}
+  .archivo-card.tiene-link{border-left:3px solid #34a853}
+  .archivo-card.sin-link{border-left:3px solid var(--border2)}
+  .archivo-card-header{display:flex;align-items:flex-start;gap:12px}
+  .archivo-icon{font-size:26px;flex-shrink:0;width:42px;height:42px;background:var(--bg3);border-radius:10px;display:flex;align-items:center;justify-content:center}
+  .archivo-info{flex:1;min-width:0}
+  .archivo-nombre{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+  .archivo-meta{font-size:10px;color:var(--text3);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .archivo-meta span{display:flex;align-items:center;gap:3px}
+  .archivo-card-footer{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding-top:10px;border-top:1px solid var(--border)}
+  .archivo-link-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:3px 9px;border-radius:12px;font-weight:600}
+  .archivo-link-si{background:#052e16;color:#34a853;border:1px solid #166534}
+  .archivo-link-no{background:var(--bg4);color:var(--text3);border:1px solid var(--border2)}
+
+  /* MODAL CONFIGURAR LINK */
+  .af-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+  .af-modal-overlay.open{display:flex}
+  .af-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:480px;overflow:hidden}
+  .af-modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .af-modal-title{font-size:14px;font-weight:700}
+  .af-modal-body{padding:18px 20px}
+  .af-modal-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+  .af-link-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:inherit;outline:none;margin-top:6px}
+  .af-link-input:focus{border-color:var(--accent)}
+  .af-tip{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.5;background:var(--bg3);padding:10px 12px;border-radius:8px;border-left:3px solid var(--accent)}
+
+  /* EMPTY STATE */
+  .archivos-empty{text-align:center;padding:48px 20px;color:var(--text3)}
+  .archivos-empty-icon{font-size:52px;margin-bottom:14px}
+  .archivos-empty-title{font-size:14px;font-weight:700;color:var(--text2);margin-bottom:6px}
+  .archivos-empty-desc{font-size:12px;line-height:1.7;max-width:280px;margin:0 auto}
+
+  @media(max-width:768px){
+    .archivo-card-footer{gap:5px}
+    .archivo-card-footer .btn{font-size:10px;padding:5px 8px}
+  }
 
   /* ===== FACTURA ===== */
   .factura-wrap{font-family:'Plus Jakarta Sans',sans-serif;color:#1a1a2e;background:#fff;padding:28px 28px 20px}
@@ -671,13 +707,11 @@
         <div class="sync-dot"></div>
         <span id="sync-label">Listo</span>
       </button>
-      <button class="btn btn-ghost btn-sm btn-importar-mobile" onclick="importarDatos()" title="Importar datos desde backup" style="font-size:10px;padding:3px 8px">Importar</button>
       <button class="btn btn-ghost btn-sm btn-pdf-mobile" onclick="exportarPDF()" title="Exportar reporte PDF" style="font-size:10px;padding:3px 8px">📄 PDF</button>
       <button class="btn btn-ghost btn-sm" onclick="abrirBusquedaGlobal()" title="Buscar clientes" style="font-size:13px;padding:3px 8px">🔍</button>
-      <button class="drive-status" id="drive-status-btn" onclick="abrirDrive()" title="Google Drive">
-        <div class="drive-dot"></div><span id="drive-status-text">Drive</span>
-      </button>
+
       <button class="btn btn-ghost btn-sm" onclick="abrirQR()" title="QR / Backup" style="font-size:13px;padding:3px 8px">📱</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirDrive()" title="Conectar Google Drive" style="font-size:13px;padding:3px 8px" id="drive-header-btn">☁️</button>
       <button class="btn btn-ghost btn-sm" id="btn-hide-prices" onclick="toggleHidePrecios()" title="Ocultar precios" style="font-size:13px;padding:3px 8px">👁️</button>
     </div>
   </div>
@@ -693,6 +727,7 @@
     <button class="nav-btn" onclick="abrirWaTemplates()">📲 WhatsApp</button>
     <button class="nav-btn" onclick="goView('asistente',this)">🤖 Asistente Offline</button>
     <button class="nav-btn" onclick="goView('archivos',this)">📁 Archivos</button>
+    <button class="nav-btn" onclick="goView('gastos',this)">💸 Gastos</button>
   </div>
 
   <div class="main">
@@ -736,8 +771,8 @@
           <button class="btn btn-ghost btn-sm" id="mob-filter-btn" onclick="toggleMobFilters()" style="display:none" title="Filtros">⚙️</button>
           <select class="filter-select" id="filter-estado" onchange="renderTabla()">
             <option value="">Todos los estados</option>
-            <option>En proceso</option><option>Pagado</option><option>Pendiente</option>
-            <option>Terminado</option><option>Cancelado</option>
+            <option>En proceso</option><option>Pendiente</option><option>Entregado</option>
+            <option>Prepagado</option><option>Pagado</option><option>Terminado</option><option>Cancelado</option>
           </select>
           <select class="filter-select" id="filter-tipo" onchange="renderTabla()">
             <option value="">Todos los tipos</option>
@@ -853,18 +888,18 @@
             <div class="ai-msg bot">
               <div class="ai-avatar bot">🤖</div>
               <div class="ai-bubble">
-                ¡Hola! Soy tu asistente inteligente 🎓 Puedo entenderte por <strong>voz 🎤 o texto</strong>. Habla con naturalidad, como si le dijeras a un asistente real:<br><br>
-                <strong>📝 Crear tareas:</strong><br>
-                <em>"Agéndame una tarea para María por novecientos soles en tres cuotas, es un ensayo jurídico para la UCV, entrega el veinte de mayo"</em><br><br>
+              ¡Hola! Soy tu asistente inteligente 🎓 Puedo entenderte por <strong>voz 🎤 o texto</strong>. Habla con naturalidad, como si le dijeras a un asistente real:<br><br>
+                <strong>📝 Crear tareas (con precios separados):</strong><br>
+                <em>"Agéndame dos tareas para Karol: uno sobre seminario de investigación, cobrando 90 soles; y otro de derecho internacional privado, ensayo jurídico, cobrando 65 soles, en dos cuotas, entrega 10 de mayo"</em><br><br>
+                <strong>🟡 Estado Prepagado (pagaron adelanto):</strong><br>
+                <em>"Tarea para Diego, artículo científico, 900 soles, me pagó la mitad hoy, entrega 10 de mayo, es urgente, VIP y difícil"</em><br><br>
+                <strong>🔔 Con recordatorio:</strong><br>
+                <em>"...anota recordatorio un día antes"</em><br><br>
                 <strong>💰 Registrar cobros:</strong><br>
                 <em>"Registra un abono de trescientos soles de Juan"</em><br><br>
-                <strong>📊 Consultar información:</strong><br>
-                <em>"¿Cuánto tengo pendiente de cobrar?"</em><br>
-                <em>"Muéstrame los trabajos vencidos"</em><br>
-                <em>"¿Quién me debe más plata?"</em><br><br>
-                <strong>🔄 Cambiar estados:</strong><br>
-                <em>"Marca el trabajo de Pedro como terminado"</em><br><br>
-                Usa los accesos rápidos de abajo 👇 o dicta directo con el micrófono 🎤
+                <strong>🔄 Estados disponibles:</strong><br>
+                🔵 En proceso &nbsp;•&nbsp; 🟠 Pendiente &nbsp;•&nbsp; 🔷 Entregado &nbsp;•&nbsp; 🟡 Prepagado &nbsp;•&nbsp; 🟣 Terminado &nbsp;•&nbsp; 🟢 Pagado &nbsp;•&nbsp; ⚫ Cancelado (tachado)<br><br>
+                💡 <strong>Tip:</strong> Entiendo nombres en minúsculas, títulos (Jueza, Dr., Lic.) y lenguaje coloquial. Usa los accesos rápidos 👇
               </div>
             </div>
           </div>
@@ -875,12 +910,13 @@
             <span class="ai-chip" onclick="aiChip('¿Cuánto cobré este mes?')">📊 Este mes</span>
             <span class="ai-chip" onclick="aiChip('¿Qué clientes me deben más dinero?')">👥 Deudores</span>
             <span class="ai-chip" onclick="aiChip('¿Cuántos trabajos tengo en proceso ahora?')">🔄 Activos</span>
+            <span class="ai-chip" onclick="aiChip('¿Qué trabajos están prepagados o con adelanto?')">🟡 Prepagados</span>
             <span class="ai-chip" onclick="aiChip('Muéstrame la proyección de cobros de los próximos 30 días')">📅 Proyección</span>
             <span class="ai-chip" onclick="aiChip('¿Qué comandos puedo usar?')">❓ Ayuda</span>
           </div>
           <div class="ai-input-area">
             <button class="ai-btn-mic" id="ai-mic-btn" onclick="toggleMic()" title="Activar micrófono — habla tu instrucción">🎤</button>
-            <textarea id="ai-textarea" placeholder="Dicta o escribe... ej: Agéndame tarea para Ana por 500 soles en dos cuotas" rows="1"
+            <textarea id="ai-textarea" placeholder="Ej: Agéndame tarea para la jueza Sujey, 40 soles contado, transcripciones PJ, entrega 22 abril" rows="1"
               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiEnviar()}"
               oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
             <button class="ai-btn-send" id="ai-send-btn" onclick="aiEnviar()" title="Enviar">➤</button>
@@ -893,15 +929,92 @@
         </div>
 
       </div>
-    </div>
-  </div>
-</div>
-
+    </div><!-- /#v-asistente -->
 
     <!-- ARCHIVOS DRIVE -->
     <div class="view" id="v-archivos">
       <div id="archivos-content"></div>
     </div>
+
+    <!-- MODAL CONFIGURAR LINK DE ARCHIVO -->
+    <div class="af-modal-overlay" id="af-link-modal">
+      <div class="af-modal">
+        <div class="af-modal-header">
+          <span class="af-modal-title">🔗 Configurar enlace de Drive</span>
+          <button class="modal-close" onclick="cerrarAfModal()">✕</button>
+        </div>
+        <div class="af-modal-body">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:10px">
+            <strong id="af-modal-nombre"></strong>
+            <span id="af-modal-tipo" style="color:var(--text3);margin-left:6px"></span>
+          </div>
+
+          <!-- AUTO-CREATE DRIVE SECTION -->
+          <div id="af-drive-auto-section" style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px">
+            <div style="font-size:11px;font-weight:700;color:var(--accent3);margin-bottom:6px;display:flex;align-items:center;gap:5px">
+              ✨ Crear automáticamente en tu Drive
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.5">
+              Se creará: <code style="background:var(--bg4);padding:2px 6px;border-radius:4px;font-size:10px">Trabajos App Pagos Brujos / <span id="af-drive-cliente" style="color:var(--accent3)"></span> / <span id="af-drive-tipo" style="color:#22d3ee"></span></code>
+            </div>
+            <div id="af-drive-status" style="font-size:11px;color:var(--text3);margin-bottom:8px;min-height:16px"></div>
+            <button id="af-btn-crear-drive" class="btn btn-primary" onclick="crearArchivoEnDrive()" style="width:100%;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Crear Google Doc en Drive
+            </button>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+            <span style="font-size:10px;color:var(--text3)">o pega un enlace manual</span>
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+          </div>
+
+          <label style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Enlace a carpeta o documento en Drive</label>
+          <input class="af-link-input" id="af-link-input" placeholder="https://drive.google.com/drive/folders/..." type="url">
+          <div class="af-tip">
+            💡 En Google Drive → clic derecho → <em>"Compartir"</em> → <em>"Copiar enlace"</em> → pégalo aquí.
+          </div>
+        </div>
+        <div class="af-modal-footer">
+          <button class="btn btn-ghost" onclick="cerrarAfModal()">Cancelar</button>
+          <button class="btn btn-danger btn-sm" id="af-btn-quitar" onclick="quitarLinkArchivo()" style="display:none">🗑️ Quitar link</button>
+          <button class="btn btn-primary" onclick="guardarLinkArchivo()">✅ Guardar enlace</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GASTOS NECESARIOS -->
+    <div class="view" id="v-gastos">
+      <!-- RESUMEN KPIs -->
+      <div class="stats-grid" id="gastos-kpis" style="margin-bottom:16px"></div>
+
+      <!-- HERRAMIENTAS FIJAS (suscripciones mensuales) -->
+      <div class="table-wrap" style="margin-bottom:16px">
+        <div class="table-toolbar" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">🛠️ Herramientas / Suscripciones</span>
+          <button class="btn btn-primary btn-sm" onclick="openGastoHerramienta()">+ Agregar</button>
+        </div>
+        <div id="gastos-herramientas-tabla"></div>
+      </div>
+
+      <!-- GASTOS PUNTUALES -->
+      <div class="table-wrap">
+        <div class="table-toolbar" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">🧾 Gastos Puntuales</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select class="filter-select" id="gastos-mes-filter" onchange="renderGastos()">
+              <option value="">Todos los meses</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="openGastoPuntual()">+ Agregar</button>
+          </div>
+        </div>
+        <div id="gastos-puntuales-tabla"></div>
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /.app -->
 
 <!-- FAB BUTTON (mobile) -->
 <button class="fab" id="fab-btn" onclick="openModal()" title="Nuevo trabajo">＋</button>
@@ -933,11 +1046,117 @@
     <button class="mnav-btn" id="mnav-archivos" onclick="goView('archivos',this,true)">
       <span class="mnav-icon">📁</span>Archivos
     </button>
+    <button class="mnav-btn" id="mnav-gastos" onclick="goView('gastos',this,true)">
+      <span class="mnav-icon">💸</span>Gastos
+    </button>
     <button class="mnav-btn" onclick="abrirWaTemplates()">
       <span class="mnav-icon">📲</span>WhatsApp
     </button>
+    <button class="mnav-btn" onclick="abrirDrive()">
+      <span class="mnav-icon">☁️</span>Drive
+    </button>
   </div>
 </nav>
+
+<!-- MODAL GASTO HERRAMIENTA -->
+<div class="modal-overlay" id="modal-gasto-herramienta">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-gh-titulo">Nueva Herramienta</span>
+      <button class="modal-close" onclick="closeGastoHerramienta()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label>Nombre de la herramienta</label>
+          <input class="form-input" id="gh-nombre" placeholder="ChatGPT, Turnitin, Claude, Grammarly...">
+        </div>
+        <div class="form-group">
+          <label>Costo mensual S/.</label>
+          <input class="form-input" id="gh-monto" type="number" placeholder="0" inputmode="decimal">
+        </div>
+        <div class="form-group">
+          <label>Moneda</label>
+          <select class="form-select" id="gh-moneda">
+            <option value="PEN">S/ Soles</option>
+            <option value="USD">$ Dólares</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label>Categoría</label>
+          <select class="form-select" id="gh-categoria">
+            <option value="IA">🤖 Inteligencia Artificial</option>
+            <option value="Antiplagio">🔍 Antiplagio / Turnitin</option>
+            <option value="Diseño">🎨 Diseño / Edición</option>
+            <option value="Ofimática">📄 Ofimática / Office</option>
+            <option value="Almacenamiento">☁️ Almacenamiento / Drive</option>
+            <option value="Comunicación">💬 Comunicación</option>
+            <option value="Otro">📦 Otro</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label>Notas</label>
+          <input class="form-input" id="gh-notas" placeholder="Plan, cuenta compartida, renovación...">
+        </div>
+        <div class="form-group form-full">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="gh-activa" checked style="accent-color:var(--accent)">
+            <span>Activa (incluir en el total mensual)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeGastoHerramienta()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarGastoHerramienta()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GASTO PUNTUAL -->
+<div class="modal-overlay" id="modal-gasto-puntual">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-gp-titulo">Nuevo Gasto Puntual</span>
+      <button class="modal-close" onclick="closeGastoPuntual()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label>Descripción</label>
+          <input class="form-input" id="gp-desc" placeholder="Qué fue el gasto...">
+        </div>
+        <div class="form-group">
+          <label>Fecha</label>
+          <input class="form-input" id="gp-fecha" type="date">
+        </div>
+        <div class="form-group">
+          <label>Monto S/.</label>
+          <input class="form-input" id="gp-monto" type="number" placeholder="0" inputmode="decimal">
+        </div>
+        <div class="form-group form-full">
+          <label>Categoría</label>
+          <select class="form-select" id="gp-categoria">
+            <option value="IA">🤖 Inteligencia Artificial</option>
+            <option value="Antiplagio">🔍 Antiplagio / Turnitin</option>
+            <option value="Diseño">🎨 Diseño</option>
+            <option value="Internet">🌐 Internet / Datos</option>
+            <option value="Equipo">💻 Equipo / Hardware</option>
+            <option value="Otro">📦 Otro</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label>Notas</label>
+          <input class="form-input" id="gp-notas" placeholder="Observaciones...">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeGastoPuntual()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarGastoPuntual()">Guardar</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL TRABAJO -->
 <div class="modal-overlay" id="modal-trabajo">
@@ -1020,11 +1239,13 @@
         <div class="form-group">
           <label>Estado</label>
           <select class="form-select" id="f-estado">
-            <option>En proceso</option>
-            <option>Pendiente</option>
-            <option>Terminado</option>
-            <option>Pagado</option>
-            <option>Cancelado</option>
+            <option value="En proceso">🔵 En proceso — lo estoy haciendo</option>
+            <option value="Pendiente">🟠 Pendiente — esperando algo</option>
+            <option value="Entregado">🔷 Entregado — pendiente de pago</option>
+            <option value="Prepagado">🟡 Prepagado — pagaron adelanto, falta terminar</option>
+            <option value="Terminado">🟣 Terminado — cerrado sin cobro completo</option>
+            <option value="Pagado">🟢 Pagado — cobrado y cerrado</option>
+            <option value="Cancelado">⚫ Cancelado — no continuó</option>
           </select>
         </div>
         <div class="form-group form-full">
@@ -1554,7 +1775,7 @@ function importarDatos() {
 }
 
 // ===================== APP =====================
-let DB = {trabajos:[], ingresos:[], nextId:1};
+let DB = {trabajos:[], ingresos:[], gastos_herramientas:[], gastos_puntuales:[], nextId:1};
 
 // ===== OCULTAR PRECIOS =====
 let hidePrecios = false;
@@ -1587,7 +1808,12 @@ function todayStr(){return today.toISOString().slice(0,10)}
 
 function loadLocal(){
   const raw=localStorage.getItem('tracker_v1');
-  if(raw){try{DB=JSON.parse(raw);return true;}catch(e){}}
+  if(raw){try{
+    DB=JSON.parse(raw);
+    if(!DB.gastos_herramientas) DB.gastos_herramientas=[];
+    if(!DB.gastos_puntuales) DB.gastos_puntuales=[];
+    return true;
+  }catch(e){}}
   return false;
 }
 
@@ -1607,12 +1833,20 @@ function seedData(){
     {id:12,nombre:'Enzo',cel:'938 513 584',dni:'',tipo:'Trabajo Acad\u00e9mico',uni:'UCV',notas:'2 hojas - parte 3',fenc:'2026-04-09',fent:'2026-04-12',fpago:'2026-04-12',precio:15,cobrado:0,estado:'En proceso',c1f:'',c1m:0,c2f:'',c2m:0,c3f:'',c3m:0,c4f:'',c4m:0}
   ];
   DB.ingresos=[{id:1,desc:'Instalaci\u00f3n programa peritaje',cliente:'Amigo del pap\u00e1',fecha:'2025-03-05',monto:200,cobrado:100,notas:'Falta S/100 en los pr\u00f3ximos d\u00edas'}];
+  DB.gastos_herramientas=[
+    {id:'gh1',nombre:'ChatGPT Plus',monto:20,moneda:'USD',categoria:'IA',notas:'Plan Plus - $20/mes',activa:true},
+    {id:'gh2',nombre:'Claude Pro',monto:20,moneda:'USD',categoria:'IA',notas:'Plan Pro - $20/mes',activa:true},
+    {id:'gh3',nombre:'Turnitin',monto:60,moneda:'PEN',categoria:'Antiplagio',notas:'Acceso mensual',activa:true},
+    {id:'gh4',nombre:'Grammarly',monto:12,moneda:'USD',categoria:'IA',notas:'Plan Premium',activa:false},
+  ];
+  DB.gastos_puntuales=[];
   DB.nextId=20;
 }
 
 function semaforo(t){
   const dias=diffDias(t.fent);
   if(t.estado==='Pagado')return{cls:'s-green',label:'Pagado'};
+  if(t.estado==='Entregado')return{cls:'s-orange',label:'Por cobrar'};
   if(t.estado==='Cancelado')return{cls:'s-blue',label:'Cancelado'};
   if(dias===null)return{cls:'s-blue',label:'Sin fecha'};
   if(dias<0)return{cls:'s-red',label:'Vencido'};
@@ -1621,8 +1855,13 @@ function semaforo(t){
 }
 
 function pillEstado(e){
-  const m={'En proceso':'p-proceso','Pagado':'p-pagado','Pendiente':'p-pendiente','Terminado':'p-terminado','Cancelado':'p-cancelado'};
-  return`<span class="pill ${m[e]||'p-pendiente'}">${e}</span>`;
+  const m={
+    'En proceso':'p-proceso','Pagado':'p-pagado','Pendiente':'p-pendiente',
+    'Terminado':'p-terminado','Cancelado':'p-cancelado','Entregado':'p-entregado',
+    'Prepagado':'p-prepagado'
+  };
+  const ic={'En proceso':'🔵','Pagado':'🟢','Pendiente':'🟠','Terminado':'🟣','Cancelado':'⚫','Entregado':'🔷','Prepagado':'🟡'};
+  return`<span class="pill ${m[e]||'p-pendiente'}">${ic[e]||''}${e}</span>`;
 }
 
 function renderDashboard(){
@@ -1641,6 +1880,7 @@ function renderDashboard(){
     <div class="stat-card red"><div class="stat-label">Saldo Pendiente</div><div class="stat-val">${fmtS((totalSaldo+otrosPend))}</div><div class="stat-sub">Por cobrar</div></div>
     <div class="stat-card yellow"><div class="stat-label">Otros Ingresos</div><div class="stat-val">${fmtS(otrosCob)}</div><div class="stat-sub">Cobrado | Pend: ${fmtSRaw(otrosPend)}</div></div>
     <div class="stat-card accent"><div class="stat-label">En Proceso</div><div class="stat-val">${t.filter(x=>x.estado==='En proceso').length}</div><div class="stat-sub">Activos</div></div>
+    <div class="stat-card" style="border-color:#0e7490;background:#0a1c1c"><div class="stat-label" style="color:#22d3ee">Entregados</div><div class="stat-val" style="color:#22d3ee">${t.filter(x=>x.estado==='Entregado').length}</div><div class="stat-sub" style="color:#22d3ee">Por cobrar</div></div>
     <div class="stat-card"><div class="stat-label">Total Trabajos</div><div class="stat-val">${t.length}</div><div class="stat-sub">Registrados</div></div>
   `;
   document.getElementById('pct-cobro').textContent=pct+'%';
@@ -1649,12 +1889,16 @@ function renderDashboard(){
   const pagados=t.filter(x=>x.estado==='Pagado').length;
   const enp=t.filter(x=>x.estado==='En proceso').length;
   const pend=t.filter(x=>x.estado==='Pendiente').length;
+  const entr=t.filter(x=>x.estado==='Entregado').length;
+  const prepagados=t.filter(x=>x.estado==='Prepagado').length;
   const venc=t.filter(x=>semaforo(x).label==='Vencido').length;
-  const pronto=t.filter(x=>{const d=diffDias(x.fent);return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado';}).length;
+  const entregados=t.filter(x=>x.estado==='Entregado').length;
+  const pronto=t.filter(x=>{const d=diffDias(x.fent);return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado'&&x.estado!=='Entregado';}).length;
   document.getElementById('counters').innerHTML=`
     <span class="counter-badge cb-green">✅ Pagados: ${pagados}</span>
     <span class="counter-badge cb-blue">🔵 En Proceso: ${enp}</span>
     <span class="counter-badge cb-orange">🟠 Pendientes: ${pend}</span>
+    ${prepagados>0?`<span class="counter-badge" style="background:#1a1200;color:#f59e0b;border:1px solid #92400e">🟡 Prepagados: ${prepagados}</span>`:''}
     <span class="counter-badge cb-red">🔴 Vencidos: ${venc}</span>
     <span class="counter-badge cb-yellow">⚠️ Pr\u00f3x 7d: ${pronto}</span>
     <span class="counter-badge cb-gray">Total: ${t.length}</span>
@@ -1725,7 +1969,7 @@ function renderTabla(){
   const ft=document.getElementById('filter-tipo').value;
 
   // Actualizar select de filtro de estado con custom states
-  const baseEstados=['En proceso','Pagado','Pendiente','Terminado','Cancelado'];
+  const baseEstados=['En proceso','Entregado','Pendiente','Prepagado','Pagado','Terminado','Cancelado'];
   const customEstados=getEstadosCustom();
   const allEstados=[...baseEstados,...customEstados];
   const selEst=document.getElementById('filter-estado');
@@ -1755,7 +1999,7 @@ function renderTabla(){
     const saldo=(t.precio||0)-(t.cobrado||0);
     const pct=t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
     const s=semaforo(t);
-    return`<tr>
+    return`<tr class="${t.estado==='Cancelado'?'estado-cancelado':''}">
       <td style="color:var(--text3)">${i+1}</td>
       <td><strong>${t.nombre}</strong>${t.cel?`<br><span style="color:var(--text3);font-size:10px">${t.cel}</span>`:''}${renderTagsPills(t.tags)}</td>
       <td style="color:var(--text2)">${t.tipo}</td>
@@ -1785,9 +2029,9 @@ function renderTabla(){
     const saldo=(t.precio||0)-(t.cobrado||0);
     const pct=t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
     const s=semaforo(t);
-    return`<div class="mcard">
+    return`<div class="mcard${t.estado==='Cancelado'?' estado-cancelado':''}">
       <div class="mcard-header">
-        <div class="mcard-nombre"><span class="semaforo ${s.cls}"></span>${t.nombre}</div>
+        <div class="mcard-nombre"><span class="semaforo ${s.cls}"></span><span>${t.nombre}</span></div>
         ${pillEstado(t.estado)}
       </div>
       <div class="mcard-body">
@@ -1982,19 +2226,23 @@ function renderProyeccion(){
 
 function goView(name, btn, isMobile=false){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('v-'+name).classList.add('active');
+  const vEl = document.getElementById('v-'+name);
+  if(!vEl) return;
+  vEl.classList.add('active');
   if(isMobile){
     document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.remove('active'));
   } else {
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   }
-  btn.classList.add('active');
+  if(btn) btn.classList.add('active');
   const fab = document.getElementById('fab-btn');
   const hideFab = name==='productividad' || name==='asistente';
   if(fab) fab.style.display = hideFab ? 'none' : '';
   renderAll();
   if(name==='productividad') renderProductividad();
   if(name==='asistente') aiCheckKey();
+  if(name==='archivos') setTimeout(function(){ if(typeof renderArchivos==='function') renderArchivos(); }, 80);
+  if(name==='gastos') setTimeout(function(){ if(typeof renderGastos==='function') renderGastos(); }, 80);
 }
 
 function renderAll(){
@@ -2005,6 +2253,9 @@ function renderAll(){
   renderProyeccion();
   if(document.getElementById('v-productividad').classList.contains('active')){
     renderProductividad();
+  }
+  if(document.getElementById('v-gastos').classList.contains('active')){
+    renderGastos();
   }
 }
 
@@ -2305,6 +2556,218 @@ function eliminarIngreso(id){
     DB.ingresos=DB.ingresos.filter(x=>x.id!==id);
     save();renderIngresos();renderDashboard();
     showToast('Ingreso eliminado');
+  }
+}
+
+// ===================== GASTOS NECESARIOS =====================
+let editGastoHId=null, editGastoPId=null;
+const TC_USD = 3.75; // tipo de cambio aproximado USD → PEN
+
+function gastoHMontoPEN(g){ return g.moneda==='USD' ? Math.round(g.monto * TC_USD) : (g.monto||0); }
+
+function renderGastos(){
+  if(!DB.gastos_herramientas) DB.gastos_herramientas=[];
+  if(!DB.gastos_puntuales) DB.gastos_puntuales=[];
+
+  // ── KPIs ──
+  const herActivas = DB.gastos_herramientas.filter(g=>g.activa);
+  const totalMensualPEN = herActivas.reduce((a,g)=>a+gastoHMontoPEN(g), 0);
+  const mesActual = new Date().toISOString().slice(0,7);
+  const gastosEsteMes = DB.gastos_puntuales.filter(g=>g.fecha&&g.fecha.startsWith(mesActual));
+  const totalPuntualMes = gastosEsteMes.reduce((a,g)=>a+(g.monto||0), 0);
+  const totalMes = totalMensualPEN + totalPuntualMes;
+
+  document.getElementById('gastos-kpis').innerHTML=`
+    <div class="stat-card red"><div class="stat-label">Gasto Mensual Fijo</div><div class="stat-val">${fmtS(totalMensualPEN)}</div><div class="stat-sub">${herActivas.length} herramienta${herActivas.length!==1?'s':''} activa${herActivas.length!==1?'s':''}</div></div>
+    <div class="stat-card yellow"><div class="stat-label">Gastos Este Mes</div><div class="stat-val">${fmtS(totalPuntualMes)}</div><div class="stat-sub">Gastos puntuales</div></div>
+    <div class="stat-card"><div class="stat-label">Total Gastado Mes</div><div class="stat-val">${fmtS(totalMes)}</div><div class="stat-sub">Fijo + puntual</div></div>
+    <div class="stat-card accent"><div class="stat-label">Herramientas Total</div><div class="stat-val">${DB.gastos_herramientas.length}</div><div class="stat-sub">${herActivas.length} activa${herActivas.length!==1?'s':''}, ${DB.gastos_herramientas.length-herActivas.length} pausada${DB.gastos_herramientas.length-herActivas.length!==1?'s':''}</div></div>
+  `;
+
+  // ── HERRAMIENTAS ──
+  const elH = document.getElementById('gastos-herramientas-tabla');
+  const CAT_ICONS = {IA:'🤖',Antiplagio:'🔍',Diseño:'🎨',Ofimática:'📄',Almacenamiento:'☁️',Comunicación:'💬',Otro:'📦'};
+  if(!DB.gastos_herramientas.length){
+    elH.innerHTML='<div class="empty">Sin herramientas registradas. Agrega ChatGPT, Turnitin, Claude, etc.</div>';
+  } else {
+    const isMobile=window.innerWidth<=640;
+    if(isMobile){
+      elH.innerHTML=DB.gastos_herramientas.map(g=>{
+        const penMes = gastoHMontoPEN(g);
+        const montoStr = g.moneda==='USD'?`$${g.monto} (~${fmtSRaw(penMes)}/mes)`:`${fmtSRaw(penMes)}/mes`;
+        return`<div class="mcard" style="${!g.activa?'opacity:.55;border-style:dashed':''}">
+          <div class="mcard-header">
+            <div class="mcard-nombre">${CAT_ICONS[g.categoria]||'📦'} ${g.nombre}</div>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-ghost btn-sm" onclick="editarGastoHerramienta('${g.id}')">✎</button>
+              <button class="btn btn-danger btn-sm" onclick="eliminarGastoHerramienta('${g.id}')">✕</button>
+            </div>
+          </div>
+          <div class="mcard-body">
+            <div class="mcard-field"><div class="mcard-field-label">Costo mensual</div><div class="mcard-field-val" style="color:var(--red)">${montoStr}</div></div>
+            <div class="mcard-field"><div class="mcard-field-label">Estado</div><div class="mcard-field-val">${g.activa?'✅ Activa':'⏸️ Pausada'}</div></div>
+            ${g.notas?`<div class="mcard-field" style="grid-column:1/-1"><div class="mcard-field-label">Notas</div><div class="mcard-field-val" style="font-size:11px">${g.notas}</div></div>`:''}
+          </div>
+        </div>`;
+      }).join('')+
+      `<div style="background:var(--bg3);border-radius:var(--radius);padding:12px;margin-top:4px;font-size:12px;color:var(--text3);text-align:center">
+        💡 Total mensual activo: <strong style="color:var(--red)">${fmtS(totalMensualPEN)}</strong>
+      </div>`;
+    } else {
+      elH.innerHTML=`<table class="tbl"><thead><tr><th>Herramienta</th><th>Categoría</th><th>Costo mensual</th><th>En soles</th><th>Estado</th><th>Notas</th><th></th></tr></thead><tbody>`+
+      DB.gastos_herramientas.map(g=>{
+        const penMes=gastoHMontoPEN(g);
+        return`<tr style="${!g.activa?'opacity:.55':''}">
+          <td><strong>${CAT_ICONS[g.categoria]||'📦'} ${g.nombre}</strong></td>
+          <td style="color:var(--text2)">${g.categoria}</td>
+          <td style="font-weight:600">${g.moneda==='USD'?'$'+g.monto+'/mes':fmtSRaw(g.monto)+'/mes'}</td>
+          <td style="color:var(--red);font-weight:700">${fmtS(penMes)}</td>
+          <td><span class="pill ${g.activa?'p-proceso':'p-cancelado'}">${g.activa?'Activa':'Pausada'}</span></td>
+          <td style="color:var(--text3);font-size:11px">${g.notas||'—'}</td>
+          <td><div class="actions">
+            <button class="btn btn-ghost btn-sm" onclick="editarGastoHerramienta('${g.id}')">✎</button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarGastoHerramienta('${g.id}')">✕</button>
+          </div></td>
+        </tr>`;
+      }).join('')+
+      `<tr class="total-row"><td colspan="3" style="padding:10px;font-size:11px;color:var(--text3)">TOTAL MENSUAL ACTIVO</td><td style="padding:10px;font-weight:700;color:var(--red)">${fmtS(totalMensualPEN)}</td><td colspan="3"></td></tr>`+
+      '</tbody></table>';
+    }
+  }
+
+  // ── GASTOS PUNTUALES ──
+  const elP = document.getElementById('gastos-puntuales-tabla');
+  // Llenar filtro de meses
+  const mesSelect = document.getElementById('gastos-mes-filter');
+  const mesesDisp = [...new Set(DB.gastos_puntuales.map(g=>g.fecha?g.fecha.slice(0,7):null).filter(Boolean))].sort().reverse();
+  const mesSelVal = mesSelect.value;
+  mesSelect.innerHTML='<option value="">Todos los meses</option>'+mesesDisp.map(m=>`<option value="${m}" ${m===mesSelVal?'selected':''}>${m}</option>`).join('');
+
+  const gpFiltrados = mesSelVal ? DB.gastos_puntuales.filter(g=>g.fecha&&g.fecha.startsWith(mesSelVal)) : DB.gastos_puntuales;
+  const totalGP = gpFiltrados.reduce((a,g)=>a+(g.monto||0),0);
+
+  if(!gpFiltrados.length){
+    elP.innerHTML='<div class="empty">Sin gastos puntuales registrados.</div>';
+    return;
+  }
+  const isMobileP=window.innerWidth<=640;
+  if(isMobileP){
+    elP.innerHTML=gpFiltrados.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')).map(g=>`
+      <div class="mcard">
+        <div class="mcard-header">
+          <div class="mcard-nombre" style="font-size:13px">${CAT_ICONS[g.categoria]||'📦'} ${g.desc}</div>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-ghost btn-sm" onclick="editarGastoPuntual('${g.id}')">✎</button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarGastoPuntual('${g.id}')">✕</button>
+          </div>
+        </div>
+        <div class="mcard-body">
+          <div class="mcard-field"><div class="mcard-field-label">Monto</div><div class="mcard-field-val" style="color:var(--red)">${fmtS(g.monto||0)}</div></div>
+          <div class="mcard-field"><div class="mcard-field-label">Fecha</div><div class="mcard-field-val">${fmt(g.fecha)}</div></div>
+          ${g.notas?`<div class="mcard-field" style="grid-column:1/-1"><div class="mcard-field-label">Notas</div><div class="mcard-field-val" style="font-size:11px">${g.notas}</div></div>`:''}
+        </div>
+      </div>`).join('')+
+      `<div style="background:var(--bg3);border-radius:var(--radius);padding:12px;margin-top:4px;font-size:12px;color:var(--text3);text-align:center">
+        Total filtrado: <strong style="color:var(--red)">${fmtS(totalGP)}</strong>
+      </div>`;
+  } else {
+    elP.innerHTML=`<table class="tbl"><thead><tr><th>#</th><th>Descripción</th><th>Categoría</th><th>Fecha</th><th>Monto</th><th>Notas</th><th></th></tr></thead><tbody>`+
+    gpFiltrados.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')).map((g,i)=>`<tr>
+      <td style="color:var(--text3)">${i+1}</td>
+      <td><strong>${CAT_ICONS[g.categoria]||'📦'} ${g.desc}</strong></td>
+      <td style="color:var(--text2)">${g.categoria}</td>
+      <td style="color:var(--text2)">${fmt(g.fecha)}</td>
+      <td style="color:var(--red);font-weight:700">${fmtS(g.monto||0)}</td>
+      <td style="color:var(--text3);font-size:11px">${g.notas||'—'}</td>
+      <td><div class="actions">
+        <button class="btn btn-ghost btn-sm" onclick="editarGastoPuntual('${g.id}')">✎</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarGastoPuntual('${g.id}')">✕</button>
+      </div></td>
+    </tr>`).join('')+
+    `<tr class="total-row"><td colspan="4" style="padding:10px;font-size:11px;color:var(--text3)">TOTAL</td><td style="padding:10px;font-weight:700;color:var(--red)">${fmtS(totalGP)}</td><td colspan="2"></td></tr>`+
+    '</tbody></table>';
+  }
+}
+
+// Herramientas CRUD
+function openGastoHerramienta(g){
+  editGastoHId=g?g.id:null;
+  document.getElementById('modal-gh-titulo').textContent=g?'Editar Herramienta':'Nueva Herramienta';
+  const d=g||{};
+  document.getElementById('gh-nombre').value=d.nombre||'';
+  document.getElementById('gh-monto').value=d.monto||0;
+  document.getElementById('gh-moneda').value=d.moneda||'PEN';
+  document.getElementById('gh-categoria').value=d.categoria||'IA';
+  document.getElementById('gh-notas').value=d.notas||'';
+  document.getElementById('gh-activa').checked=d.activa!==false;
+  document.getElementById('modal-gasto-herramienta').classList.add('open');
+}
+function closeGastoHerramienta(){ document.getElementById('modal-gasto-herramienta').classList.remove('open'); }
+function guardarGastoHerramienta(){
+  const nombre=document.getElementById('gh-nombre').value.trim();
+  if(!nombre){alert('El nombre es obligatorio');return;}
+  const obj={
+    id: editGastoHId||('gh'+Date.now()),
+    nombre,
+    monto: parseFloat(document.getElementById('gh-monto').value)||0,
+    moneda: document.getElementById('gh-moneda').value,
+    categoria: document.getElementById('gh-categoria').value,
+    notas: document.getElementById('gh-notas').value.trim(),
+    activa: document.getElementById('gh-activa').checked
+  };
+  if(editGastoHId){
+    const idx=DB.gastos_herramientas.findIndex(x=>x.id===editGastoHId);
+    if(idx>=0) DB.gastos_herramientas[idx]=obj;
+  } else {
+    DB.gastos_herramientas.push(obj);
+  }
+  save(); closeGastoHerramienta(); renderGastos(); showToast('Herramienta guardada');
+}
+function editarGastoHerramienta(id){ const g=DB.gastos_herramientas.find(x=>x.id===id); if(g)openGastoHerramienta(g); }
+function eliminarGastoHerramienta(id){
+  if(confirm('¿Eliminar esta herramienta?')){
+    DB.gastos_herramientas=DB.gastos_herramientas.filter(x=>x.id!==id);
+    save(); renderGastos(); showToast('Herramienta eliminada');
+  }
+}
+
+// Gastos puntuales CRUD
+function openGastoPuntual(g){
+  editGastoPId=g?g.id:null;
+  document.getElementById('modal-gp-titulo').textContent=g?'Editar Gasto':'Nuevo Gasto Puntual';
+  const d=g||{};
+  document.getElementById('gp-desc').value=d.desc||'';
+  document.getElementById('gp-fecha').value=d.fecha||todayStr();
+  document.getElementById('gp-monto').value=d.monto||0;
+  document.getElementById('gp-categoria').value=d.categoria||'IA';
+  document.getElementById('gp-notas').value=d.notas||'';
+  document.getElementById('modal-gasto-puntual').classList.add('open');
+}
+function closeGastoPuntual(){ document.getElementById('modal-gasto-puntual').classList.remove('open'); }
+function guardarGastoPuntual(){
+  const desc=document.getElementById('gp-desc').value.trim();
+  if(!desc){alert('La descripción es obligatoria');return;}
+  const obj={
+    id: editGastoPId||('gp'+Date.now()),
+    desc,
+    fecha: document.getElementById('gp-fecha').value,
+    monto: parseFloat(document.getElementById('gp-monto').value)||0,
+    categoria: document.getElementById('gp-categoria').value,
+    notas: document.getElementById('gp-notas').value.trim()
+  };
+  if(editGastoPId){
+    const idx=DB.gastos_puntuales.findIndex(x=>x.id===editGastoPId);
+    if(idx>=0) DB.gastos_puntuales[idx]=obj;
+  } else {
+    DB.gastos_puntuales.push(obj);
+  }
+  save(); closeGastoPuntual(); renderGastos(); showToast('Gasto guardado');
+}
+function editarGastoPuntual(id){ const g=DB.gastos_puntuales.find(x=>x.id===id); if(g)openGastoPuntual(g); }
+function eliminarGastoPuntual(id){
+  if(confirm('¿Eliminar este gasto?')){
+    DB.gastos_puntuales=DB.gastos_puntuales.filter(x=>x.id!==id);
+    save(); renderGastos(); showToast('Gasto eliminado');
   }
 }
 
@@ -3197,11 +3660,20 @@ function eliminarEstadoCustom(i){
 }
 function actualizarSelectEstados(){
   const customArr = getEstadosCustom();
-  const base = ['En proceso','Pendiente','Terminado','Pagado','Cancelado'];
+  const base = ['En proceso','Pendiente','Entregado','Prepagado','Terminado','Pagado','Cancelado'];
   const sel = document.getElementById('f-estado');
   if(!sel) return;
   const curVal = sel.value;
-  sel.innerHTML = [...base, ...customArr].map(e=>`<option ${e===curVal?'selected':''}>${e}</option>`).join('');
+  const baseLabels = {
+    'En proceso':'🔵 En proceso — lo estoy haciendo',
+    'Pendiente':'🟠 Pendiente — esperando algo',
+    'Entregado':'🔷 Entregado — pendiente de pago',
+    'Prepagado':'🟡 Prepagado — pagaron adelanto, falta terminar',
+    'Terminado':'🟣 Terminado — cerrado sin cobro completo',
+    'Pagado':'🟢 Pagado — cobrado y cerrado',
+    'Cancelado':'⚫ Cancelado — no continuó'
+  };
+  sel.innerHTML = [...base, ...customArr].map(e=>`<option value="${e}" ${e===curVal?'selected':''}>${baseLabels[e]||e}</option>`).join('');
   if(!sel.value && curVal) sel.value = base[0];
 }
 
@@ -3353,9 +3825,9 @@ function buildTrackerContext(){
   const totalFact = t.reduce((a,x)=>a+(x.precio||0),0);
   const totalCob  = t.reduce((a,x)=>a+(x.cobrado||0),0);
   const saldoPend = totalFact - totalCob;
-  const activos   = t.filter(x=>x.estado==='En proceso'||x.estado==='Pendiente');
-  const vencidos  = t.filter(x=>{ const d=diffDias(x.fent); return d!==null&&d<0&&x.estado!=='Pagado'&&x.estado!=='Cancelado'; });
-  const proximos  = t.filter(x=>{ const d=diffDias(x.fent); return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado'&&x.estado!=='Cancelado'; });
+  const activos   = t.filter(x=>x.estado==='En proceso'||x.estado==='Pendiente'||x.estado==='Prepagado'||x.estado==='Entregado');
+  const vencidos  = t.filter(x=>{ const d=diffDias(x.fent); return d!==null&&d<0&&x.estado!=='Pagado'&&x.estado!=='Cancelado'&&x.estado!=='Terminado'; });
+  const proximos  = t.filter(x=>{ const d=diffDias(x.fent); return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado'&&x.estado!=='Cancelado'&&x.estado!=='Terminado'; });
   return {t, totalFact, totalCob, saldoPend, activos, vencidos, proximos, hoy};
 }
 
@@ -3403,6 +3875,7 @@ function numerosEnLetras(t){
 }
 
 // Detecta intención principal del texto — muy amplia
+// MEJORADO: más variantes orales y frases naturales
 function detectarIntencion(txt){
   const t = norm(txt);
   const tN = numerosEnLetras(t);
@@ -3412,7 +3885,7 @@ function detectarIntencion(txt){
     return 'ayuda';
 
   // Saludo / chit-chat
-  if(/^(hola|buenos dias|buenas|hey|ola|qué tal|que tal|buen dia|buenas tardes|buenas noches|hi)\b/.test(t))
+  if(/^(hola|buenos dias|buenas|hey|ola|qu[eé] tal|buen dia|buenas tardes|buenas noches|hi)\b/.test(t))
     return 'saludo';
 
   // Gracias
@@ -3423,57 +3896,136 @@ function detectarIntencion(txt){
   if(/[¿?]/.test(txt) || /^\s*(?:cuanto|cuánto|cuál|cual|qué|que|quien|quién|dame|dime|muestra|hay|tienes|tienen|como|cómo|cuales|cuántos|cuantos)\b/.test(t))
     return 'consulta';
 
-  // Crear / agendar
-  if(/\b(agrega|agregar|crea|crear|nueva|nuevo|agendame|agenda|registra(?!\s+cobro)|anota|pon|añade|ingresa|ingrese|añadir|nueva tarea|nuevo trabajo|hacer tarea)\b/.test(t))
+  // Crear / agendar — incluye formas orales como "agéndame", "ponme", "mete", "apunta"
+  if(/\b(agrega|agregar|crea|crear|nueva|nuevo|ag[eé]ndame|agenda|registra(?!\s+cobro)|anota|añade|ingresa|ingrese|añadir|nueva\s+tarea|nuevo\s+trabajo|hacer\s+tarea|ponme|apunta|ap[uú]ntame|mete|meteme|hay\s+que\s+crear|hay\s+que\s+registrar|necesito\s+(?:crear|registrar|anotar)|quiero\s+(?:agregar|registrar|crear)|agrégame|ag[ée]game)\b/.test(t))
     return 'crear';
 
   // Cobrar — solo si hay verbo de acción explícito de cobro
-  if(/\b(cobra(?!r\s+(?:cuanto|cuánto))|cobrar\s+\d|cobro de|registrar cobro|registra cobro|abono de|abona|me pagaron|pagaron|pago de|recibi|recibí|recibie)\b/.test(t))
+  if(/\b(cobra(?!r\s+(?:cuanto|cuánto))|cobrar\s+\d|cobro\s+de|registrar\s+cobro|registra\s+cobro|abono\s+de|abona|me\s+pagaron|pagaron|pago\s+de|recibi|recibí|recibie|me\s+dio|me\s+dejó|me\s+dejaron|me\s+depositó|deposit[oó])\b/.test(t))
     return 'cobrar';
 
   // Cambiar estado
-  if(/\b(cambia|cambiar|actualiza|pon estado|marca(?!\s*r)|ponlo|marcalo|cambialo|poner estado|estado a|pasar a)\b/.test(t) && !/\b(cuanto|cuánto)\b/.test(t))
+  if(/\b(cambia|cambiar|actualiza|pon\s+estado|marca(?!\s*r)|ponlo|marcalo|cambialo|poner\s+estado|estado\s+a|pasar\s+a|marcalo\s+como|ponlo\s+como)\b/.test(t) && !/\b(cuanto|cuánto)\b/.test(t))
     return 'estado';
 
   // Eliminar / borrar
-  if(/\b(elimina|eliminar|borra|borrar|quita(?!\s+cuota)|suprime|suprime|bórra|elimínalo|quítalo|borrar|borralos)\b/.test(t))
+  if(/\b(elimina|eliminar|borra|borrar|quita(?!\s+cuota)|suprime|b[oó]rra|elim[ií]nalo|qu[ií]talo|borrar|borralos|desaparece|desaparecer)\b/.test(t))
     return 'eliminar';
 
   // Buscar cliente específico
-  if(/\b(busca|buscar|muestra(?:me)?|ver|mostrar|info(?:rmacion)?|datos de|trabajos de|historial de)\b/.test(t) && extraerCliente(txt))
+  if(/\b(busca|buscar|muestra(?:me)?|ver|mostrar|info(?:rmaci[oó]n)?|datos\s+de|trabajos\s+de|historial\s+de)\b/.test(t) && extraerCliente(txt))
     return 'buscar';
 
   // Consulta por palabras clave de reporte
-  if(/\b(cuanto|cuánto|pendiente|saldo|resumen|reporte|informe|vencid|alerta|quien|deber|mes|semana|activo|listar|lista|total|cobré|cobre|proceso|pagado|cancelado|terminado|estadistica|cuotas?|plan de pago|proyeccion|proyección|deudor|distribucion|ganare|ingreso|tipo)\b/.test(t))
+  if(/\b(cuanto|cuánto|pendiente|saldo|resumen|reporte|informe|vencid|alerta|quien|deber|mes|semana|activo|listar|lista|total|cobré|cobre|proceso|pagado|cancelado|terminado|estadistica|cuotas?|plan\s+de\s+pago|proyeccion|proyección|deudor|distribucion|ganare|ingreso|tipo)\b/.test(t))
     return 'consulta';
+
+  // Si contiene precio Y nombre → probablemente es un "crear" sin verbo explícito
+  // Ej: "Sujey 40 soles transcripciones"
+  if(extraerMonto(txt) && extraerCliente(txt))
+    return 'crear';
 
   return 'desconocido';
 }
 
 // Extrae nombre de cliente con múltiples patrones y fuzzy
+// MEJORADO: acepta minúsculas, ignora títulos/tratamientos, maneja lenguaje oral
 function extraerCliente(txt){
-  const t = txt.replace(/\s+/g,' ');
-  const EXCLUIR = /^(sol|soles|cuota|cuotas|mayo|junio|julio|agosto|enero|febrero|marzo|abril|septiembre|octubre|noviembre|diciembre|dos|tres|cuatro|cinco|seis|siete|un|una|este|esa|ese|esto|eso|trabajo|tarea|el|la|lo|en|de|para|con|por|que|como)$/i;
+  // Normalizar texto conservando acentos pero sin case-sensitivity para los patrones
+  const t = txt.replace(/\s+/g,' ').trim();
+
+  // Palabras a excluir definitivamente del nombre
+  const EXCLUIR_SET = new Set([
+    'sol','soles','cuota','cuotas','pago','pagos',
+    'enero','febrero','marzo','abril','mayo','junio','julio','agosto',
+    'septiembre','octubre','noviembre','diciembre',
+    'dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez',
+    'un','una','unos','unas',
+    'este','esta','ese','esa','eso','esto','aquel','aquella',
+    'trabajo','tarea','curso','archivo','tipo','precio','monto','cobro',
+    'el','la','lo','los','las','en','de','para','con','por','que',
+    'como','al','del','se','mi','su','sus','mis',
+    'nuevo','nueva','tesis','examen','articulo','foro','ensayo',
+    'contado','cuotas','entrega','fecha','plazo','pj','poder','judicial',
+    'transcripcion','transcripciones','audiencia','audiencias','notas',
+    'soles','quinientos','cien','mil','quinientas'
+  ]);
+
+  // Títulos/tratamientos que preceden al nombre y deben saltarse
+  const TITULOS = /^(el\s+señor|la\s+señora|el\s+dr\.?|la\s+dra\.?|el\s+lic\.?|la\s+lic\.?|el\s+ing\.?|la\s+ing\.?|la\s+jueza?|el\s+juez|la\s+doctora?|el\s+doctor|el\s+abogado|la\s+abogada|señor|señora|señorita|srta?\.?|don\s+|doña\s+|dr\.?\s+|dra\.?\s+|lic\.?\s+)\s*/i;
+
+  // Función para limpiar un fragmento de nombre capturado
+  function limpiarNombre(raw){
+    // Quitar título del inicio si lo hay
+    let n = raw.replace(TITULOS,'').trim();
+    const palabras = n.split(/\s+/);
+    const validas = [];
+    for(const p of palabras){
+      const pLow = p.toLowerCase().replace(/[áéíóúü]/g, c=>({á:'a',é:'e',í:'i',ó:'o',ú:'u',ü:'u'}[c]||c));
+      if(EXCLUIR_SET.has(pLow)) break;
+      if(/^\d+$/.test(p)) break; // número → para
+      validas.push(p);
+    }
+    if(validas.length === 0) return null;
+    // Capitalizar cada palabra del nombre
+    return validas.map(p=>p.charAt(0).toUpperCase()+p.slice(1).toLowerCase()).join(' ');
+  }
+
+  // Patrones de extracción (case-insensitive, acepta min/may y títulos intermedios)
+  const PREPS = '(?:el\\s+señor|la\\s+señora|la\\s+jueza?|el\\s+juez|el\\s+dr\\.?|la\\s+dra\\.?|señor|señora|señorita|don|doña|dr\\.?|dra\\.?|lic\\.?)?\\s*';
+  const NOMBRE_PAT = '([A-ZÁÉÍÓÚÑa-záéíóúñ][a-záéíóúñ]+(?:\\s+[A-ZÁÉÍÓÚÑa-záéíóúñ][a-záéíóúñ]+){0,3})';
 
   const patrones = [
-    /\bpara\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
-    /\bcliente\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
-    /\ba\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
-    /\bde\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
-    /\bnombre\s+(?:de\s+)?([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
-    /\b(?:el trabajo de|la tarea de|info de|datos de|trabajos de|historial de)\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/,
+    new RegExp('\\bpara\\s+'+PREPS+NOMBRE_PAT,'i'),
+    new RegExp('\\bcliente\\s+'+PREPS+NOMBRE_PAT,'i'),
+    new RegExp('\\ba\\s+'+PREPS+NOMBRE_PAT,'i'),
+    new RegExp('\\bde\\s+'+PREPS+NOMBRE_PAT,'i'),
+    new RegExp('\\bnombre\\s+(?:de\\s+)?'+PREPS+NOMBRE_PAT,'i'),
+    new RegExp('\\b(?:el trabajo de|la tarea de|info de|datos de|trabajos de|historial de)\\s+'+PREPS+NOMBRE_PAT,'i'),
+    new RegExp('\\b(?:cobra(?:r)?|cobré|cobro)\\s+(?:[\\w\\s]+soles?\\s+(?:de|a)\\s+|\\d+\\s+(?:de|a)\\s+)'+NOMBRE_PAT,'i'),
   ];
+
   for(const p of patrones){
     const m = t.match(p);
     if(m && m[1]){
-      const palabras = m[1].trim().split(' ');
-      const validas = [];
-      for(const pal of palabras){
-        if(EXCLUIR.test(pal)) break;
-        validas.push(pal);
-      }
-      if(validas.length > 0) return validas.join(' ');
+      const resultado = limpiarNombre(m[1]);
+      if(resultado && resultado.length >= 2) return resultado;
     }
+  }
+
+  // Último recurso: buscar nombre propio en la BD existente dentro del texto
+  if(typeof DB !== 'undefined' && DB.trabajos && DB.trabajos.length > 0){
+    const tNorm = t.toLowerCase();
+    for(const trabajo of DB.trabajos){
+      const nombreNorm = trabajo.nombre.toLowerCase();
+      if(tNorm.includes(nombreNorm)){
+        return trabajo.nombre;
+      }
+    }
+  }
+
+  return null;
+}
+
+// Extrae monto de un SEGMENTO individual — prioriza patrones contextuales como "cobrando X"
+// Más preciso que extraerMonto para segmentos que vienen de dividir un texto largo
+function extraerMontoSegmento(txt){
+  const t = norm(txt);
+  const tN = numerosEnLetras(t);
+  let m;
+  // "S/ 900" o "s/900"
+  m = tN.match(/s\/\s*(\d+(?:[.,]\d+)?)/);
+  if(m) return parseFloat(m[1].replace(',','.'));
+  // "cobrando/cobro por/cobré X soles" — SOLO dentro del segmento
+  m = tN.match(/(?:cobrand[oa]\s+(?:por\s+)?|cobr[oé]\s+|cobro\s+(?:por\s+)?|mi\s+cobro\s+(?:es\s+)?|precio\s+(?:es\s+)?|vale\s+|cuesta\s+)(\d{2,})\b/);
+  if(m && parseFloat(m[1])>0) return parseFloat(m[1].replace(',','.'));
+  // "X soles" explícito dentro del segmento
+  m = tN.match(/(\d{2,})\s*(?:sol(?:es)?|nuevo sol(?:es)?)/);
+  if(m && parseFloat(m[1])>0) return parseFloat(m[1].replace(',','.'));
+  // Buscar número puro de 2+ dígitos solo si hay contexto de precio
+  if(/\b(sol(es)?|cobr|precio|monto|vale|pag[ao])\b/.test(tN)){
+    m = tN.match(/\b(\d{2,4})\b/);
+    if(m && parseInt(m[1])>=20) return parseInt(m[1]);
   }
   return null;
 }
@@ -3485,7 +4037,13 @@ function extraerMonto(txt){
   // "S/ 900" o "s/900"
   let m = tN.match(/s\/\s*(\d+(?:[.,]\d+)?)/);
   if(m) return parseFloat(m[1].replace(',','.'));
-  // "900 soles" / "900 sol"
+  // "cobrando/cobro/cobré X" — capturar monto después de verbo de cobro
+  m = tN.match(/(?:cobrand[oa]|cobr[oé]|cobrar|precio(?:\s+es)?|vale|cuesta|cost[oó]|pago(?:\s+total)?(?:\s+es)?|le\s+cobr[oé]?)\s+(?:[a-záéíóúñ\s]+\s+)?(\d{2,}(?:[.,]\d+)?)\b/);
+  if(m && parseFloat(m[1])>0) return parseFloat(m[1].replace(',','.'));
+  // "X soles" / "X sol" — número seguido de soles
+  m = tN.match(/(\d{2,}(?:[.,]\d+)?)\s*(?:sol(?:es)?|nuevo sol(?:es)?)/);
+  if(m && parseFloat(m[1])>0) return parseFloat(m[1].replace(',','.'));
+  // "900 soles" / genérico — número de 2+ dígitos
   m = tN.match(/(\d{2,}(?:[.,]\d+)?)\s*(?:sol(?:es)?|nuevo sol(?:es)?)?/);
   if(m && parseFloat(m[1])>0) return parseFloat(m[1].replace(',','.'));
   // Número solo seguido de "soles"
@@ -3559,36 +4117,56 @@ function extraerFechas(txt){
 }
 
 // Extrae tipo de trabajo — coincide con la lista exacta del formulario
+// MEJORADO: más sinónimos, lenguaje oral, tipos del PJ, etc.
 function extraerTipo(txt){
   const t = norm(txt);
   const tipos = [
+    // Transcripciones (nuevo)
+    {k:'transcripcion de audiencia', v:'Transcripción de Audiencias'},
+    {k:'transcripciones de audiencias', v:'Transcripción de Audiencias'},
+    {k:'transcripcion audiencia', v:'Transcripción de Audiencias'},
+    {k:'transcripciones audiencias', v:'Transcripción de Audiencias'},
+    {k:'transcripcion', v:'Transcripción de Audiencias'},
+    {k:'transcripciones', v:'Transcripción de Audiencias'},
+    // Poder Judicial / legal
+    {k:'poder judicial', v:'Trabajo Juridico PJ'},
+    {k:' pj ', v:'Trabajo Juridico PJ'},
+    // Foros
     {k:'foro de debate y argumentacion', v:'Foro de Debate y Argumentación'},
     {k:'foro de debate', v:'Foro de Debate y Argumentación'},
     {k:'foro debate', v:'Foro de Debate y Argumentación'},
     {k:'foro argumentacion', v:'Foro de Debate y Argumentación'},
     {k:'foro', v:'Foro de Debate y Argumentación'},
+    // Ensayos
     {k:'ensayo juridico', v:'Ensayo Jurídico'},
     {k:'ensayo', v:'Ensayo Jurídico'},
+    // Académico básico
     {k:'cuestionario', v:'Cuestionario'},
     {k:'examen', v:'Examen'},
+    // Tesis
     {k:'tesis de maestria', v:'Tesis de Maestría'},
     {k:'tesis maestria', v:'Tesis de Maestría'},
     {k:'maestria', v:'Tesis de Maestría'},
     {k:'tesis completa', v:'Tesis Completa'},
+    // Artículos
     {k:'articulo cientifico', v:'Artículo Científico'},
     {k:'articulo academico', v:'Artículo Académico'},
     {k:'articulo', v:'Artículo Académico'},
+    // Plagio
     {k:'reduccion de plagio', v:'Reducción de Plagio'},
     {k:'reduccion plagio', v:'Reducción de Plagio'},
     {k:'antiplagios', v:'Reducción de Plagio'},
     {k:'antiplagio', v:'Reducción de Plagio'},
     {k:'plagio', v:'Reducción de Plagio'},
+    // Titulación
     {k:'bachiller', v:'Bachiller / Titulación'},
     {k:'titulacion', v:'Bachiller / Titulación'},
+    // Soporte
     {k:'trabajo academico', v:'Trabajo Académico'},
     {k:'soporte tecnico', v:'Soporte Técnico'},
     {k:'instalacion', v:'Soporte Técnico'},
     {k:'soporte', v:'Soporte Técnico'},
+    // Tesis genérica (al final para no pisar maestría)
     {k:'tesis', v:'Tesis Completa'},
   ];
   for(const {k,v} of tipos){
@@ -3620,6 +4198,18 @@ function extraerUniversidad(txt){
     if(tUp.includes(nombre)) return sigla;
   }
   return '';
+}
+
+// Extrae etiquetas/tags mencionadas en el texto
+function extraerTagsDeTexto(txt){
+  const t = norm(txt);
+  const tags = [];
+  if(/\b(urgente|urgency|rapido|r[aá]pido|express|ya ya|cuanto antes|lo antes posible|pronto|urge)\b/.test(t)) tags.push('urgente');
+  if(/\b(vip|cliente vip|prioritario|especial|importante)\b/.test(t)) tags.push('vip');
+  if(/\b(dif[ií]cil|dificultos[ao]|complejo|complicado|pesado|duro)\b/.test(t)) tags.push('dificil');
+  if(/\b(revisi[oó]n|revisar|review|correcci[oó]n|corregir|feedback)\b/.test(t)) tags.push('revision');
+  if(/\b(express|express[ao]|super r[aá]pido|en el d[ií]a|hoy mismo|inmediato)\b/.test(t) && !tags.includes('urgente')) tags.push('express');
+  return [...new Set(tags)]; // sin duplicados
 }
 
 // Busca trabajos por nombre (fuzzy mejorado)
@@ -3684,6 +4274,147 @@ function conector(){
   return c[Math.floor(Math.random()*c.length)];
 }
 
+/* ------ DETECTOR DE MÚLTIPLES TRABAJOS ------ */
+// Detecta si el mensaje pide crear VARIOS trabajos y los divide en segmentos
+function detectarMultiplesTareas(texto){
+  const t = norm(texto);
+
+  // Señales de múltiples trabajos
+  const esMultiple =
+    // "uno ... y otro" / "una ... y otra"
+    /\bun[ao]\b.{5,200}\bel?\s+otro\b|\bun[ao]\b.{5,200}\bun[ao]\s+m[aá]s\b/i.test(texto) ||
+    // "dos tareas" / "tres trabajos" explícitos
+    /\b(dos|tres|cuatro|2|3|4)\s+(tareas?|trabajos?|encargos?)\b/i.test(t) ||
+    // "agéndame X ... y también Y"
+    /\by\s+tambi[eé]n\b/i.test(t) ||
+    // "primero ... segundo" / "1. ... 2."
+    /\b(primero|segundo|1\.|2\.)\b/i.test(t);
+
+  if(!esMultiple) return null;
+
+  // Extraer cliente global (antes de dividir los segmentos)
+  const clienteGlobal = extraerCliente(texto);
+
+  // Extraer tags globales
+  const tagsGlobales = extraerTagsDeTexto(texto);
+
+  // Intentar dividir por separadores típicos de múltiples trabajos
+  // Patrón: "uno sobre X" ... "otro para/sobre Y"
+  const SPLIT_RE = /\s+y\s+(?:el\s+)?(?:otr[ao]|tambi[eé]n|adem[aá]s|el\s+segundo|un\s+segundo)\s+/i;
+  const partes = texto.split(SPLIT_RE);
+
+  if(partes.length >= 2){
+    // Intentar extraer montos de cada segmento o del texto completo por posición
+    // Buscar todos los montos mencionados globalmente para asignarlos por orden
+    const tNorm = numerosEnLetras(norm(texto));
+    const todosMontos = [];
+    // Buscar patrones "cobrando X" o "cobro X" o "X soles" globalmente
+    const reMontoGlobal = /(?:cobrand[oa]|cobr[oé]|cobrar|precio|vale|cuesta)\s+(?:[a-záéíóúñ\s]{0,30}?\s+)?(\d{2,})\b/gi;
+    let mm;
+    while((mm = reMontoGlobal.exec(tNorm)) !== null){
+      todosMontos.push(parseInt(mm[1]));
+    }
+    // También buscar números de 2+ dígitos que parezcan precios (20-9999)
+    if(todosMontos.length === 0){
+      const rePrecio = /\b(\d{2,4})\b/g;
+      while((mm = rePrecio.exec(tNorm)) !== null){
+        const n = parseInt(mm[1]);
+        if(n >= 20 && n <= 9999) todosMontos.push(n);
+      }
+    }
+
+    return {segmentos: partes, clienteGlobal, tagsGlobales, todosMontos};
+  }
+
+  return null;
+}
+
+// Crea un trabajo a partir de un segmento de texto + cliente (si no se extrae del segmento)
+function crearTrabajoDesdSegmento(segmento, clienteFallback, tagsGlobales, montoFallback){
+  const cliente = extraerCliente(segmento) || clienteFallback;
+  if(!cliente) return null;
+
+  // Extraer monto del segmento primero, con extracción específica de "cobrando X" y "X soles"
+  let monto = extraerMontoSegmento(segmento);
+  if(!monto && montoFallback) monto = montoFallback;
+  const fechas    = extraerFechas(segmento);
+  const numCuotas = extraerNumeroCuotas(segmento);
+  const tipo      = extraerTipo(segmento);
+  const uni       = extraerUniversidad(segmento);
+  const tags      = [...new Set([...extraerTagsDeTexto(segmento), ...(tagsGlobales||[])])];
+
+  const tNorm = norm(segmento);
+  const esContadoExplicito = /\b(al\s+contado|de\s+contado|pago\s+total|un\s+solo\s+pago|un\s+pago)\b/.test(tNorm);
+  const esCuotas = !esContadoExplicito && !!(numCuotas || fechas.length >= 2 ||
+    /\b(cuotas?|pagos?|partes?|plazos?|armadas?|letras?)\b/.test(tNorm));
+
+  // Detectar si ya pagaron (prepagado)
+  const esPrepagado = /\b(ya\s+(?:me\s+)?pag[oó]|pag[oó]\s+(?:la\s+mitad|hoy|adelanto|se[ñn]a|parte)|adelanto|anticipo|prepagado|anticipo|adelanto|abono\s+inicial)\b/.test(tNorm);
+
+  // Detectar cobrado inicial (mitad hoy, etc.)
+  let cobradoInicial = 0;
+  const mMitad = tNorm.match(/(?:mitad|la\s+mitad|50%)\s+(?:hoy|ahora|de\s+entrada)/);
+  if(mMitad && monto) cobradoInicial = Math.round(monto/2);
+  const mAdelanto = numerosEnLetras(tNorm).match(/(?:ya\s+(?:me\s+)?pag[oó]|pag[oó]\s+hoy|adelanto\s+de?)\s+(\d{2,})/);
+  if(mAdelanto) cobradoInicial = parseInt(mAdelanto[1]);
+
+  let cuotasArr = [];
+  let modoPago  = 'contado';
+
+  if(esCuotas && fechas.length > 0){
+    modoPago = 'cuotas';
+    const totalCuotas = numCuotas || fechas.length;
+    const montoCuota  = monto ? Math.round(monto / totalCuotas) : 0;
+    cuotasArr = fechas.map(f => ({f, m: montoCuota, estado:'pendiente'}));
+    if(numCuotas && numCuotas > fechas.length){
+      for(let i = fechas.length; i < numCuotas; i++) cuotasArr.push({f:'', m: montoCuota, estado:'pendiente'});
+    }
+  } else if(esCuotas){
+    modoPago = 'cuotas';
+    const totalCuotas = numCuotas || 2;
+    const montoCuota  = monto ? Math.round(monto / totalCuotas) : 0;
+    cuotasArr = Array.from({length:totalCuotas}, ()=>({f:'', m:montoCuota, estado:'pendiente'}));
+  }
+
+  const hoy = todayStr();
+  // Notas: buscar descripción natural en el segmento
+  let notasExtraidas = '';
+  const mNotasMatch = segmento.match(/\b(?:son|es|trata\s+de|descripcion:|notas?:|sobre)\s+(.{5,80}?)(?:\s+(?:para|entrega|fecha|por|s\/|\d|$))/i);
+  if(mNotasMatch && mNotasMatch[1]){
+    const candidate = mNotasMatch[1].trim();
+    if(!/\b(soles?|cuota|fecha)\b/i.test(candidate) && candidate.length > 3){
+      notasExtraidas = candidate.charAt(0).toUpperCase() + candidate.slice(1);
+    }
+  }
+  if(!notasExtraidas && tipo && tipo !== 'Trabajo Académico'){
+    const palabrasNotas = tNorm.match(/\b(seminario|investigacion|derecho|internacional|privado|penal|civil|tesis|ensayo|articulo|monografia|informe|practica)\b/gi);
+    if(palabrasNotas && palabrasNotas.length > 0){
+      notasExtraidas = palabrasNotas.slice(0,3).join(' ');
+      notasExtraidas = notasExtraidas.charAt(0).toUpperCase() + notasExtraidas.slice(1);
+    }
+  }
+
+  const nuevo = {
+    id: DB.nextId++,
+    nombre: cliente,
+    cel: '', dni: '',
+    tipo, uni,
+    fenc: hoy,
+    fent: fechas.length > 0 ? fechas[fechas.length-1] : '',
+    fpago: fechas.length > 0 ? fechas[fechas.length-1] : '',
+    precio: monto || 0,
+    cobrado: cobradoInicial,
+    estado: esPrepagado && cobradoInicial > 0 ? 'Prepagado' : 'En proceso',
+    notas: notasExtraidas,
+    modoPago,
+    cuotas: cuotasArr,
+    tags: tags
+  };
+  cuotasArr.forEach((c,i)=>{ nuevo['c'+(i+1)+'f']=c.f||''; nuevo['c'+(i+1)+'m']=c.m||0; });
+  DB.trabajos.push(nuevo);
+  return nuevo;
+}
+
 /* ------ PROCESADOR PRINCIPAL ------ */
 function procesarComandoLocal(texto){
   const intencion = detectarIntencion(texto);
@@ -3703,8 +4434,10 @@ function procesarComandoLocal(texto){
   if(intencion === 'ayuda'){
     return {tipo:'html', msg:`🤖 <strong>Guía completa del Asistente</strong><br><br>
 <div class="ai-result-card">
-<div class="arc-title">📝 Crear Trabajos</div>
+<div class="arc-title">📝 Crear Trabajos — habla con naturalidad</div>
 <div class="arc-row"><span style="color:var(--text3)">Simple</span><span>"Crea tarea para Juan por quinientos soles"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Oral</span><span>"Agéndame una tarea para Sujey, 40 soles al contado, entrega el 22 de abril"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Con título</span><span>"Para la jueza Sujey, transcripciones de audiencias, 40 soles"</span></div>
 <div class="arc-row"><span style="color:var(--text3)">Con tipo</span><span>"Agrégame un ensayo jurídico para María, ochocientos soles, USS"</span></div>
 <div class="arc-row"><span style="color:var(--text3)">Con cuotas</span><span>"Agéndame tarea para Pedro, novecientos soles en tres cuotas, entrega veinte de mayo"</span></div>
 <div class="arc-row"><span style="color:var(--text3)">Con fechas</span><span>"Registra tesis para Ana, dos mil soles, cuotas 10 mayo y 10 junio"</span></div>
@@ -3712,7 +4445,14 @@ function procesarComandoLocal(texto){
 </div>
 <div class="ai-result-card" style="margin-top:8px">
 <div class="arc-title">🏷️ Tipos de trabajo que reconozco</div>
-<div class="arc-row"><span style="color:var(--text3)">Por voz</span><span>tesis, artículo científico, artículo académico, reducción de plagio, bachiller, trabajo académico, soporte técnico, tesis de maestría, ensayo jurídico, foro de debate, examen, cuestionario</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Nuevos</span><span>transcripciones de audiencias, trabajo jurídico PJ</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Académicos</span><span>tesis, artículo científico, artículo académico, reducción de plagio, bachiller, trabajo académico, soporte técnico, tesis de maestría, ensayo jurídico, foro de debate, examen, cuestionario</span></div>
+</div>
+<div class="ai-result-card" style="margin-top:8px">
+<div class="arc-title">💡 Tips para el reconocimiento de nombres</div>
+<div class="arc-row"><span style="color:var(--text3)">✅ Funciona</span><span>"para Sujey", "para la jueza Sujey", "a María López"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">⚠️ Evita</span><span>Decir solo el título sin nombre: "para la jueza" (sin nombre)</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Títulos OK</span><span>Jueza/Juez, Dr./Dra., Lic., Señor/Señora, Don/Doña</span></div>
 </div>
 <div class="ai-result-card" style="margin-top:8px">
 <div class="arc-title">💰 Cobros y Pagos</div>
@@ -3724,8 +4464,20 @@ function procesarComandoLocal(texto){
 <div class="arc-title">🔄 Cambiar Estado</div>
 <div class="arc-row"><span style="color:var(--text3)">Terminar</span><span>"Marca el trabajo de Juan como terminado"</span></div>
 <div class="arc-row"><span style="color:var(--text3)">Pagar</span><span>"Pon el trabajo de Ana como pagado"</span></div>
-<div class="arc-row"><span style="color:var(--text3)">Cancelar</span><span>"Cancela el trabajo de Pedro"</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Cancelar</span><span>"Cancela el trabajo de Pedro" (queda tachado)</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Prepagado</span><span>"El trabajo de María está prepagado" (pagaron adelanto)</span></div>
+<div class="arc-row"><span style="color:var(--text3)">Entregado</span><span>"El trabajo de Luis ya está entregado"</span></div>
 <div class="arc-row"><span style="color:var(--text3)">En proceso</span><span>"Cambia el estado de María a en proceso"</span></div>
+</div>
+<div class="ai-result-card" style="margin-top:8px">
+<div class="arc-title">🏷️ Significado de los estados</div>
+<div class="arc-row"><span style="color:#60a5fa">🔵 En proceso</span><span>Lo estoy haciendo ahora</span></div>
+<div class="arc-row"><span style="color:var(--orange)">🟠 Pendiente</span><span>Esperando algo (info, revisión, etc.)</span></div>
+<div class="arc-row"><span style="color:#22d3ee">🔷 Entregado</span><span>Ya entregué, pendiente de cobro</span></div>
+<div class="arc-row"><span style="color:#f59e0b">🟡 Prepagado</span><span>Me pagaron adelanto, todavía no termino</span></div>
+<div class="arc-row"><span style="color:#d946ef">🟣 Terminado</span><span>Cerrado pero sin cobro completo registrado</span></div>
+<div class="arc-row"><span style="color:var(--green)">🟢 Pagado</span><span>Cobrado y cerrado por completo</span></div>
+<div class="arc-row"><span style="color:#666">⚫ Cancelado</span><span>No continuó — se tacha en el registro</span></div>
 </div>
 <div class="ai-result-card" style="margin-top:8px">
 <div class="arc-title">📊 Consultas</div>
@@ -3735,20 +4487,98 @@ function procesarComandoLocal(texto){
 <div class="arc-row"><span style="color:var(--text3)">Alertas</span><span>"¿Qué trabajos vencen esta semana?"</span></div>
 <div class="arc-row"><span style="color:var(--text3)">Cliente</span><span>"Muéstrame los trabajos de Enzo"</span></div>
 <div class="arc-row"><span style="color:var(--text3)">Resumen</span><span>"Dame un resumen general"</span></div>
-<div class="arc-row"><span style="color:var(--text3)">Cuotas</span><span>"¿Qué cuotas vencen esta semana?"</span></div>
 </div>
 <div class="ai-result-card" style="margin-top:8px">
 <div class="arc-title">🗑️ Eliminar</div>
 <div class="arc-row"><span style="color:var(--text3)">Eliminar</span><span>"Elimina el trabajo de Juan"</span></div>
 </div>
-<br>💡 <em>Entiendo números en letras (novecientos → 900, dos cuotas → 2), fechas habladas (veinte de mayo, próximo lunes) y nombres completos.</em>`};
+<br>💡 <em>Entiendo: números en letras (novecientos → 900), fechas habladas (veinte de mayo, próximo lunes), nombres completos, títulos profesionales y lenguaje coloquial peruano.</em>`};
   }
 
-  // ── CREAR TRABAJO ──
+  // ── CREAR TRABAJO (simple o múltiple) ──
   if(intencion === 'crear'){
+
+    // Tags globales del mensaje completo (vip, urgente, difícil, etc.)
+    const tagsGlobales = extraerTagsDeTexto(texto);
+
+    // ── Detectar si son MÚLTIPLES trabajos ──
+    const multi = detectarMultiplesTareas(texto);
+    if(multi){
+      const {segmentos, clienteGlobal, tagsGlobales: tagsMulti, todosMontos} = multi;
+      const creados = [];
+      const fallidos = [];
+
+      // Asignar montos por segmento: extraer de cada uno con extraerMontoSegmento
+      // Solo usar pool global como último recurso si el segmento no tiene precio propio
+      const montosPool = (todosMontos && todosMontos.length > 0) ? [...todosMontos] : [];
+
+      for(let si = 0; si < segmentos.length; si++){
+        const seg = segmentos[si];
+        if(seg.trim().length < 5) continue;
+        // Extraer monto directamente del segmento (más preciso)
+        const montoSeg = extraerMontoSegmento(seg);
+        // Solo usar fallback del pool si el segmento no tiene precio propio
+        const montoFallback = (!montoSeg && montosPool.length > 0) ? montosPool.shift() : null;
+        const t = crearTrabajoDesdSegmento(seg, clienteGlobal, tagsMulti || tagsGlobales, montoFallback);
+        if(t) creados.push(t);
+        else fallidos.push(seg.trim().substring(0,60));
+      }
+
+      if(creados.length === 0){
+        return {tipo:'error', msg:`⚠️ Detecté que querías crear varios trabajos, pero no pude identificar los datos suficientes.<br><br>Prueba separando cada trabajo claramente:<br><em>"Agéndame dos tareas para <strong>Karol</strong>:<br>Uno: seminario de investigación, 90 soles, entrega 10 de mayo<br>Dos: derecho internacional privado, ensayo jurídico, 65 soles en dos cuotas"</em>`};
+      }
+
+      save(); renderAll();
+
+      // Construir respuesta con resumen de cada trabajo creado
+      let resumen = `✅ <strong>¡Listo! ${creados.length} trabajo${creados.length>1?'s':''} creado${creados.length>1?'s':''} exitosamente</strong><br><br>`;
+      const TAG_ICONS = {urgente:'🔥',vip:'⭐',dificil:'💀',revision:'🔍',express:'⚡'};
+
+      creados.forEach((n, i) => {
+        const tagsHtml = (n.tags&&n.tags.length>0)
+          ? '<br>'+n.tags.map(tg=>`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--bg4);color:var(--text2);border:1px solid var(--border2)">${TAG_ICONS[tg]||''}${tg}</span>`).join(' ')
+          : '';
+        resumen += `<div class="ai-result-card" style="margin-bottom:8px">
+  <div class="arc-title">Trabajo #${n.id} — ${i+1}/${creados.length}</div>
+  <div class="arc-row"><span>Cliente</span><span><strong>${n.nombre}</strong></span></div>
+  <div class="arc-row"><span>Tipo</span><span>${n.tipo}</span></div>
+  ${n.uni ? `<div class="arc-row"><span>Universidad</span><span>${n.uni}</span></div>` : ''}
+  <div class="arc-row"><span>Precio</span><span style="color:var(--accent3);font-weight:700">${fmtS(n.precio||0)}</span></div>
+  <div class="arc-row"><span>Modalidad</span><span>${n.modoPago==='cuotas'?'📅 En Cuotas':'💵 Al Contado'}</span></div>
+  ${n.fent ? `<div class="arc-row"><span>F. Entrega</span><span>${fmtFechaTxt(n.fent)}</span></div>` : ''}
+  ${n.notas ? `<div class="arc-row"><span>Notas</span><span style="color:var(--text3)">${n.notas}</span></div>` : ''}
+  ${tagsHtml ? `<div class="arc-row"><span>Etiquetas</span><span>${tagsHtml}</span></div>` : ''}
+</div>`;
+        if(n.cuotas && n.cuotas.length > 0){
+          resumen += `<div style="padding:4px 0 8px 8px;font-size:11px">📅 <strong>${n.cuotas.length} cuota(s):</strong> `;
+          resumen += n.cuotas.map((c,ci)=>`Cuota ${ci+1}: ${fmtSRaw(c.m)}${c.f?' — '+fmtFechaTxt(c.f):''}`).join(' &nbsp;|&nbsp; ');
+          resumen += '</div>';
+        }
+      });
+
+      if(fallidos.length > 0){
+        resumen += `<br>⚠️ <em>No pude procesar ${fallidos.length} segmento(s). Puedes agregarlos manualmente.</em>`;
+      }
+
+      return {tipo:'html', msg: resumen};
+    }
+
+    // ── Trabajo ÚNICO ──
     const cliente = extraerCliente(texto);
     if(!cliente){
-      return {tipo:'error', msg:'⚠️ No pude identificar el nombre del cliente.<br><br>Prueba así: <em>"Crear tarea para <strong>Juan</strong> por 900 soles"</em><br>O: <em>"Agéndame una tarea para <strong>María López</strong>"</em>'};
+      const montoDetectado = extraerMonto(texto);
+      const tipoDetectado  = extraerTipo(texto);
+      const fechaDetectada = extraerFechas(texto);
+      let pistas = '';
+      if(montoDetectado) pistas += `<br>💰 Monto detectado: <strong>S/${montoDetectado}</strong>`;
+      if(tipoDetectado && tipoDetectado !== 'Trabajo Académico') pistas += `<br>📋 Tipo detectado: <strong>${tipoDetectado}</strong>`;
+      if(fechaDetectada.length>0) pistas += `<br>📅 Fecha detectada: <strong>${fechaDetectada[0]}</strong>`;
+      return {tipo:'error', msg:`⚠️ No pude identificar el nombre del cliente.${pistas}<br><br>
+Prueba siendo más directo con el nombre:<br>
+<em>"Crea tarea para <strong>Sujey</strong> por 40 soles"</em><br>
+<em>"Agéndame tarea para <strong>María López</strong>"</em><br>
+<em>"Registra trabajo a <strong>Juan</strong>, 500 soles"</em><br><br>
+💡 <em>Si el nombre tiene título (Jueza, Dr., etc.) ponlo antes del nombre: "para la jueza <strong>Sujey</strong>"</em>`};
     }
     const monto  = extraerMonto(texto);
     const fechas = extraerFechas(texto);
@@ -3757,7 +4587,8 @@ function procesarComandoLocal(texto){
     const uni    = extraerUniversidad(texto);
 
     const tNorm = norm(texto);
-    const esCuotas = !!(numCuotas || fechas.length >= 2 ||
+    const esContadoExplicito = /\b(al\s+contado|de\s+contado|pago\s+total|un\s+solo\s+pago|un\s+pago)\b/.test(tNorm);
+    const esCuotas = !esContadoExplicito && !!(numCuotas || fechas.length >= 2 ||
       /\b(cuotas?|pagos?|partes?|plazos?|armadas?|letras?)\b/.test(tNorm));
 
     let cuotasArr = [];
@@ -3769,9 +4600,7 @@ function procesarComandoLocal(texto){
       const montoCuota  = monto ? Math.round(monto / totalCuotas) : 0;
       cuotasArr = fechas.map(f => ({f, m: montoCuota, estado:'pendiente'}));
       if(numCuotas && numCuotas > fechas.length){
-        for(let i = fechas.length; i < numCuotas; i++){
-          cuotasArr.push({f:'', m: montoCuota, estado:'pendiente'});
-        }
+        for(let i = fechas.length; i < numCuotas; i++) cuotasArr.push({f:'', m: montoCuota, estado:'pendiente'});
       }
     } else if(esCuotas){
       modoPago = 'cuotas';
@@ -3781,6 +4610,39 @@ function procesarComandoLocal(texto){
     }
 
     const hoy = todayStr();
+
+    let notasExtraidas = '';
+    const mNotasMatch = texto.match(/\b(?:son|es|trata\s+de|descripcion:|notas?:|sobre)\s+(.{5,80}?)(?:\s+(?:para|entrega|fecha|por|s\/|\d|$))/i);
+    if(mNotasMatch && mNotasMatch[1]){
+      const candidate = mNotasMatch[1].trim();
+      if(!/\b(soles?|cuota|fecha)\b/i.test(candidate) && candidate.length > 3)
+        notasExtraidas = candidate.charAt(0).toUpperCase() + candidate.slice(1);
+    }
+
+    // Detectar si ya pagaron adelanto/señal
+    const tNorm2 = norm(texto);
+    const esPrepagado = /\b(ya\s+(?:me\s+)?pag[oó]|pag[oó]\s+(?:la\s+mitad|hoy|adelanto|se[ñn]a|parte)|adelanto|anticipo|prepagado|anticipo|adelanto|abono\s+inicial)\b/.test(tNorm2);
+
+    // Calcular cobrado inicial si mencionan "mitad hoy" o un valor específico adelantado
+    let cobradoInicial = 0;
+    const mMitadHoy = tNorm2.match(/(?:la\s+mitad|mitad)\s+(?:hoy|ahora|de\s+entrada|al\s+inicio)/);
+    if(mMitadHoy && monto) cobradoInicial = Math.round(monto/2);
+    const tNorm2N = numerosEnLetras(tNorm2);
+    const mAdelantoVal = tNorm2N.match(/(?:ya\s+(?:me\s+)?pag[oó]|pag[oó]\s+hoy|adelanto\s+(?:de\s+)?|se[ñn]a\s+(?:de\s+)?)(\d{2,})/);
+    if(mAdelantoVal) cobradoInicial = parseInt(mAdelantoVal[1]);
+
+    // Detectar recordatorio ("anota recordatorio un día antes", etc.)
+    let reminderDate = '';
+    let reminderText = 'Revisar trabajo antes de entrega';
+    const mRecordatorio = tNorm2.match(/\b(?:recordatorio|aviso|recuerda(?:me)?|alerta)[\s\w]*(?:(\d+)\s*d[ií]as?\s+antes|un\s+d[ií]a\s+antes|el\s+d[ií]a\s+anterior)/i);
+    if(mRecordatorio && fechas.length > 0){
+      const diasAntes = mRecordatorio[1] ? parseInt(mRecordatorio[1]) : 1;
+      const fEntrega = new Date(fechas[fechas.length-1]+'T12:00:00');
+      fEntrega.setDate(fEntrega.getDate() - diasAntes);
+      reminderDate = fEntrega.toISOString().slice(0,10);
+      reminderText = `Revisar y tener listo — entrega en ${diasAntes} día(s)`;
+    }
+
     const nuevo = {
       id: DB.nextId++,
       nombre: cliente,
@@ -3790,28 +4652,41 @@ function procesarComandoLocal(texto){
       fent: fechas.length > 0 ? fechas[fechas.length-1] : '',
       fpago: fechas.length > 0 ? fechas[fechas.length-1] : '',
       precio: monto || 0,
-      cobrado: 0,
-      estado: 'En proceso',
-      notas: '',
+      cobrado: cobradoInicial,
+      estado: (esPrepagado && cobradoInicial > 0) ? 'Prepagado' : 'En proceso',
+      notas: notasExtraidas,
       modoPago,
-      cuotas: cuotasArr
+      cuotas: cuotasArr,
+      tags: tagsGlobales,
+      reminderDate,
+      reminderText
     };
     cuotasArr.forEach((c,i)=>{ nuevo['c'+(i+1)+'f']=c.f||''; nuevo['c'+(i+1)+'m']=c.m||0; });
     DB.trabajos.push(nuevo);
     save(); renderAll();
 
+    const TAG_ICONS2 = {urgente:'🔥',vip:'⭐',dificil:'💀',revision:'🔍',express:'⚡'};
+    const tagsHtmlSingle = (tagsGlobales.length>0)
+      ? '<div class="arc-row"><span>Etiquetas</span><span>'+tagsGlobales.map(tg=>`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--bg4);color:var(--text2);border:1px solid var(--border2)">${TAG_ICONS2[tg]||''}${tg}</span>`).join(' ')+'</span></div>'
+      : '';
+
     const CONECTORES_OK = ['¡Listo!','¡Claro!','¡Enseguida!','¡Hecho!','¡Ya está!'];
-    const conector = CONECTORES_OK[Math.floor(Math.random()*CONECTORES_OK.length)];
-    let resumen = `✅ <strong>${conector} Tarea creada exitosamente</strong>
+    const conectorOK = CONECTORES_OK[Math.floor(Math.random()*CONECTORES_OK.length)];
+    let resumen = `✅ <strong>${conectorOK} Tarea creada exitosamente</strong>
 <div class="ai-result-card">
   <div class="arc-title">Nuevo Trabajo #${nuevo.id}</div>
   <div class="arc-row"><span>Cliente</span><span><strong>${nuevo.nombre}</strong></span></div>
   <div class="arc-row"><span>Tipo</span><span>${nuevo.tipo}</span></div>
   ${uni ? `<div class="arc-row"><span>Universidad</span><span>${uni}</span></div>` : ''}
   <div class="arc-row"><span>Precio</span><span style="color:var(--accent3)"><strong>${fmtS(nuevo.precio||0)}</strong></span></div>
+  ${cobradoInicial>0?`<div class="arc-row"><span>Adelanto registrado</span><span style="color:var(--green)"><strong>${fmtS(cobradoInicial)}</strong></span></div>`:''}
+  ${cobradoInicial>0?`<div class="arc-row"><span>Saldo pendiente</span><span style="color:var(--red)">${fmtS((monto||0)-cobradoInicial)}</span></div>`:''}
   <div class="arc-row"><span>Modalidad</span><span>${modoPago==='cuotas'?'📅 En Cuotas':'💵 Al Contado'}</span></div>
   ${nuevo.fent ? `<div class="arc-row"><span>F. Entrega</span><span>${fmtFechaTxt(nuevo.fent)}</span></div>` : ''}
-  <div class="arc-row"><span>Estado</span><span>🔵 ${nuevo.estado}</span></div>
+  ${notasExtraidas ? `<div class="arc-row"><span>Notas</span><span style="color:var(--text3)">${notasExtraidas}</span></div>` : ''}
+  ${tagsHtmlSingle}
+  <div class="arc-row"><span>Estado</span><span>${pillEstado(nuevo.estado)}</span></div>
+  ${reminderDate?`<div class="arc-row"><span>🔔 Recordatorio</span><span style="color:var(--accent3)">${fmtFechaTxt(reminderDate)} — ${reminderText}</span></div>`:''}
 </div>`;
     if(cuotasArr.length > 0){
       resumen += `<br>📅 <strong>${cuotasArr.length} cuota(s) programada(s):</strong><br>`;
@@ -3900,16 +4775,18 @@ ${saldoNuevo<=0?'<br>🎉 <strong>¡Trabajo completamente pagado!</strong>':''}`
 
   // ── CAMBIAR ESTADO ──
   if(intencion === 'estado'){
-    const estadosList = ['En proceso','Pendiente','Terminado','Pagado','Cancelado'];
+    const estadosList = ['En proceso','Pendiente','Entregado','Prepagado','Terminado','Pagado','Cancelado'];
     let estadoNuevo = null;
     for(const e of estadosList){
       if(tn.includes(norm(e))){ estadoNuevo = e; break; }
     }
     if(/\b(pagad[oa]|pago completo)\b/.test(tn)) estadoNuevo = 'Pagado';
     // Detectores adicionales de estado por lenguaje natural
-    if(/\b(cancel[ao]|cancelad[oa])\b/.test(tn)) estadoNuevo = 'Cancelado';
-    if(/\b(terminad[oa]|complet[ao]|listo|entregad[oa]|finaliz)\b/.test(tn)) estadoNuevo = 'Terminado';
+    if(/\b(cancel[ao]|cancelad[oa]|no\s+continu[oó]|no\s+quiso|no\s+jal[oó])\b/.test(tn)) estadoNuevo = 'Cancelado';
+    if(/\b(terminad[oa]|complet[ao]|listo|finaliz)\b/.test(tn)) estadoNuevo = 'Terminado';
+    if(/\b(entregad[oa]|ya lo entregu[eé]|ya entregu[eé])\b/.test(tn)) estadoNuevo = 'Entregado';
     if(/\b(pagad[oa]|cobrad[oa]|saldad[oa])\b/.test(tn)) estadoNuevo = 'Pagado';
+    if(/\b(prepagad[oa]|se[ñn]a|anticip[ao]|adelant[ao]\s+pago|ya\s+pag[oó]\s+parte)\b/.test(tn)) estadoNuevo = 'Prepagado';
     if(/\b(en proceso|activo|retom[ao]|reanudar)\b/.test(tn)) estadoNuevo = 'En proceso';
     if(/\b(pendiente|en espera|pausad[oa])\b/.test(tn) && !estadoNuevo) estadoNuevo = 'Pendiente';
 
@@ -3919,7 +4796,7 @@ ${saldoNuevo<=0?'<br>🎉 <strong>¡Trabajo completamente pagado!</strong>':''}`
       return {tipo:'error', msg:'⚠️ No encontré el cliente. Indica el nombre claramente:<br><em>"Cambia el estado de <strong>Juan</strong> a Pagado"</em><br><em>"Marca el trabajo de <strong>María</strong> como terminado"</em>'};
     }
     if(!estadoNuevo){
-      return {tipo:'error', msg:`⚠️ No identifiqué el nuevo estado para <strong>${t.nombre}</strong>.<br>Estados disponibles: <strong>En proceso</strong>, <strong>Pendiente</strong>, <strong>Terminado</strong>, <strong>Pagado</strong>, <strong>Cancelado</strong>.`};
+      return {tipo:'error', msg:`⚠️ No identifiqué el nuevo estado para <strong>${t.nombre}</strong>.<br>Estados disponibles: <strong>En proceso</strong>, <strong>Pendiente</strong>, <strong>Entregado</strong>, <strong>Prepagado</strong>, <strong>Terminado</strong>, <strong>Pagado</strong>, <strong>Cancelado</strong>.`};
     }
     const antes = t.estado;
     t.estado = estadoNuevo;
@@ -3959,7 +4836,7 @@ ${saldoNuevo<=0?'<br>🎉 <strong>¡Trabajo completamente pagado!</strong>':''}`
     '"Cobré [monto] soles de [nombre]"',
     '"¿Cuánto tengo pendiente de cobrar?"',
     '"Muéstrame los trabajos de [nombre]"',
-    '"Cambia el estado de [nombre] a Terminado"',
+    '"Cambia el estado de [nombre] a Terminado" / "Marca como Entregado"',
     '"¿Qué puedes hacer?" para ver toda la guía',
   ];
   return {tipo:'html', msg:`🤔 No entendí bien esa instrucción. Intenta con alguna de estas:<br><br>${sugerencias.map(s=>`• <em>${s}</em>`).join('<br>')}<br><br>También puedes tocar <strong>"❓ Ayuda completa"</strong> para ver todos los comandos.`};
@@ -4026,6 +4903,35 @@ function generarRespuestaConsulta(texto){
     return {tipo:'html', msg: resp};
   }
 
+  // Prepagados / adelantos
+  if(/\b(prepagad[oa]|se[ñn]a|anticipo|adelanto|ya\s+pag|pagaron\s+parte)\b/.test(tn)){
+    const prepagados = DB.trabajos.filter(x=>x.estado==='Prepagado');
+    if(prepagados.length === 0){
+      return {tipo:'html', msg:`🟡 ${conector()}, no tienes trabajos en estado Prepagado actualmente. Los trabajos Prepagados son los que tienen un adelanto/señal pero aún no están terminados.`};
+    }
+    let resp = `🟡 <strong>${conector()}, tienes ${prepagados.length} trabajo${prepagados.length>1?'s':''} prepagado${prepagados.length>1?'s':''}:</strong><br><br>`;
+    let totalAdel=0, totalPend=0;
+    prepagados.forEach(x=>{
+      const sal=(x.precio||0)-(x.cobrado||0);
+      totalAdel+=(x.cobrado||0); totalPend+=sal;
+      resp+=`<div class="ai-result-card" style="margin-bottom:6px">
+        <div class="arc-row"><span>${x.nombre}</span><span>${pillEstado(x.estado)}</span></div>
+        <div class="arc-row"><span>Tipo</span><span>${x.tipo}</span></div>
+        <div class="arc-row"><span>Precio total</span><span>${fmtSRaw(x.precio||0)}</span></div>
+        <div class="arc-row"><span>Adelanto cobrado</span><span style="color:var(--green)">${fmtSRaw(x.cobrado||0)}</span></div>
+        <div class="arc-row"><span>Saldo pendiente</span><span style="color:var(--red)">${fmtSRaw(sal)}</span></div>
+        ${x.fent?`<div class="arc-row"><span>Entrega</span><span>${fmtFechaTxt(x.fent)}</span></div>`:''}
+      </div>`;
+    });
+    if(prepagados.length>1){
+      resp+=`<div class="ai-result-card" style="background:var(--bg4)">
+        <div class="arc-row"><span>Total adelantos cobrados</span><span style="color:var(--green)">${fmtSRaw(totalAdel)}</span></div>
+        <div class="arc-row"><span>Total pendiente por cobrar</span><span style="color:var(--red)">${fmtSRaw(totalPend)}</span></div>
+      </div>`;
+    }
+    return {tipo:'html', msg: resp};
+  }
+
   // Saldo / pendiente / cobrar
   if(/\b(saldo|pendiente|cobrar|debo|cobr|cuanto\s+me|cuanto\s+falta|cuanto\s+queda)\b/.test(tn)){
     const otrosPend = DB.ingresos.reduce((a,x)=>a+(x.monto-x.cobrado||0),0);
@@ -4081,6 +4987,7 @@ function generarRespuestaConsulta(texto){
   if(/\b(resumen|activos|lista|listar|todos|general|cuantos\s+(?:trabajo|registro)|mis\s+trabajo|total\s+de\s+trabajo)\b/.test(tn)){
     const pagados = t.filter(x=>x.estado==='Pagado').length;
     const terminados = t.filter(x=>x.estado==='Terminado').length;
+  const entregadosAI = t.filter(x=>x.estado==='Entregado').length;
     const enProceso = t.filter(x=>x.estado==='En proceso').length;
     const pendientes = t.filter(x=>x.estado==='Pendiente').length;
     const cancelados = t.filter(x=>x.estado==='Cancelado').length;
@@ -4092,6 +4999,7 @@ function generarRespuestaConsulta(texto){
   <div class="arc-row"><span>🔵 En proceso</span><span>${enProceso}</span></div>
   <div class="arc-row"><span>🟠 Pendientes</span><span>${pendientes}</span></div>
   <div class="arc-row"><span>🟣 Terminados</span><span>${terminados}</span></div>
+  <div class="arc-row"><span>📦 Entregados (por cobrar)</span><span style="color:#22d3ee">${entregadosAI}</span></div>
   <div class="arc-row"><span>🟢 Pagados</span><span style="color:var(--green)">${pagados}</span></div>
   <div class="arc-row"><span>⚫ Cancelados</span><span style="color:var(--text3)">${cancelados}</span></div>
 </div>
@@ -4702,7 +5610,7 @@ function abrirQR(){
   renderBackupHistory();
   const qrWrap = document.getElementById('qr-canvas-wrap');
   if(qrWrap){
-    const url = location.href.split('?')[0];
+    const url = 'https://socminyorvinbru-ship-it.github.io/tracker-academico/index.html';
     qrWrap.innerHTML = '';
     // Load qrcode.js if not already loaded
     function renderQR(){
@@ -4717,11 +5625,6 @@ function abrirQR(){
           correctLevel: QRCode.CorrectLevel.H
         });
         qrDiv.style.cssText = 'background:#fff;border-radius:12px;padding:12px;display:inline-block;border:4px solid var(--accent)';
-        // URL label below
-        const urlLabel = document.createElement('div');
-        urlLabel.style.cssText = 'font-size:10px;color:var(--text3);word-break:break-all;max-width:220px;text-align:center;margin-top:8px;padding:6px 8px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)';
-        urlLabel.textContent = url;
-        qrWrap.appendChild(urlLabel);
         const copyBtn = document.createElement('button');
         copyBtn.className = 'btn btn-ghost btn-sm';
         copyBtn.style.cssText = 'margin-top:8px;font-size:11px';
@@ -5253,7 +6156,7 @@ function abrirPlantillasDesdeModal(){
 // ===================== GOOGLE DRIVE =====================
 const DRIVE = {
   CLIENT_ID: localStorage.getItem('drive_client_id') || '',
-  SCOPES: 'https://www.googleapis.com/auth/drive.file',
+  SCOPES: 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file',
   TOKEN_KEY: 'drive_access_token',
   TOKEN_EXP_KEY: 'drive_token_exp',
   USER_KEY: 'drive_user',
@@ -5472,6 +6375,12 @@ function updateDriveStatusUI(){
   } else {
     btn.className='drive-status';
     txt.textContent='Drive';
+  }
+  // Actualizar botón Drive en header
+  const hdrBtn = document.getElementById('drive-header-btn');
+  if(hdrBtn){
+    hdrBtn.title = DRIVE.isConnected ? '✅ Drive conectado' : '☁️ Conectar Google Drive';
+    hdrBtn.style.color = DRIVE.isConnected ? 'var(--green)' : '';
   }
 }
 
@@ -5770,143 +6679,361 @@ if('serviceWorker' in navigator){
 </script>
 
 <script>
-// ===== VISTA ARCHIVOS DRIVE =====
+// ===== VISTA ARCHIVOS DRIVE — NUEVO SISTEMA =====
+
+var _afCurrentId = null;
+
+function iconoTipoArchivo(tipo){
+  if(!tipo) return '📄';
+  var t = tipo.toLowerCase();
+  if(t.includes('tesis')) return '🎓';
+  if(t.includes('maestr')) return '🏛️';
+  if(t.includes('monograf')) return '📖';
+  if(t.includes('ensayo')) return '✍️';
+  if(t.includes('informe')||t.includes('practic')) return '📋';
+  if(t.includes('artículo')||t.includes('articulo')||t.includes('paper')||t.includes('científ')||t.includes('cientif')) return '🔬';
+  if(t.includes('transcript')) return '🎙️';
+  if(t.includes('foro')||t.includes('debate')) return '💬';
+  if(t.includes('derecho')||t.includes('jurídic')||t.includes('juridic')||t.includes('legal')) return '⚖️';
+  if(t.includes('examen')||t.includes('cuestion')) return '📝';
+  if(t.includes('soporte')||t.includes('técnico')||t.includes('tecnico')) return '💻';
+  return '📄';
+}
+
+function escHtmlAr(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtArchivoFecha(f){
+  if(!f) return '';
+  var parts = f.split('-');
+  if(parts.length < 3) return f;
+  var meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return parseInt(parts[2])+' '+meses[parseInt(parts[1])-1];
+}
+
 function renderArchivos() {
   var el = document.getElementById('archivos-content');
   if (!el) return;
 
-  // Todos los trabajos que tienen driveDocUrl
-  var conDrive = DB.trabajos.filter(function(t){ return t.driveDocUrl; });
-  var sinDrive  = DB.trabajos.filter(function(t){ return !t.driveDocUrl; });
-  var q = (document.getElementById('archivos-search-input') ? document.getElementById('archivos-search-input').value : '').toLowerCase();
-  if(q) conDrive = conDrive.filter(function(t){ return t.nombre.toLowerCase().includes(q) || (t.tipo||'').toLowerCase().includes(q); });
+  var q = '';
+  var qEl = document.getElementById('archivos-search-input');
+  if(qEl) q = (qEl.value||'').toLowerCase();
 
-  var iconoTipo = function(tipo){
-    if(!tipo) return '📄';
-    var t = tipo.toLowerCase();
-    if(t.includes('tesis')) return '🎓';
-    if(t.includes('monograf')) return '📖';
-    if(t.includes('ensayo')) return '✍️';
-    if(t.includes('informe')||t.includes('practic')) return '📋';
-    if(t.includes('artículo')||t.includes('articulo')||t.includes('paper')) return '🔬';
-    return '📄';
-  };
+  var todos = DB.trabajos.slice();
+  var filtrados = todos;
+  if(q) filtrados = filtrados.filter(function(t){
+    return (t.nombre||'').toLowerCase().includes(q) ||
+           (t.tipo||'').toLowerCase().includes(q) ||
+           (t.uni||'').toLowerCase().includes(q);
+  });
+
+  filtrados.sort(function(a,b){
+    var aL = !!(a.archivoLink); var bL = !!(b.archivoLink);
+    if(aL !== bL) return bL ? 1 : -1;
+    return b.id - a.id;
+  });
+
+  var conLink = todos.filter(function(t){ return t.archivoLink; }).length;
+  var sinLink = todos.length - conLink;
 
   var html = '';
 
-  // Header
   html += '<div class="archivos-header">';
   html += '<div><div class="archivos-title">📁 Archivos Drive</div>';
-  html += '<div class="archivos-subtitle">Carpetas y documentos creados automáticamente</div></div>';
-  if(DRIVE.isConnected) {
-    html += '<button class="btn btn-ghost btn-sm" onclick="renderArchivos()" style="color:var(--accent3)">↻ Actualizar</button>';
-  }
+  html += '<div class="archivos-subtitle">Todos tus trabajos — configura el enlace a Drive en cada uno</div></div>';
+  html += '<button class="btn btn-ghost btn-sm" onclick="renderArchivos()" style="color:var(--accent3)">↻</button>';
   html += '</div>';
 
-  // Buscador
-  html += '<input class="archivos-search" id="archivos-search-input" placeholder="🔍 Buscar por cliente o tipo..." oninput="renderArchivos()" value="'+q+'">';
+  html += '<div class="archivos-toolbar">';
+  html += '<input class="archivos-search" id="archivos-search-input" placeholder="🔍 Buscar por nombre, tipo o universidad..." oninput="renderArchivos()" value="'+escHtmlAr(q)+'">';
+  html += '</div>';
 
-  // Drive no conectado
-  if(!DRIVE.isConnected) {
-    html += '<div class="archivo-no-drive">';
-    html += '<div style="font-size:40px;margin-bottom:12px">🔗</div>';
-    html += '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">Drive no conectado</div>';
-    html += '<div style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.6">Conecta tu Google Drive para ver y acceder a todas las carpetas de tus trabajos.</div>';
-    html += '<button class="btn btn-primary" onclick="abrirDrive()">Conectar Drive</button>';
-    html += '</div>';
-  }
-
-  // Stats
   html += '<div class="archivos-stats">';
-  html += '<div class="archivo-stat"><div class="archivo-stat-val">'+conDrive.length+'</div><div class="archivo-stat-label">Con carpeta</div></div>';
-  html += '<div class="archivo-stat"><div class="archivo-stat-val" style="color:var(--yellow)">'+sinDrive.length+'</div><div class="archivo-stat-label">Sin carpeta</div></div>';
-  html += '<div class="archivo-stat"><div class="archivo-stat-val" style="color:var(--green)">'+DB.trabajos.length+'</div><div class="archivo-stat-label">Total</div></div>';
+  html += '<div class="archivo-stat"><div class="archivo-stat-val" style="color:var(--green)">'+conLink+'</div><div class="archivo-stat-label">Con enlace</div></div>';
+  html += '<div class="archivo-stat"><div class="archivo-stat-val" style="color:var(--yellow)">'+sinLink+'</div><div class="archivo-stat-label">Sin enlace</div></div>';
+  html += '<div class="archivo-stat"><div class="archivo-stat-val">'+todos.length+'</div><div class="archivo-stat-label">Total trabajos</div></div>';
   html += '</div>';
 
-  // Lista de archivos con Drive
-  if(conDrive.length > 0) {
-    html += '<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Con carpeta en Drive ('+conDrive.length+')</div>';
-    conDrive.forEach(function(t){
-      var saldo = (t.precio||0)-(t.cobrado||0);
-      var saldoColor = saldo > 0 ? 'color:var(--red)' : 'color:var(--green)';
-      var saldoTxt   = saldo > 0 ? 'Debe S/'+saldo : 'Pagado';
-      html += '<div class="archivo-card">';
-      html += '<div class="archivo-icon">'+iconoTipo(t.tipo)+'</div>';
-      html += '<div class="archivo-info">';
-      html += '<div class="archivo-nombre">'+t.nombre+'</div>';
-      html += '<div class="archivo-meta">';
-      html += '<span>📋 '+(t.tipo||'Trabajo')+'</span>';
-      if(t.uni) html += '<span>🏫 '+t.uni+'</span>';
-      html += '<span style="'+saldoColor+'">💰 '+saldoTxt+'</span>';
-      html += '</div>';
-      if(t.driveCarpetaNombre) html += '<div style="font-size:10px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📂 '+t.driveCarpetaNombre+'</div>';
-      html += '</div>';
-      html += '<div class="archivo-actions">';
-      html += '<button class="btn btn-primary btn-sm" onclick="window.open(''+t.driveDocUrl+'','_blank')" title="Abrir documento">📄 Doc</button>';
-      if(t.driveCarpetaUrl) html += '<button class="btn btn-ghost btn-sm" onclick="window.open(''+t.driveCarpetaUrl+'','_blank')" title="Abrir carpeta" style="color:#34a853">📂</button>';
-      html += '</div>';
-      html += '</div>';
-    });
-  }
+  if(filtrados.length === 0){
+    if(todos.length === 0){
+      html += '<div class="archivos-empty"><div class="archivos-empty-icon">📁</div>';
+      html += '<div class="archivos-empty-title">Aún no hay trabajos</div>';
+      html += '<div class="archivos-empty-desc">Crea tu primer trabajo en Registro o con el Asistente Offline y aparecerá aquí automáticamente.</div></div>';
+    } else {
+      html += '<div class="archivos-empty"><div class="archivos-empty-icon">🔍</div>';
+      html += '<div class="archivos-empty-title">Sin resultados</div>';
+      html += '<div class="archivos-empty-desc">No encontré trabajos que coincidan con <em>"'+escHtmlAr(q)+'"</em></div></div>';
+    }
+  } else {
+    var conLinkArr = filtrados.filter(function(t){ return t.archivoLink; });
+    var sinLinkArr = filtrados.filter(function(t){ return !t.archivoLink; });
 
-  // Trabajos sin Drive
-  if(sinDrive.length > 0 && !q) {
-    html += '<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">Sin carpeta aún ('+sinDrive.length+')</div>';
-    sinDrive.slice(0, 5).forEach(function(t){
-      html += '<div class="archivo-card" style="opacity:.6;border-style:dashed">';
-      html += '<div class="archivo-icon" style="opacity:.5">'+iconoTipo(t.tipo)+'</div>';
-      html += '<div class="archivo-info">';
-      html += '<div class="archivo-nombre">'+t.nombre+'</div>';
-      html += '<div class="archivo-meta"><span>📋 '+(t.tipo||'Trabajo')+'</span></div>';
-      html += '</div>';
-      if(DRIVE.isConnected) {
-        html += '<button class="btn btn-ghost btn-sm" style="font-size:10px;color:var(--accent3);flex-shrink:0" onclick="crearCarpetaManual('+t.id+')">📂 Crear</button>';
-      }
-      html += '</div>';
-    });
-    if(sinDrive.length > 5) html += '<div style="text-align:center;font-size:11px;color:var(--text3);padding:8px">... y '+(sinDrive.length-5)+' más sin carpeta</div>';
-  }
-
-  if(conDrive.length === 0 && !DRIVE.isConnected) {
-    // already shown connect message
-  } else if(conDrive.length === 0 && q) {
-    html += '<div class="archivos-empty"><div class="archivos-empty-icon">🔍</div><div class="archivos-empty-title">Sin resultados</div><div class="archivos-empty-desc">No hay archivos que coincidan con "'+q+'"</div></div>';
+    if(conLinkArr.length > 0){
+      html += '<div style="font-size:10px;font-weight:700;color:#34a853;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:6px">📂 Con enlace configurado ('+conLinkArr.length+')</div>';
+      conLinkArr.forEach(function(t){ html += buildArchivoCard(t); });
+    }
+    if(sinLinkArr.length > 0){
+      if(conLinkArr.length > 0) html += '<div style="height:1px;background:var(--border);margin:16px 0"></div>';
+      html += '<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">⏳ Sin enlace aún ('+sinLinkArr.length+')</div>';
+      html += '<div style="font-size:11px;color:var(--text3);margin-bottom:10px;padding:8px 12px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent)">💡 Crea la carpeta en tu Google Drive, copia el enlace y pégalo con el botón <strong>🔗 Configurar link</strong>.</div>';
+      sinLinkArr.forEach(function(t){ html += buildArchivoCard(t); });
+    }
   }
 
   el.innerHTML = html;
 }
 
-// Crear carpeta manualmente para un trabajo existente
-async function crearCarpetaManual(id) {
+function buildArchivoCard(t){
+  var icono = iconoTipoArchivo(t.tipo);
+  var tieneLink = !!(t.archivoLink);
+  var saldo = (t.precio||0)-(t.cobrado||0);
+  var saldoTxt = saldo > 0 ? 'S/'+saldo+' pendiente' : 'Pagado ✅';
+  var saldoColor = saldo > 0 ? 'color:var(--yellow)' : 'color:var(--green)';
+
+  var h = '<div class="archivo-card '+(tieneLink?'tiene-link':'sin-link')+'">';
+  h += '<div class="archivo-card-header">';
+  h += '<div class="archivo-icon">'+icono+'</div>';
+  h += '<div class="archivo-info">';
+  h += '<div class="archivo-nombre">'+escHtmlAr(t.nombre)+'</div>';
+  h += '<div class="archivo-meta">';
+  h += '<span>📋 '+escHtmlAr(t.tipo||'Trabajo')+'</span>';
+  if(t.uni) h += '<span>🏫 '+escHtmlAr(t.uni)+'</span>';
+  if(t.fent) h += '<span>📅 '+fmtArchivoFecha(t.fent)+'</span>';
+  h += '<span style="'+saldoColor+'">💰 '+saldoTxt+'</span>';
+  h += '</div>';
+  if(tieneLink && t.archivoNombre){
+    h += '<div style="font-size:10px;color:#34a853;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📂 '+escHtmlAr(t.archivoNombre)+'</div>';
+  }
+  h += '</div></div>';
+
+  h += '<div class="archivo-card-footer">';
+  if(tieneLink){
+    h += '<button class="btn btn-primary btn-sm" onclick="abrirArchivoLink('+t.id+')" style="display:flex;align-items:center;gap:5px;flex:1">📂 Abrir en Drive</button>';
+  }
+  h += '<button class="btn btn-ghost btn-sm" onclick="abrirAfModal('+t.id+')" style="color:var(--accent3)">';
+  h += tieneLink ? '✏️ Editar link' : '🔗 Configurar link';
+  h += '</button>';
+  h += '<span class="archivo-link-badge '+(tieneLink?'archivo-link-si':'archivo-link-no')+'">';
+  h += tieneLink ? '🟢 Drive OK' : '⚪ Sin link';
+  h += '</span>';
+  h += '</div></div>';
+  return h;
+}
+
+function abrirArchivoLink(id){
+  var t = DB.trabajos.find(function(x){ return x.id === id; });
+  if(!t || !t.archivoLink){ showToast('⚠️ Este trabajo no tiene enlace configurado'); return; }
+  window.open(t.archivoLink, '_blank');
+}
+
+function abrirAfModal(id){
   var t = DB.trabajos.find(function(x){ return x.id === id; });
   if(!t) return;
-  if(!DRIVE.isConnected){ showToast('Conecta Drive primero'); return; }
-  showToast('Creando carpeta...');
-  try {
-    var r = await crearCarpetaYDocEnDrive(t);
-    if(!r){ showToast('Error al crear carpeta'); return; }
-    var idx = DB.trabajos.findIndex(function(x){ return x.id === id; });
-    if(idx >= 0){
-      DB.trabajos[idx].driveDocUrl = r.docUrl;
-      DB.trabajos[idx].driveCarpetaUrl = r.carpetaUrl;
-      DB.trabajos[idx].driveCarpetaNombre = r.nombreCarpeta;
-      if(typeof save==='function') save();
+  _afCurrentId = id;
+  var modal = document.getElementById('af-link-modal');
+  var nomEl = document.getElementById('af-modal-nombre');
+  var tipEl = document.getElementById('af-modal-tipo');
+  var inp   = document.getElementById('af-link-input');
+  var btnQ  = document.getElementById('af-btn-quitar');
+  if(nomEl) nomEl.textContent = t.nombre;
+  if(tipEl) tipEl.textContent = (t.tipo||'')+(t.uni?' · '+t.uni:'');
+  if(inp) inp.value = t.archivoLink || '';
+  if(btnQ) btnQ.style.display = t.archivoLink ? 'inline-flex' : 'none';
+
+  // Actualizar preview de ruta Drive
+  var clienteEl = document.getElementById('af-drive-cliente');
+  var tipoEl    = document.getElementById('af-drive-tipo');
+  var statusEl  = document.getElementById('af-drive-status');
+  var btnCrear  = document.getElementById('af-btn-crear-drive');
+  if(clienteEl) clienteEl.textContent = t.nombre;
+  if(tipoEl)    tipoEl.textContent = t.tipo || 'Documento';
+
+  // Mostrar estado de conexión Drive
+  if(statusEl){
+    if(DRIVE.isConnected){
+      statusEl.innerHTML = '<span style="color:var(--green)">✅ Drive conectado — listo para crear</span>';
+      if(btnCrear) { btnCrear.disabled = false; btnCrear.style.opacity='1'; }
+    } else {
+      statusEl.innerHTML = '<span style="color:var(--orange)">⚠️ Drive no conectado. </span><button onclick="cerrarAfModal();abrirDrive();" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:4px">🔗 Conectar Drive aquí</button>';
+      if(btnCrear){ btnCrear.disabled = true; btnCrear.style.opacity='0.5'; }
     }
-    showToast('Carpeta creada');
-    renderArchivos();
-  } catch(e){ showToast('Error: '+e.message); }
+  }
+
+  if(modal) modal.classList.add('open');
+  setTimeout(function(){ if(inp) inp.focus(); }, 200);
 }
 
-// Patch goView to render archivos when switching to it
-var _origGoViewArchivos = goView;
-function goView(name, btn, isMobile){
-  _origGoViewArchivos(name, btn, isMobile);
-  if(name === 'archivos') setTimeout(renderArchivos, 50);
+// ============================================================
+// AUTO-CREAR GOOGLE DOC EN DRIVE
+// Ruta: Trabajos App Pagos Brujos / [Cliente] / [Tipo]
+// Permisos: cualquiera con el enlace puede editar
+// ============================================================
+var ROOT_FOLDER_NAME = 'Trabajos App Pagos Brujos';
+
+async function crearArchivoEnDrive(){
+  if(_afCurrentId === null) return;
+  var t = DB.trabajos.find(function(x){ return x.id === _afCurrentId; });
+  if(!t){ showToast('Error: trabajo no encontrado'); return; }
+
+  var btnCrear  = document.getElementById('af-btn-crear-drive');
+  var statusEl  = document.getElementById('af-drive-status');
+  var inp       = document.getElementById('af-link-input');
+
+  if(!DRIVE.isConnected){
+    showToast('⚠️ Primero conecta tu Google Drive en la sección Drive');
+    return;
+  }
+
+  // UI: loading
+  if(btnCrear){ btnCrear.disabled = true; btnCrear.innerHTML = '⏳ Creando en Drive...'; }
+  if(statusEl) statusEl.innerHTML = '<span style="color:var(--accent3)">⏳ Buscando / creando carpetas...</span>';
+
+  try {
+    // PASO 1: Obtener o crear carpeta raíz "Trabajos App Pagos Brujos"
+    var rootId = await afGetOrCreateFolder(ROOT_FOLDER_NAME, null);
+    if(statusEl) statusEl.innerHTML = '<span style="color:var(--accent3)">⏳ Carpeta raíz ✓ — creando subcarpeta cliente...</span>';
+
+    // PASO 2: Obtener o crear subcarpeta con nombre del cliente
+    var clienteId = await afGetOrCreateFolder(t.nombre, rootId);
+    if(statusEl) statusEl.innerHTML = '<span style="color:var(--accent3)">⏳ Carpeta cliente ✓ — creando documento...</span>';
+
+    // PASO 3: Crear Google Doc con nombre del tipo de trabajo
+    var docName = (t.tipo || 'Documento') + (t.uni ? ' — ' + t.uni : '');
+    var docId = await afCrearGoogleDoc(docName, clienteId);
+    if(statusEl) statusEl.innerHTML = '<span style="color:var(--accent3)">⏳ Documento creado ✓ — configurando permisos...</span>';
+
+    // PASO 4: Dar permiso "cualquiera con el enlace puede editar"
+    await afDarPermisoPublico(docId);
+    if(statusEl) statusEl.innerHTML = '<span style="color:var(--accent3)">⏳ Permisos ✓ — obteniendo enlace...</span>';
+
+    // PASO 5: Construir el enlace compartible
+    var link = 'https://docs.google.com/document/d/' + docId + '/edit?usp=sharing';
+
+    // PASO 6: Poner el link en el input y guardarlo
+    if(inp) inp.value = link;
+    var idx = DB.trabajos.findIndex(function(x){ return x.id === _afCurrentId; });
+    if(idx >= 0){
+      DB.trabajos[idx].archivoLink = link;
+      DB.trabajos[idx].archivoNombre = docName + ' — Drive';
+      if(typeof save === 'function') save();
+    }
+
+    if(statusEl) statusEl.innerHTML = '<span style="color:var(--green)">✅ ¡Documento creado y enlace guardado!</span>';
+    if(btnCrear){ btnCrear.disabled = false; btnCrear.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> ¡Creado exitosamente!'; btnCrear.style.background='var(--green)'; }
+    showToast('✅ Google Doc creado en Drive con enlace editor');
+    renderArchivos();
+
+    // Actualizar botón quitar
+    var btnQ = document.getElementById('af-btn-quitar');
+    if(btnQ) btnQ.style.display = 'inline-flex';
+
+  } catch(err){
+    console.error('Error creando en Drive:', err);
+    if(statusEl) statusEl.innerHTML = '<span style="color:var(--red)">❌ Error: ' + (err.message||'No se pudo crear') + '</span>';
+    if(btnCrear){ btnCrear.disabled = false; btnCrear.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Reintentar'; }
+    showToast('❌ Error al crear en Drive. Verifica la conexión.');
+  }
 }
+
+// Busca o crea una carpeta por nombre dentro de un padre (parentId = null → My Drive)
+async function afGetOrCreateFolder(nombre, parentId){
+  var parentQuery = parentId ? ` and '${parentId}' in parents` : " and 'root' in parents";
+  var q = encodeURIComponent(`name='${nombre}' and mimeType='application/vnd.google-apps.folder' and trashed=false${parentQuery}`);
+  var r = await DRIVE.request('https://www.googleapis.com/drive/v3/files?q=' + q + '&fields=files(id,name)');
+  var data = await r.json();
+  if(data.files && data.files.length > 0) return data.files[0].id;
+  // Crear la carpeta
+  var meta = { name: nombre, mimeType: 'application/vnd.google-apps.folder' };
+  if(parentId) meta.parents = [parentId];
+  var cr = await DRIVE.request('https://www.googleapis.com/drive/v3/files', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(meta)
+  });
+  var folder = await cr.json();
+  if(!folder.id) throw new Error('No se pudo crear la carpeta: ' + nombre);
+  return folder.id;
+}
+
+// Crea un Google Doc vacío dentro de una carpeta
+async function afCrearGoogleDoc(nombre, parentId){
+  var meta = {
+    name: nombre,
+    mimeType: 'application/vnd.google-apps.document',
+    parents: [parentId]
+  };
+  var cr = await DRIVE.request('https://www.googleapis.com/drive/v3/files', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(meta)
+  });
+  var doc = await cr.json();
+  if(!doc.id) throw new Error('No se pudo crear el documento');
+  return doc.id;
+}
+
+// Da permiso "cualquiera con el enlace puede editar" a un archivo
+async function afDarPermisoPublico(fileId){
+  var permBody = { role: 'writer', type: 'anyone' };
+  await DRIVE.request('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(permBody)
+  });
+}
+
+function cerrarAfModal(){
+  var modal = document.getElementById('af-link-modal');
+  if(modal) modal.classList.remove('open');
+  _afCurrentId = null;
+}
+
+function guardarLinkArchivo(){
+  if(_afCurrentId === null) return;
+  var inp = document.getElementById('af-link-input');
+  var link = (inp ? inp.value.trim() : '');
+  if(link && !link.startsWith('http')){
+    showToast('⚠️ El enlace debe comenzar con https://');
+    return;
+  }
+  var idx = DB.trabajos.findIndex(function(x){ return x.id === _afCurrentId; });
+  if(idx < 0){ showToast('Error: trabajo no encontrado'); return; }
+  DB.trabajos[idx].archivoLink = link || null;
+  if(link){
+    DB.trabajos[idx].archivoNombre = DB.trabajos[idx].nombre + ' — Drive';
+  } else {
+    DB.trabajos[idx].archivoNombre = null;
+  }
+  if(typeof save === 'function') save();
+  cerrarAfModal();
+  showToast(link ? '✅ Enlace guardado correctamente' : '🗑️ Enlace eliminado');
+  renderArchivos();
+}
+
+function quitarLinkArchivo(){
+  if(_afCurrentId === null) return;
+  if(!confirm('¿Quitar el enlace de Drive de este trabajo?')) return;
+  var idx = DB.trabajos.findIndex(function(x){ return x.id === _afCurrentId; });
+  if(idx >= 0){
+    DB.trabajos[idx].archivoLink = null;
+    DB.trabajos[idx].archivoNombre = null;
+    if(typeof save === 'function') save();
+  }
+  cerrarAfModal();
+  showToast('🗑️ Enlace eliminado');
+  renderArchivos();
+}
+
+// Cerrar modal al clic fuera
+document.addEventListener('click', function(e){
+  var modal = document.getElementById('af-link-modal');
+  if(modal && modal.classList.contains('open') && e.target === modal) cerrarAfModal();
+});
 </script>
 
-
 <script>
+
 // BOTÓN CONECTAR DRIVE - siempre funciona
 function driveConectarClick() {
   var btn = document.getElementById('drive-connect-btn-static');
