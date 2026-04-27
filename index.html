@@ -337,6 +337,13 @@
     .stats-grid.proy-grid-mobile{grid-template-columns:1fr 1fr}
     .proy-card{padding:12px 10px}
     .proy-monto{font-size:18px}
+    /* tabla de cuotas en mobile → tarjetas */
+    #cuotas-tabla .tbl{display:none}
+    #cuotas-tabla .cuota-mcard{display:flex;flex-direction:column;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:11px 13px;margin:8px 12px;cursor:pointer}
+    #cuotas-tabla .cuota-mcard-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    #cuotas-tabla .cuota-mcard-nombre{font-size:13px;font-weight:700;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #cuotas-tabla .cuota-mcard-bottom{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+    #cuotas-tabla .cuota-mcard-sub{font-size:10px;color:var(--text3)}
 
     /* Productividad */
     .estados-section{padding:12px}
@@ -2216,7 +2223,8 @@ function renderUrgentes(){
   // PRÓXIMOS 7 días (excluyendo hoy)
   const elProx=document.getElementById('urgentes-proximos');
   const proximos=DB.trabajos.filter(x=>{
-    if(excluidos.includes(x.estado)||x.fent===hoyStr) return false;
+    if(x.estado==='Pagado'||x.estado==='Cancelado') return false;
+    if(x.fent===hoyStr) return false; // hoy ya está arriba
     const d=diffDias(x.fent);
     return d!==null&&d>0&&d<=7;
   }).sort((a,b)=>(diffDias(a.fent)||99)-(diffDias(b.fent)||99));
@@ -2304,29 +2312,53 @@ function renderProyeccion(){
   const t=DB.trabajos;
   const getSaldo=x=>(x.precio||0)-(x.cobrado||0);
 
-  // Fecha relevante para proyección: primera cuota pendiente, o fpago si es contado
-  function getFechaProyeccion(x){
-    if(x.cuotas&&x.cuotas.length>0){
-      var pend=x.cuotas.find(function(c){return c.f&&c.m&&(c.estado||'pendiente')!=='pagada';});
-      return pend?pend.f:null;
+  // Recolectar TODAS las cuotas individuales de todos los trabajos
+  const todasCuotas=[];
+  t.forEach(function(tj){
+    if(tj.estado==='Cancelado') return;
+    var arr=[];
+    if(tj.cuotas&&tj.cuotas.length>0){
+      arr=tj.cuotas.map(function(c,i){return Object.assign({},c,{num:i+1});});
+    } else {
+      [[tj.c1f,tj.c1m,1],[tj.c2f,tj.c2m,2],[tj.c3f,tj.c3m,3],[tj.c4f,tj.c4m,4],[tj.c5f,tj.c5m,5],[tj.c6f,tj.c6m,6]]
+        .filter(function(p){return p[0]&&p[1];})
+        .forEach(function(p){arr.push({f:p[0],m:p[1],num:p[2],estado:'pendiente'});});
     }
-    // Formato antiguo c1f..c6f
-    var ants=[[x.c1f,x.c1m],[x.c2f,x.c2m],[x.c3f,x.c3m],[x.c4f,x.c4m],[x.c5f,x.c5m],[x.c6f,x.c6m]].filter(function(p){return p[0]&&p[1];});
-    if(ants.length>0) return ants[0][0];
-    return x.fpago||null;
+    arr.forEach(function(c){
+      if(c.f&&c.m){
+        todasCuotas.push({
+          nombre:tj.nombre,tipo:tj.tipo,fecha:c.f,monto:parseFloat(c.m)||0,
+          dias:diffDias(c.f),num:c.num,estado:c.estado||'pendiente',
+          freal:c.freal||'',nota:c.nota||'',id:tj.id,trabajoEstado:tj.estado
+        });
+      }
+    });
+    // Si no tiene cuotas y solo tiene fpago → tratar el saldo como 1 cobro
+    if(arr.length===0&&tj.fpago){
+      var sal=getSaldo(tj);
+      if(sal>0){
+        todasCuotas.push({
+          nombre:tj.nombre,tipo:tj.tipo,fecha:tj.fpago,monto:sal,
+          dias:diffDias(tj.fpago),num:1,estado:'pendiente',freal:'',nota:'',id:tj.id,trabajoEstado:tj.estado
+        });
+      }
+    }
+  });
+
+  // Sumar solo cuotas NO pagadas que caen en el rango
+  function sumaCuotasEnRango(dias){
+    return todasCuotas.filter(function(c){
+      if(c.estado==='pagada'||c.trabajoEstado==='Pagado') return false;
+      var d=c.dias;
+      return d!==null&&d!==undefined&&d<=dias&&d>=-1;
+    }).reduce(function(a,c){return a+c.monto;},0);
   }
 
-  function enRango(x,dias){
-    if(getSaldo(x)<=0||x.estado==='Pagado'||x.estado==='Cancelado') return false;
-    var f=getFechaProyeccion(x);
-    var d=diffDias(f);
-    return d!==null&&d<=dias&&d>=-1;
-  }
+  const proy30=sumaCuotasEnRango(30);
+  const proy60=sumaCuotasEnRango(60);
+  const proy90=sumaCuotasEnRango(90);
+  const totalPend=t.reduce(function(a,x){return a+getSaldo(x);},0)+DB.ingresos.reduce(function(a,x){return a+(x.monto-x.cobrado||0);},0);
 
-  const proy30=t.filter(function(x){return enRango(x,30);}).reduce(function(a,x){return a+getSaldo(x);},0);
-  const proy60=t.filter(function(x){return enRango(x,60);}).reduce(function(a,x){return a+getSaldo(x);},0);
-  const proy90=t.filter(function(x){return enRango(x,90);}).reduce(function(a,x){return a+getSaldo(x);},0);
-  const totalPend=t.reduce((a,x)=>a+getSaldo(x),0)+DB.ingresos.reduce((a,x)=>a+(x.monto-x.cobrado||0),0);
   document.getElementById('proy-grid').innerHTML=`
     <div class="proy-card"><div class="proy-periodo">Próximos 30 días</div><div class="proy-monto" style="color:var(--green)">${fmtS(proy30)}</div><div class="proy-desc">Cobros esperados</div></div>
     <div class="proy-card"><div class="proy-periodo">Próximos 60 días</div><div class="proy-monto" style="color:var(--yellow)">${fmtS(proy60)}</div><div class="proy-desc">Cobros esperados</div></div>
@@ -2334,40 +2366,26 @@ function renderProyeccion(){
     <div class="proy-card" style="border-color:var(--accent)"><div class="proy-periodo">Gran Total Pendiente</div><div class="proy-monto" style="color:var(--red)">${fmtS(totalPend)}</div><div class="proy-desc">Todo por cobrar</div></div>
   `;
 
-  // Recolectar todas las cuotas
-  const cuotas=[];
-  DB.trabajos.forEach(tj=>{
-    const arr = tj.cuotas && tj.cuotas.length>0 ? tj.cuotas.map((c,i)=>({...c,num:i+1}))
-      : [[tj.c1f,tj.c1m,1],[tj.c2f,tj.c2m,2],[tj.c3f,tj.c3m,3],[tj.c4f,tj.c4m,4],[tj.c5f,tj.c5m,5],[tj.c6f,tj.c6m,6]]
-          .filter(([f,m])=>f&&m).map(([f,m,n])=>({f,m,num:n,estado:'pendiente'}));
-    arr.forEach(c=>{
-      if(c.f&&c.m){
-        cuotas.push({nombre:tj.nombre,tipo:tj.tipo,fecha:c.f,monto:c.m,dias:diffDias(c.f),num:c.num,estado:c.estado||'pendiente',freal:c.freal||'',nota:c.nota||'',id:tj.id});
-      }
-    });
-  });
-
-  // Poblar filtro de meses con los meses disponibles
-  const mesesDisp = [...new Set(cuotas.map(c=>c.fecha?c.fecha.slice(0,7):'').filter(Boolean))].sort();
-  const mesFilter = document.getElementById('proy-mes-filter');
+  // Filtros
+  const mesesDisp=[...new Set(todasCuotas.map(function(c){return c.fecha?c.fecha.slice(0,7):'';}).filter(Boolean))].sort();
+  const mesFilter=document.getElementById('proy-mes-filter');
   const mesNombres=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   if(mesFilter){
-    const curMes = mesFilter.value;
-    mesFilter.innerHTML='<option value="">Todos los meses</option>'+mesesDisp.map(m=>{
-      const [y,mo]=m.split('-');
-      return`<option value="${m}" ${m===curMes?'selected':''}>${mesNombres[parseInt(mo)-1]} ${y}</option>`;
+    const curMes=mesFilter.value;
+    mesFilter.innerHTML='<option value="">Todos los meses</option>'+mesesDisp.map(function(m){
+      var parts=m.split('-');
+      return`<option value="${m}" ${m===curMes?'selected':''}>${mesNombres[parseInt(parts[1])-1]} ${parts[0]}</option>`;
     }).join('');
   }
 
-  // Aplicar filtros
-  const filtroMes = mesFilter?mesFilter.value:'';
-  const filtroEstado = document.getElementById('proy-estado-filter')?document.getElementById('proy-estado-filter').value:'';
-  let cuotasFiltradas = cuotas.filter(c=>{
-    if(filtroMes && (!c.fecha || !c.fecha.startsWith(filtroMes))) return false;
-    if(filtroEstado && c.estado!==filtroEstado) return false;
+  const filtroMes=mesFilter?mesFilter.value:'';
+  const filtroEstado=document.getElementById('proy-estado-filter')?document.getElementById('proy-estado-filter').value:'';
+  var cuotasFiltradas=todasCuotas.filter(function(c){
+    if(filtroMes&&(!c.fecha||!c.fecha.startsWith(filtroMes))) return false;
+    if(filtroEstado&&c.estado!==filtroEstado) return false;
     return true;
   });
-  cuotasFiltradas.sort((a,b)=>(a.dias||0)-(b.dias||0));
+  cuotasFiltradas.sort(function(a,b){return (a.dias||0)-(b.dias||0);});
 
   const cel=document.getElementById('cuotas-tabla');
   if(cuotasFiltradas.length===0){cel.innerHTML='<div class="empty">Sin cuotas para los filtros seleccionados</div>';return;}
@@ -2376,24 +2394,48 @@ function renderProyeccion(){
   const estLabel={pagada:'Pagada',retraso:'Con retraso',pendiente:'Pendiente'};
   const estColor={pagada:'var(--green)',retraso:'var(--yellow)',pendiente:'var(--text3)'};
 
-  cel.innerHTML=`<table class="tbl"><thead><tr><th>Cliente</th><th>Tipo</th><th>Cuota</th><th>Fecha Prog.</th><th>Días</th><th>Monto S/.</th><th>Estado</th></tr></thead><tbody>`+
-  cuotasFiltradas.map(c=>{
-    let dcls;
-    if(c.dias<0)dcls='background:#1f0505;color:var(--red);border:1px solid #7f1d1d';
-    else if(c.dias<=7)dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';
-    else dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';
-    const est=c.estado||'pendiente';
-    return`<tr style="cursor:pointer" onclick="verHistorial(${c.id})">
-      <td><strong>${c.nombre}</strong></td>
-      <td>${c.tipo}</td>
-      <td><span style="color:var(--text3)">C${c.num}</span></td>
-      <td>${fmt(c.fecha)}${c.freal&&est==='retraso'?`<br><span style="font-size:10px;color:var(--yellow)">Pagó: ${fmt(c.freal)}</span>`:''}
-      </td>
-      <td><span class="dias-badge" style="${dcls}">${c.dias<0?Math.abs(c.dias)+'d venc':c.dias===0?'Hoy':c.dias+'d'}</span></td>
-      <td style="font-weight:600;color:var(--accent3)">${fmtSRaw(c.monto)}</td>
-      <td><span style="font-size:12px;color:${estColor[est]}">${estIcon[est]} ${estLabel[est]}</span></td>
-    </tr>`;
-  }).join('')+'</tbody></table>';
+  const isMobile=window.innerWidth<=640;
+  if(isMobile){
+    cel.innerHTML=cuotasFiltradas.map(function(c){
+      var d=c.dias;
+      var dcls,dtext;
+      if(d<0){dcls='background:#1f0505;color:var(--red);border:1px solid #7f1d1d';dtext=Math.abs(d)+'d venc';}
+      else if(d===0){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext='Hoy';}
+      else if(d<=7){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext=d+'d';}
+      else{dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';dtext=d+'d';}
+      var est=c.estado||'pendiente';
+      return`<div class="cuota-mcard" onclick="verHistorial(${c.id})">
+        <div class="cuota-mcard-top">
+          <span class="cuota-mcard-nombre">${c.nombre}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--accent3)">${fmtSRaw(c.monto)}</span>
+        </div>
+        <div class="cuota-mcard-bottom">
+          <span class="cuota-mcard-sub">${c.tipo} · C${c.num} · ${fmt(c.fecha)}</span>
+          <span class="dias-badge" style="${dcls}">${dtext}</span>
+          <span style="font-size:11px;color:${estColor[est]}">${estIcon[est]} ${estLabel[est]}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    cel.innerHTML=`<table class="tbl"><thead><tr><th>Cliente</th><th>Tipo</th><th>Cuota</th><th>Fecha Prog.</th><th>Días</th><th>Monto S/.</th><th>Estado</th></tr></thead><tbody>`+
+    cuotasFiltradas.map(function(c){
+      var d=c.dias;
+      var dcls;
+      if(d<0)dcls='background:#1f0505;color:var(--red);border:1px solid #7f1d1d';
+      else if(d<=7)dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';
+      else dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';
+      var est=c.estado||'pendiente';
+      return`<tr style="cursor:pointer" onclick="verHistorial(${c.id})">
+        <td><strong>${c.nombre}</strong></td>
+        <td>${c.tipo}</td>
+        <td><span style="color:var(--text3)">C${c.num}</span></td>
+        <td>${fmt(c.fecha)}${c.freal&&est==='retraso'?`<br><span style="font-size:10px;color:var(--yellow)">Pagó: ${fmt(c.freal)}</span>`:''}</td>
+        <td><span class="dias-badge" style="${dcls}">${d<0?Math.abs(d)+'d venc':d===0?'Hoy':d+'d'}</span></td>
+        <td style="font-weight:600;color:var(--accent3)">${fmtSRaw(c.monto)}</td>
+        <td><span style="font-size:12px;color:${estColor[est]}">${estIcon[est]} ${estLabel[est]}</span></td>
+      </tr>`;
+    }).join('')+'</tbody></table>';
+  }
 }
 
 
@@ -6023,34 +6065,16 @@ function enviarCobroMasivo(){
 // ===================== BLOQUE 4 — HISTORIAL CHAT ASISTENTE =====================
 
 function getChatHistory(){
-  try{ return JSON.parse(localStorage.getItem('tracker_chat_history')||'[]'); }catch(e){return [];}
+  return []; // Historial desactivado para no acumular datos
 }
 function saveChatHistory(arr){
-  try{ localStorage.setItem('tracker_chat_history', JSON.stringify(arr.slice(-60))); }catch(e){}
+  // Desactivado — no guardar historial de conversaciones
 }
 function appendChatMessage(role, text){
-  const arr = getChatHistory();
-  arr.push({role, text, ts: Date.now()});
-  saveChatHistory(arr);
+  // No guardar en localStorage
 }
 function loadChatHistory(){
-  const cont = document.getElementById('ai-messages');
-  if(!cont) return;
-  const arr = getChatHistory();
-  if(arr.length===0) return;
-  // Add a session divider
-  const div = document.createElement('div');
-  div.className = 'chat-session-divider';
-  div.textContent = 'Conversaciones anteriores';
-  cont.insertBefore(div, cont.firstChild.nextSibling);
-  arr.forEach(msg=>{
-    const el = document.createElement('div');
-    el.className = 'ai-msg '+msg.role;
-    const avatar = msg.role==='bot' ? '<div class="ai-avatar bot">🤖</div>' : '<div class="ai-avatar user">👤</div>';
-    const bubble = `<div class="ai-bubble">${msg.role==='bot'?msg.text:escHtml(msg.text)}</div>`;
-    el.innerHTML = msg.role==='user' ? bubble+avatar : avatar+bubble;
-    cont.insertBefore(el, div);
-  });
+  // Historial desactivado — no cargar conversaciones anteriores
 }
 
 // ===================== PATCH: manualSync con historial =====================
@@ -6750,6 +6774,7 @@ function init(){
   actualizarSelectEstados();
   aiCheckKey();
   renderDailySummary();
+  try{ localStorage.removeItem('tracker_chat_history'); }catch(e){} // limpiar historial viejo
   loadChatHistory();
   setTimeout(initDriveAutoSync, 1200);
   // Wire up send button and textarea to patched aiEnviar
