@@ -170,6 +170,37 @@
   .p-terminado{background:#1c0a1c;color:#d946ef;border:1px solid #701a75}
   .p-entregado{background:#0a1c1c;color:#22d3ee;border:1px solid #0e7490}
   .p-prepagado{background:#1a1200;color:#f59e0b;border:1px solid #92400e}
+  /* COLAPSO en tarjetas */
+  .mcard-collapse-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0 2px;line-height:1;transition:transform .25s,color .2s;flex-shrink:0;display:flex;align-items:center}
+  .mcard-collapse-btn:hover{color:var(--accent3)}
+  .mcard.collapsed .mcard-body,.mcard.collapsed .pct-bar,.mcard.collapsed .mcard-footer{display:none!important}
+  .mcard.collapsed{padding-bottom:14px}
+  .mcard.collapsed .mcard-header{margin-bottom:0}
+  .mcard.collapsed .mcard-collapse-btn{transform:rotate(-90deg)}
+  .mcard-precio-mini{font-size:12px;font-weight:700;color:var(--accent3);white-space:nowrap;margin-left:4px}
+
+  /* URGENTES del día */
+  .urgentes-header{display:flex;align-items:center;gap:8px;padding:14px 16px 10px}
+  .urgentes-date-badge{background:linear-gradient(135deg,var(--red),#c02020);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap}
+  .urgente-card{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+  .urgente-card:last-child{border-bottom:none}
+  .urgente-card:hover{background:var(--bg3)}
+  .urgente-semaforo{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .urgente-info{flex:1;min-width:0}
+  .urgente-nombre{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .urgente-sub{font-size:10px;color:var(--text3);margin-top:1px}
+  .urgente-monto{font-size:13px;font-weight:700;color:var(--accent3);white-space:nowrap;flex-shrink:0}
+  .urgente-estado{flex-shrink:0}
+
+  /* ALERTAS mobile mejoradas */
+  .alert-mcard{background:var(--bg3);border-radius:var(--radius2);margin:8px 12px;padding:11px 13px;display:flex;flex-direction:column;gap:6px;cursor:pointer;border:1px solid var(--border)}
+  .alert-mcard:hover{border-color:var(--border2)}
+  .alert-mcard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .alert-mcard-nombre{font-size:13px;font-weight:700;color:var(--text);flex:1;min-width:0}
+  .alert-mcard-bottom{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+  .alert-mcard-tipo{font-size:10px;color:var(--text3)}
+  .alert-mcard-saldo{font-size:12px;font-weight:700}
+
   /* Cancelado tachado en tarjetas */
   .tbl tr.estado-cancelado td{text-decoration:line-through;opacity:0.55}
   .mcard.estado-cancelado{opacity:0.55;border-style:dashed}
@@ -720,6 +751,7 @@
   <div class="nav">
     <button class="nav-btn active" onclick="goView('dashboard',this)">📊 Dashboard</button>
     <button class="nav-btn" onclick="goView('registro',this)">📋 Registro</button>
+    <button class="nav-btn" id="nav-urgentes" onclick="goView('urgentes',this)">📅 <span id="nav-urgentes-label">Urgentes</span></button>
     <button class="nav-btn" onclick="goView('alertas',this)">⚠️ Alertas</button>
     <button class="nav-btn" onclick="goView('ingresos',this)">💼 Otros Ingresos</button>
     <button class="nav-btn" onclick="goView('proyeccion',this)">📅 Proyección</button>
@@ -809,6 +841,24 @@
         </div>
         <!-- Mobile cards -->
         <div class="mobile-cards" id="mobile-cards"></div>
+      </div>
+    </div>
+
+    <!-- URGENTES DEL DÍA -->
+    <div class="view" id="v-urgentes">
+      <div class="table-wrap" style="margin-bottom:16px">
+        <div class="urgentes-header">
+          <span style="font-size:13px;font-weight:700;color:var(--text);flex:1">🚨 Trabajos urgentes</span>
+          <span class="urgentes-date-badge" id="urgentes-date-badge">Hoy</span>
+        </div>
+        <div id="urgentes-lista"></div>
+      </div>
+      <!-- También muestra los de mañana -->
+      <div class="table-wrap">
+        <div class="section-header">
+          <span class="section-title">📆 Próximos (siguientes 7 días)</span>
+        </div>
+        <div id="urgentes-proximos"></div>
       </div>
     </div>
 
@@ -1027,6 +1077,9 @@
     </button>
     <button class="mnav-btn" id="mnav-registro" onclick="goView('registro',this,true)">
       <span class="mnav-icon">📋</span>Registro
+    </button>
+    <button class="mnav-btn" id="mnav-urgentes" onclick="goView('urgentes',this,true)">
+      <span class="mnav-icon">🚨</span><span id="mnav-urgentes-label">Urgentes</span>
     </button>
     <button class="mnav-btn" id="mnav-alertas" onclick="goView('alertas',this,true)">
       <span class="mnav-icon">⚠️</span>Alertas
@@ -2024,15 +2077,20 @@ function renderTabla(){
     </tr>`
   }).join('');
 
-  // Mobile cards
+  // Mobile cards - todos colapsados por defecto
   document.getElementById('mobile-cards').innerHTML=rows.map((t,i)=>{
     const saldo=(t.precio||0)-(t.cobrado||0);
     const pct=t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
     const s=semaforo(t);
-    return`<div class="mcard${t.estado==='Cancelado'?' estado-cancelado':''}">
-      <div class="mcard-header">
+    const esCancelado=t.estado==='Cancelado';
+    return`<div class="mcard${esCancelado?' estado-cancelado':''} collapsed" id="mcard-${t.id}">
+      <div class="mcard-header" style="cursor:pointer;user-select:none" onclick="toggleMcard(${t.id})">
         <div class="mcard-nombre"><span class="semaforo ${s.cls}"></span><span>${t.nombre}</span></div>
-        ${pillEstado(t.estado)}
+        <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
+          <span class="mcard-precio-mini">${fmtS(t.precio||0)}</span>
+          ${pillEstado(t.estado)}
+          <button class="mcard-collapse-btn" onclick="event.stopPropagation();toggleMcard(${t.id})" title="Expandir/Colapsar">▾</button>
+        </div>
       </div>
       <div class="mcard-body">
         <div class="mcard-field"><div class="mcard-field-label">Tipo</div><div class="mcard-field-val">${t.tipo}</div></div>
@@ -2057,33 +2115,128 @@ function renderTabla(){
   }).join('');
 }
 
+function toggleMcard(id){
+  var el=document.getElementById('mcard-'+id);
+  if(!el) return;
+  var isCollapsed=el.classList.toggle('collapsed');
+  var mini=el.querySelector('.mcard-precio-mini');
+  if(mini) mini.style.display=isCollapsed?'':'none';
+}
+
 function renderAlertas(){
+  const isMobile=window.innerWidth<=640;
   const all=DB.trabajos.filter(x=>{
     const d=diffDias(x.fent);
     return x.estado!=='Pagado'&&x.estado!=='Cancelado'&&(d===null||d<=7);
   }).sort((a,b)=>(diffDias(a.fent)||999)-(diffDias(b.fent)||999));
   const el=document.getElementById('alertas-full');
-  if(all.length===0){el.innerHTML='<div class="empty">Todo al d\u00eda ✅</div>';return;}
-  el.innerHTML=`<table class="tbl"><thead><tr><th>#</th><th>Cliente</th><th>Tipo</th><th>F. Entrega</th><th>D\u00edas</th><th>Saldo S/.</th><th>Estado</th></tr></thead><tbody>`+
-  all.map((t,i)=>{
-    const d=diffDias(t.fent);
-    const s=semaforo(t);
-    let dcls,dtext;
-    if(d===null){dcls='background:var(--bg4);color:var(--text3)';dtext='Sin fecha'}
-    else if(d<0){dcls='background:#1f0505;color:var(--red);border:1px solid #7f1d1d';dtext=`${Math.abs(d)}d vencido`}
-    else if(d<=1){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext=d===0?'Hoy':'Ma\u00f1ana'}
-    else{dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';dtext=`En ${d}d`}
-    const sal=(t.precio||0)-(t.cobrado||0);
-    return`<tr>
-      <td style="color:var(--text3)">${i+1}</td>
-      <td><strong>${t.nombre}</strong></td>
-      <td>${t.tipo}</td>
-      <td>${fmt(t.fent)}</td>
-      <td><span class="dias-badge" style="${dcls}">${dtext}</span></td>
-      <td class="${sal>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">${fmtSRaw(sal)}</td>
-      <td>${pillEstado(t.estado)}</td>
-    </tr>`
-  }).join('')+'</tbody></table>';
+  if(all.length===0){el.innerHTML='<div class="empty">Todo al día ✅</div>';return;}
+
+  if(isMobile){
+    el.innerHTML=all.map((t,i)=>{
+      const d=diffDias(t.fent);
+      const sal=(t.precio||0)-(t.cobrado||0);
+      let dcls,dtext;
+      if(d===null){dcls='background:var(--bg4);color:var(--text3)';dtext='Sin fecha'}
+      else if(d<0){dcls='background:#1f0505;color:var(--red);border:1px solid #7f1d1d';dtext=`${Math.abs(d)}d vencido`}
+      else if(d===0){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext='HOY'}
+      else if(d===1){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext='Mañana'}
+      else{dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';dtext=`En ${d}d`}
+      const s=semaforo(t);
+      return`<div class="alert-mcard" onclick="verHistorial(${t.id})">
+        <div class="alert-mcard-top">
+          <div class="alert-mcard-nombre"><span class="semaforo ${s.cls}" style="display:inline-block;margin-right:5px"></span>${t.nombre}</div>
+          <span class="dias-badge" style="${dcls};flex-shrink:0">${dtext}</span>
+        </div>
+        <div class="alert-mcard-bottom">
+          <span class="alert-mcard-tipo">${t.tipo}${t.uni?' · '+t.uni:''}</span>
+          ${pillEstado(t.estado)}
+          <span class="alert-mcard-saldo ${sal>0?'saldo-pos':'saldo-zero'}">${fmtSRaw(sal)}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    el.innerHTML=`<table class="tbl"><thead><tr><th>#</th><th>Cliente</th><th>Tipo</th><th>F. Entrega</th><th>Días</th><th>Saldo S/.</th><th>Estado</th></tr></thead><tbody>`+
+    all.map((t,i)=>{
+      const d=diffDias(t.fent);
+      let dcls,dtext;
+      if(d===null){dcls='background:var(--bg4);color:var(--text3)';dtext='Sin fecha'}
+      else if(d<0){dcls='background:#1f0505;color:var(--red);border:1px solid #7f1d1d';dtext=`${Math.abs(d)}d vencido`}
+      else if(d<=1){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext=d===0?'Hoy':'Mañana'}
+      else{dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';dtext=`En ${d}d`}
+      const sal=(t.precio||0)-(t.cobrado||0);
+      return`<tr style="cursor:pointer" onclick="verHistorial(${t.id})">
+        <td style="color:var(--text3)">${i+1}</td>
+        <td><strong>${t.nombre}</strong></td>
+        <td>${t.tipo}</td>
+        <td>${fmt(t.fent)}</td>
+        <td><span class="dias-badge" style="${dcls}">${dtext}</span></td>
+        <td class="${sal>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">${fmtSRaw(sal)}</td>
+        <td>${pillEstado(t.estado)}</td>
+      </tr>`;
+    }).join('')+'</tbody></table>';
+  }
+}
+
+function renderUrgentes(){
+  // Actualizar badges de fecha dinámica
+  const hoy=new Date();
+  const diasSemana=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const labelFecha=`${diasSemana[hoy.getDay()]} ${hoy.getDate()} ${meses[hoy.getMonth()]}`;
+  ['urgentes-date-badge','nav-urgentes-label','mnav-urgentes-label'].forEach(id=>{
+    var el=document.getElementById(id);
+    if(el) el.textContent = (id==='urgentes-date-badge') ? `🚨 Urgentes · ${labelFecha}` : `${hoy.getDate()}/${hoy.getMonth()+1}`;
+  });
+
+  const excluidos=['Pagado','Cancelado'];
+  // HOY
+  const hoyStr=hoy.toISOString().slice(0,10);
+  const urgentesHoy=DB.trabajos.filter(x=>!excluidos.includes(x.estado)&&x.fent===hoyStr)
+    .sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
+  const elHoy=document.getElementById('urgentes-lista');
+  if(urgentesHoy.length===0){
+    elHoy.innerHTML='<div class="empty">✅ Ningún trabajo para entregar hoy</div>';
+  } else {
+    elHoy.innerHTML=urgentesHoy.map(t=>{
+      const s=semaforo(t);
+      const sal=(t.precio||0)-(t.cobrado||0);
+      return`<div class="urgente-card" onclick="verHistorial(${t.id})">
+        <span class="semaforo ${s.cls}" style="width:10px;height:10px;flex-shrink:0"></span>
+        <div class="urgente-info">
+          <div class="urgente-nombre">${t.nombre}</div>
+          <div class="urgente-sub">${t.tipo}${t.uni?' · '+t.uni:''}</div>
+        </div>
+        <span class="urgente-monto">${fmtS(t.precio||0)}</span>
+        <span class="urgente-estado">${pillEstado(t.estado)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // PRÓXIMOS 7 días (excluyendo hoy)
+  const elProx=document.getElementById('urgentes-proximos');
+  const proximos=DB.trabajos.filter(x=>{
+    if(excluidos.includes(x.estado)||x.fent===hoyStr) return false;
+    const d=diffDias(x.fent);
+    return d!==null&&d>0&&d<=7;
+  }).sort((a,b)=>(diffDias(a.fent)||99)-(diffDias(b.fent)||99));
+  if(proximos.length===0){
+    elProx.innerHTML='<div class="empty">Sin entregas en los próximos 7 días</div>';
+  } else {
+    elProx.innerHTML=proximos.map(t=>{
+      const d=diffDias(t.fent);
+      const s=semaforo(t);
+      return`<div class="urgente-card" onclick="verHistorial(${t.id})">
+        <span class="urgente-semaforo" style="background:${d<=2?'var(--yellow)':'#60a5fa'}"></span>
+        <div class="urgente-info">
+          <div class="urgente-nombre">${t.nombre}</div>
+          <div class="urgente-sub">${t.tipo} · ${fmt(t.fent)}</div>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:${d<=2?'var(--yellow)':'#60a5fa'};white-space:nowrap">En ${d}d</span>
+        <span class="urgente-estado">${pillEstado(t.estado)}</span>
+      </div>`;
+    }).join('');
+  }
 }
 
 function renderIngresos(){
@@ -2150,9 +2303,29 @@ function renderIngresos(){
 function renderProyeccion(){
   const t=DB.trabajos;
   const getSaldo=x=>(x.precio||0)-(x.cobrado||0);
-  const proy30=t.filter(x=>getSaldo(x)>0&&x.estado!=='Pagado'&&x.estado!=='Cancelado'&&diffDias(x.fpago)!==null&&diffDias(x.fpago)<=30&&diffDias(x.fpago)>=0).reduce((a,x)=>a+getSaldo(x),0);
-  const proy60=t.filter(x=>getSaldo(x)>0&&x.estado!=='Pagado'&&x.estado!=='Cancelado'&&diffDias(x.fpago)!==null&&diffDias(x.fpago)<=60&&diffDias(x.fpago)>=0).reduce((a,x)=>a+getSaldo(x),0);
-  const proy90=t.filter(x=>getSaldo(x)>0&&x.estado!=='Pagado'&&x.estado!=='Cancelado'&&diffDias(x.fpago)!==null&&diffDias(x.fpago)<=90&&diffDias(x.fpago)>=0).reduce((a,x)=>a+getSaldo(x),0);
+
+  // Fecha relevante para proyección: primera cuota pendiente, o fpago si es contado
+  function getFechaProyeccion(x){
+    if(x.cuotas&&x.cuotas.length>0){
+      var pend=x.cuotas.find(function(c){return c.f&&c.m&&(c.estado||'pendiente')!=='pagada';});
+      return pend?pend.f:null;
+    }
+    // Formato antiguo c1f..c6f
+    var ants=[[x.c1f,x.c1m],[x.c2f,x.c2m],[x.c3f,x.c3m],[x.c4f,x.c4m],[x.c5f,x.c5m],[x.c6f,x.c6m]].filter(function(p){return p[0]&&p[1];});
+    if(ants.length>0) return ants[0][0];
+    return x.fpago||null;
+  }
+
+  function enRango(x,dias){
+    if(getSaldo(x)<=0||x.estado==='Pagado'||x.estado==='Cancelado') return false;
+    var f=getFechaProyeccion(x);
+    var d=diffDias(f);
+    return d!==null&&d<=dias&&d>=-1;
+  }
+
+  const proy30=t.filter(function(x){return enRango(x,30);}).reduce(function(a,x){return a+getSaldo(x);},0);
+  const proy60=t.filter(function(x){return enRango(x,60);}).reduce(function(a,x){return a+getSaldo(x);},0);
+  const proy90=t.filter(function(x){return enRango(x,90);}).reduce(function(a,x){return a+getSaldo(x);},0);
   const totalPend=t.reduce((a,x)=>a+getSaldo(x),0)+DB.ingresos.reduce((a,x)=>a+(x.monto-x.cobrado||0),0);
   document.getElementById('proy-grid').innerHTML=`
     <div class="proy-card"><div class="proy-periodo">Próximos 30 días</div><div class="proy-monto" style="color:var(--green)">${fmtS(proy30)}</div><div class="proy-desc">Cobros esperados</div></div>
@@ -2246,9 +2419,12 @@ function goView(name, btn, isMobile=false){
 }
 
 function renderAll(){
+  // Migrar estado 'Listo' → 'Pagado'
+  DB.trabajos.forEach(function(t){if(t.estado==='Listo') t.estado='Pagado';});
   renderDashboard();
   renderTabla();
   renderAlertas();
+  renderUrgentes();
   renderIngresos();
   renderProyeccion();
   if(document.getElementById('v-productividad').classList.contains('active')){
