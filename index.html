@@ -171,8 +171,8 @@
   .p-entregado{background:#0a1c1c;color:#22d3ee;border:1px solid #0e7490}
   .p-prepagado{background:#1a1200;color:#f59e0b;border:1px solid #92400e}
   /* COLAPSO en tarjetas */
-  .mcard-collapse-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0 2px;line-height:1;transition:transform .25s,color .2s;flex-shrink:0;display:flex;align-items:center}
-  .mcard-collapse-btn:hover{color:var(--accent3)}
+  .mcard-collapse-btn{background:none;border:none;cursor:pointer;color:var(--accent3);font-size:20px;padding:2px 4px;line-height:1;transition:transform .25s,color .2s;flex-shrink:0;display:flex;align-items:center;opacity:1;visibility:visible}
+  .mcard-collapse-btn:hover{color:var(--accent2)}
   .mcard.collapsed .mcard-body,.mcard.collapsed .pct-bar,.mcard.collapsed .mcard-footer{display:none!important}
   .mcard.collapsed{padding-bottom:14px}
   .mcard.collapsed .mcard-header{margin-bottom:0}
@@ -242,7 +242,9 @@
   .ingreso-row:hover{background:var(--bg3)}
 
   /* PROYECCION */
-  .proy-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+  .proy-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+  .proy-card:hover{border-color:var(--accent2)}
+  .proy-card.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(124,111,255,.3)}
   .proy-periodo{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
   .proy-monto{font-size:24px;font-weight:700;margin-bottom:3px}
   .proy-desc{font-size:10px;color:var(--text3)}
@@ -749,7 +751,7 @@
       <button class="btn btn-ghost btn-sm" onclick="abrirBusquedaGlobal()" title="Buscar clientes" style="font-size:13px;padding:3px 8px">🔍</button>
 
       <button class="btn btn-ghost btn-sm" onclick="abrirQR()" title="QR / Backup" style="font-size:13px;padding:3px 8px">📱</button>
-      <button class="btn btn-ghost btn-sm" onclick="abrirDrive()" title="Conectar Google Drive" style="font-size:13px;padding:3px 8px" id="drive-header-btn">☁️</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirDrive()" title="Backup de datos" style="font-size:13px;padding:3px 8px" id="drive-header-btn">💾</button>
       <button class="btn btn-ghost btn-sm" id="btn-hide-prices" onclick="toggleHidePrecios()" title="Ocultar precios" style="font-size:13px;padding:3px 8px">👁️</button>
     </div>
   </div>
@@ -896,17 +898,12 @@
       <div class="divider"></div>
       <div class="table-wrap">
         <div class="table-toolbar" style="justify-content:space-between">
-          <span style="font-size:13px;font-weight:700;color:var(--text)">📅 Cuotas Programadas</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text)">📅 Cuotas Programadas <span id="proy-filtro-label" style="font-size:11px;font-weight:400;color:var(--accent3)"></span></span>
           <div style="display:flex;gap:8px;align-items:center">
             <select class="filter-select" id="proy-mes-filter" onchange="renderProyeccion()">
               <option value="">Todos los meses</option>
             </select>
-            <select class="filter-select" id="proy-estado-filter" onchange="renderProyeccion()">
-              <option value="">Todos los estados</option>
-              <option value="pendiente">⏳ Pendientes</option>
-              <option value="pagada">✅ Pagadas</option>
-              <option value="retraso">⏰ Con retraso</option>
-            </select>
+            <button class="btn btn-ghost btn-sm" id="proy-clear-btn" onclick="proyClearFilter()" style="display:none;font-size:11px">✕ Quitar filtro</button>
           </div>
         </div>
         <div id="cuotas-tabla"></div>
@@ -1113,7 +1110,7 @@
       <span class="mnav-icon">📲</span>WhatsApp
     </button>
     <button class="mnav-btn" onclick="abrirDrive()">
-      <span class="mnav-icon">☁️</span>Drive
+      <span class="mnav-icon">💾</span>Backup
     </button>
   </div>
 </nav>
@@ -1143,16 +1140,24 @@
           </select>
         </div>
         <div class="form-group form-full">
-          <label>Categoría</label>
-          <select class="form-select" id="gh-categoria">
-            <option value="IA">🤖 Inteligencia Artificial</option>
-            <option value="Antiplagio">🔍 Antiplagio / Turnitin</option>
-            <option value="Diseño">🎨 Diseño / Edición</option>
-            <option value="Ofimática">📄 Ofimática / Office</option>
-            <option value="Almacenamiento">☁️ Almacenamiento / Drive</option>
-            <option value="Comunicación">💬 Comunicación</option>
-            <option value="Otro">📦 Otro</option>
-          </select>
+          <label>Categoría <span style="font-size:10px;color:var(--text3)">(puedes escribir una propia)</span></label>
+          <input class="form-input" id="gh-categoria" list="gh-cat-list" placeholder="IA, Transporte, Gym, Teléfono..." autocomplete="off">
+          <datalist id="gh-cat-list">
+            <option value="IA">
+            <option value="Antiplagio">
+            <option value="Diseño">
+            <option value="Ofimática">
+            <option value="Almacenamiento">
+            <option value="Comunicación">
+            <option value="Internet">
+            <option value="Teléfono">
+            <option value="Transporte">
+            <option value="Gimnasio">
+            <option value="Gasolina">
+            <option value="Ropa">
+            <option value="Alimentación">
+            <option value="Otro">
+          </datalist>
         </div>
         <div class="form-group form-full">
           <label>Notas</label>
@@ -1195,15 +1200,27 @@
           <input class="form-input" id="gp-monto" type="number" placeholder="0" inputmode="decimal">
         </div>
         <div class="form-group form-full">
-          <label>Categoría</label>
-          <select class="form-select" id="gp-categoria">
-            <option value="IA">🤖 Inteligencia Artificial</option>
-            <option value="Antiplagio">🔍 Antiplagio / Turnitin</option>
-            <option value="Diseño">🎨 Diseño</option>
-            <option value="Internet">🌐 Internet / Datos</option>
-            <option value="Equipo">💻 Equipo / Hardware</option>
-            <option value="Otro">📦 Otro</option>
-          </select>
+          <label>Categoría <span style="font-size:10px;color:var(--text3)">(puedes escribir una propia)</span></label>
+          <input class="form-input" id="gp-categoria" list="gp-cat-list" placeholder="Transporte, Gym, Ropa, Pasaje..." autocomplete="off">
+          <datalist id="gp-cat-list">
+            <option value="IA">
+            <option value="Antiplagio">
+            <option value="Diseño">
+            <option value="Internet">
+            <option value="Equipo">
+            <option value="Teléfono">
+            <option value="Transporte">
+            <option value="Gasolina">
+            <option value="Pasaje">
+            <option value="Gimnasio">
+            <option value="Ropa">
+            <option value="Alimentación">
+            <option value="Moto">
+            <option value="Reparación">
+            <option value="Salud">
+            <option value="Ocio">
+            <option value="Otro">
+          </datalist>
         </div>
         <div class="form-group form-full">
           <label>Notas</label>
@@ -1592,88 +1609,38 @@
 <div class="modal-overlay" id="modal-drive">
   <div class="modal" style="max-width:420px">
     <div class="modal-header">
-      <span class="modal-title">☁️ Google Drive</span>
+      <span class="modal-title">💾 Backup de Datos</span>
       <button class="modal-close" onclick="document.getElementById('modal-drive').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body" style="padding:0">
-      <!-- VISTA: NO CONECTADO -->
-      <div id="drive-disconnected-view" class="drive-section">
-        <div class="drive-setup-box">
-          <div class="drive-setup-icon">☁️</div>
-          <div class="drive-setup-title">Conectar Google Drive</div>
+      <div class="drive-section">
+        <div class="drive-setup-box" style="margin-bottom:14px">
+          <div class="drive-setup-icon">💾</div>
+          <div class="drive-setup-title">Exportar / Importar datos</div>
           <div class="drive-setup-desc">
-            Sincroniza tus datos automáticamente con Google Drive.<br>
-            Accede desde cualquier dispositivo y nunca pierdas tu información.
-          </div>
-          <div id="google-signin-btn-wrap" style="display:flex;justify-content:center;margin-bottom:14px">
-            <button id="drive-connect-btn-static" onclick="driveConectarClick()" style="display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;justify-content:center;transition:background .2s">
-              <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-              Conectar con Google
-            </button>
-          </div>
-          <div style="font-size:11px;color:var(--text3);line-height:1.7;margin-bottom:8px">
-            ⚠️ <strong>Importante:</strong> Necesitas tu Client ID de Google.
-            <a href="#" onclick="mostrarDriveConfig();return false" style="color:var(--accent3)">Ver instrucciones</a>
+            Guarda tu información en un archivo JSON y restáurala cuando quieras.<br>
+            Puedes guardar ese archivo en Google Drive, WhatsApp, o donde prefieras.
           </div>
         </div>
-        <!-- Config Client ID -->
-        <div id="drive-config-box" style="display:none;margin-top:14px">
-          <div class="drive-section-label">🔑 Tu Google Client ID</div>
-          <input class="form-input" id="drive-client-id-input" placeholder="xxxx.apps.googleusercontent.com" style="margin-bottom:8px;font-size:12px">
-          <button class="btn btn-primary" style="width:100%" onclick="guardarClientId()">💾 Guardar y Conectar</button>
-          <div style="margin-top:10px;font-size:10px;color:var(--text3);line-height:1.6">
-            1. Ve a <strong>console.cloud.google.com</strong><br>
-            2. Crea un proyecto → APIs → Google Drive API → Habilitar<br>
-            3. Credenciales → Crear credencial → OAuth → Aplicación web<br>
-            4. En "Orígenes autorizados" agrega la URL de tu archivo<br>
-            5. Copia el Client ID y pégalo aquí
-          </div>
-        </div>
-      </div>
-
-      <!-- VISTA: CONECTADO -->
-      <div id="drive-connected-view" class="drive-section" style="display:none">
-        <div class="drive-user-card">
-          <img class="drive-avatar" id="drive-user-avatar" src="" alt="">
-          <div class="drive-user-info">
-            <div class="drive-user-name" id="drive-user-name">—</div>
-            <div class="drive-user-email" id="drive-user-email">—</div>
-          </div>
-          <span class="drive-auto-badge">✅ Conectado</span>
-        </div>
-
-        <div class="drive-actions">
-          <button class="drive-action-btn" onclick="driveBackupSubir()">
-            <span class="da-icon">⬆️</span>
-            <span class="da-label">Subir Backup</span>
-            <span class="da-sub">Guarda tus datos en Drive</span>
-          </button>
-          <button class="drive-action-btn" onclick="driveListarBackups()">
+        <div class="drive-actions" style="grid-template-columns:1fr 1fr;gap:10px;display:grid;margin-bottom:16px">
+          <button class="drive-action-btn" onclick="backupExportar()">
             <span class="da-icon">⬇️</span>
-            <span class="da-label">Restaurar</span>
-            <span class="da-sub">Descarga desde Drive</span>
+            <span class="da-label">Exportar backup</span>
+            <span class="da-sub">Descarga un archivo JSON con todos tus datos</span>
           </button>
-          <button class="drive-action-btn" onclick="driveBackupAuto()">
-            <span class="da-icon">🔄</span>
-            <span class="da-label">Auto-Sync</span>
-            <span class="da-sub" id="drive-autosync-label">Activar sync automático</span>
-          </button>
-          <button class="drive-action-btn" onclick="driveDesconectar()" style="border-color:#7f1d1d">
-            <span class="da-icon">🔓</span>
-            <span class="da-label" style="color:var(--red)">Desconectar</span>
-            <span class="da-sub">Cerrar sesión Drive</span>
+          <button class="drive-action-btn" onclick="document.getElementById('backup-import-input').click()">
+            <span class="da-icon">⬆️</span>
+            <span class="da-label">Importar backup</span>
+            <span class="da-sub">Carga un archivo JSON para restaurar datos</span>
           </button>
         </div>
-
-        <div class="drive-section-label">📂 Backups en Drive</div>
-        <div id="drive-files-list">
-          <div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">
-            Haz clic en "Restaurar" para ver tus backups
-          </div>
+        <input type="file" id="backup-import-input" accept=".json" style="display:none" onchange="backupImportar(this)">
+        <div id="backup-status" style="font-size:12px;color:var(--text3);text-align:center;min-height:20px;padding:4px 0"></div>
+        <div class="drive-section-label">📋 Último backup exportado</div>
+        <div id="backup-last-export" style="font-size:11px;color:var(--text3);padding:4px 0">Nunca</div>
+        <div style="margin-top:14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:11px;color:var(--text3);line-height:1.7">
+          💡 <strong style="color:var(--text2)">Consejo:</strong> Exporta el backup y guárdalo en tu Google Drive manualmente, o envíatelo por WhatsApp. Así siempre tendrás una copia segura.
         </div>
-
-        <div class="drive-section-label">⏱️ Último sync</div>
-        <div id="drive-last-sync" style="font-size:11px;color:var(--text3);padding:4px 0">Nunca</div>
       </div>
     </div>
   </div>
@@ -1934,6 +1901,14 @@ function renderDashboard(){
   const totalTodo=totalCob+otrosCob;
   const pct=totalFact>0?Math.round(totalTodo/(totalFact+DB.ingresos.reduce((a,x)=>a+x.monto,0))*100):0;
 
+  // Calcular egresos del mes actual
+  const mesActual=new Date().toISOString().slice(0,7);
+  const herActivas=(DB.gastos_herramientas||[]).filter(g=>g.activa);
+  const totalHer=herActivas.reduce((a,g)=>a+gastoHMontoPEN(g),0);
+  const gastosEsteMes=(DB.gastos_puntuales||[]).filter(g=>g.fecha&&g.fecha.startsWith(mesActual));
+  const totalPuntual=gastosEsteMes.reduce((a,g)=>a+(g.monto||0),0);
+  const totalEgresos=totalHer+totalPuntual;
+
   document.getElementById('stats-grid').innerHTML=`
     <div class="stat-card"><div class="stat-label">Total Facturado</div><div class="stat-val">${fmtS(totalFact)}</div><div class="stat-sub">Acad\u00e9mico</div></div>
     <div class="stat-card green"><div class="stat-label">Total Cobrado</div><div class="stat-val">${fmtS((totalCob+otrosCob))}</div><div class="stat-sub">Todo</div></div>
@@ -1942,6 +1917,7 @@ function renderDashboard(){
     <div class="stat-card accent"><div class="stat-label">En Proceso</div><div class="stat-val">${t.filter(x=>x.estado==='En proceso').length}</div><div class="stat-sub">Activos</div></div>
     <div class="stat-card" style="border-color:#0e7490;background:#0a1c1c"><div class="stat-label" style="color:#22d3ee">Entregados</div><div class="stat-val" style="color:#22d3ee">${t.filter(x=>x.estado==='Entregado').length}</div><div class="stat-sub" style="color:#22d3ee">Por cobrar</div></div>
     <div class="stat-card"><div class="stat-label">Total Trabajos</div><div class="stat-val">${t.length}</div><div class="stat-sub">Registrados</div></div>
+    <div class="stat-card red" style="cursor:pointer" onclick="goView('gastos',document.querySelector('.nav-btn:nth-child(9)'))" title="Ver detalle de egresos"><div class="stat-label">💸 Egresos Este Mes</div><div class="stat-val">${fmtS(totalEgresos)}</div><div class="stat-sub">Fijo ${fmtSRaw(totalHer)} + Puntual ${fmtSRaw(totalPuntual)}</div></div>
   `;
   document.getElementById('pct-cobro').textContent=pct+'%';
   document.getElementById('progress-fill').style.width=pct+'%';
@@ -2308,6 +2284,19 @@ function renderIngresos(){
   }
 }
 
+// Estado del filtro activo de proyección: null=todos pendientes, 30=30días, 60=60días, 90=90días, 'total'=todos
+var proySel = null;
+
+function proyClearFilter(){
+  proySel = null;
+  renderProyeccion();
+}
+
+function proyClickCard(rango){
+  proySel = (proySel === rango) ? null : rango;
+  renderProyeccion();
+}
+
 function renderProyeccion(){
   const t=DB.trabajos;
   const getSaldo=x=>(x.precio||0)-(x.cobrado||0);
@@ -2345,10 +2334,13 @@ function renderProyeccion(){
     }
   });
 
-  // Sumar solo cuotas NO pagadas que caen en el rango
+  // Solo cuotas NO pagadas
+  const cuotasPend = todasCuotas.filter(function(c){
+    return c.estado!=='pagada' && c.estado!=='retraso' && c.trabajoEstado!=='Pagado';
+  });
+
   function sumaCuotasEnRango(dias){
-    return todasCuotas.filter(function(c){
-      if(c.estado==='pagada'||c.trabajoEstado==='Pagado') return false;
+    return cuotasPend.filter(function(c){
       var d=c.dias;
       return d!==null&&d!==undefined&&d<=dias&&d>=-1;
     }).reduce(function(a,c){return a+c.monto;},0);
@@ -2360,11 +2352,36 @@ function renderProyeccion(){
   const totalPend=t.reduce(function(a,x){return a+getSaldo(x);},0)+DB.ingresos.reduce(function(a,x){return a+(x.monto-x.cobrado||0);},0);
 
   document.getElementById('proy-grid').innerHTML=`
-    <div class="proy-card"><div class="proy-periodo">Próximos 30 días</div><div class="proy-monto" style="color:var(--green)">${fmtS(proy30)}</div><div class="proy-desc">Cobros esperados</div></div>
-    <div class="proy-card"><div class="proy-periodo">Próximos 60 días</div><div class="proy-monto" style="color:var(--yellow)">${fmtS(proy60)}</div><div class="proy-desc">Cobros esperados</div></div>
-    <div class="proy-card"><div class="proy-periodo">Próximos 90 días</div><div class="proy-monto" style="color:var(--accent3)">${fmtS(proy90)}</div><div class="proy-desc">Cobros esperados</div></div>
-    <div class="proy-card" style="border-color:var(--accent)"><div class="proy-periodo">Gran Total Pendiente</div><div class="proy-monto" style="color:var(--red)">${fmtS(totalPend)}</div><div class="proy-desc">Todo por cobrar</div></div>
+    <div class="proy-card${proySel===30?' active':''}" onclick="proyClickCard(30)">
+      <div class="proy-periodo">📅 Próximos 30 días</div>
+      <div class="proy-monto" style="color:var(--green)">${fmtS(proy30)}</div>
+      <div class="proy-desc">Cobros esperados · clic para filtrar</div>
+    </div>
+    <div class="proy-card${proySel===60?' active':''}" onclick="proyClickCard(60)">
+      <div class="proy-periodo">📅 Próximos 60 días</div>
+      <div class="proy-monto" style="color:var(--yellow)">${fmtS(proy60)}</div>
+      <div class="proy-desc">Cobros esperados · clic para filtrar</div>
+    </div>
+    <div class="proy-card${proySel===90?' active':''}" onclick="proyClickCard(90)">
+      <div class="proy-periodo">📅 Próximos 90 días</div>
+      <div class="proy-monto" style="color:var(--accent3)">${fmtS(proy90)}</div>
+      <div class="proy-desc">Cobros esperados · clic para filtrar</div>
+    </div>
+    <div class="proy-card${proySel==='total'?' active':''}" style="${proySel==='total'?'':'border-color:var(--accent)'}" onclick="proyClickCard('total')">
+      <div class="proy-periodo">💰 Gran Total Pendiente</div>
+      <div class="proy-monto" style="color:var(--red)">${fmtS(totalPend)}</div>
+      <div class="proy-desc">Todo por cobrar · clic para filtrar</div>
+    </div>
   `;
+
+  // Actualizar label y botón limpiar
+  const labelEl=document.getElementById('proy-filtro-label');
+  const clearBtn=document.getElementById('proy-clear-btn');
+  if(proySel===30){if(labelEl)labelEl.textContent='— Próximos 30 días';if(clearBtn)clearBtn.style.display='';}
+  else if(proySel===60){if(labelEl)labelEl.textContent='— Próximos 60 días';if(clearBtn)clearBtn.style.display='';}
+  else if(proySel===90){if(labelEl)labelEl.textContent='— Próximos 90 días';if(clearBtn)clearBtn.style.display='';}
+  else if(proySel==='total'){if(labelEl)labelEl.textContent='— Todo pendiente';if(clearBtn)clearBtn.style.display='';}
+  else{if(labelEl)labelEl.textContent='';if(clearBtn)clearBtn.style.display='none';}
 
   // Filtros
   const mesesDisp=[...new Set(todasCuotas.map(function(c){return c.fecha?c.fecha.slice(0,7):'';}).filter(Boolean))].sort();
@@ -2379,12 +2396,38 @@ function renderProyeccion(){
   }
 
   const filtroMes=mesFilter?mesFilter.value:'';
-  const filtroEstado=document.getElementById('proy-estado-filter')?document.getElementById('proy-estado-filter').value:'';
-  var cuotasFiltradas=todasCuotas.filter(function(c){
-    if(filtroMes&&(!c.fecha||!c.fecha.startsWith(filtroMes))) return false;
-    if(filtroEstado&&c.estado!==filtroEstado) return false;
-    return true;
-  });
+
+  // Aplicar filtro de rango por card seleccionada (solo pendientes) o filtro de mes
+  var cuotasFiltradas;
+  if(proySel===30){
+    cuotasFiltradas=cuotasPend.filter(function(c){
+      var d=c.dias; return d!==null&&d!==undefined&&d<=30&&d>=-1;
+    });
+  } else if(proySel===60){
+    cuotasFiltradas=cuotasPend.filter(function(c){
+      var d=c.dias; return d!==null&&d!==undefined&&d<=60&&d>=-1;
+    });
+  } else if(proySel===90){
+    cuotasFiltradas=cuotasPend.filter(function(c){
+      var d=c.dias; return d!==null&&d!==undefined&&d<=90&&d>=-1;
+    });
+  } else if(proySel==='total'){
+    cuotasFiltradas=cuotasPend.slice();
+  } else {
+    // Sin filtro de card: mostrar todas excepto pagadas, aplicar filtro de mes si hay
+    cuotasFiltradas=todasCuotas.filter(function(c){
+      if(filtroMes&&(!c.fecha||!c.fecha.startsWith(filtroMes))) return false;
+      return true;
+    });
+  }
+
+  // Si hay filtro de mes y filtro de card, combinar
+  if(proySel!==null && filtroMes){
+    cuotasFiltradas=cuotasFiltradas.filter(function(c){
+      return c.fecha&&c.fecha.startsWith(filtroMes);
+    });
+  }
+
   cuotasFiltradas.sort(function(a,b){return (a.dias||0)-(b.dias||0);});
 
   const cel=document.getElementById('cuotas-tabla');
@@ -2957,7 +3000,7 @@ function openGastoPuntual(g){
   document.getElementById('gp-desc').value=d.desc||'';
   document.getElementById('gp-fecha').value=d.fecha||todayStr();
   document.getElementById('gp-monto').value=d.monto||0;
-  document.getElementById('gp-categoria').value=d.categoria||'IA';
+  document.getElementById('gp-categoria').value=d.categoria||'';
   document.getElementById('gp-notas').value=d.notas||'';
   document.getElementById('modal-gasto-puntual').classList.add('open');
 }
@@ -7278,6 +7321,72 @@ function driveConectarClick() {
   
   // Todo listo, pedir autorización
   DRIVE.tokenClient.requestAccessToken({prompt: 'select_account'});
+}
+</script>
+
+<script>
+// ===================== BACKUP LOCAL =====================
+function backupExportar(){
+  try{
+    const dataStr = JSON.stringify(DB, null, 2);
+    const blob = new Blob([dataStr], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fecha = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = 'tracker-backup-'+fecha+'.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    const now = new Date().toLocaleString('es-PE');
+    localStorage.setItem('backup_last_export', now);
+    const el = document.getElementById('backup-last-export');
+    if(el) el.textContent = now;
+    const st = document.getElementById('backup-status');
+    if(st){st.textContent='✅ Backup exportado correctamente';st.style.color='var(--green)';}
+    showToast('✅ Backup exportado');
+  } catch(e){
+    showToast('❌ Error al exportar: '+e.message);
+  }
+}
+
+function backupImportar(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data.trabajos){
+        showToast('❌ Archivo no válido');
+        return;
+      }
+      if(!confirm('¿Restaurar backup? Se reemplazarán todos los datos actuales.')){
+        input.value='';
+        return;
+      }
+      Object.assign(DB, data);
+      save();
+      renderAll();
+      const st = document.getElementById('backup-status');
+      if(st){st.textContent='✅ Backup restaurado — '+file.name;st.style.color='var(--green)';}
+      showToast('✅ Datos restaurados correctamente');
+    } catch(err){
+      showToast('❌ Error al leer el archivo: '+err.message);
+    }
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+// Cargar fecha del último backup al abrir modal
+function abrirDrive(){
+  const modal = document.getElementById('modal-drive');
+  if(modal) modal.classList.add('open');
+  const last = localStorage.getItem('backup_last_export');
+  const el = document.getElementById('backup-last-export');
+  if(el) el.textContent = last || 'Nunca';
 }
 </script>
 </body>
