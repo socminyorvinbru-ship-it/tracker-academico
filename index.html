@@ -765,7 +765,7 @@
     <button class="nav-btn" onclick="goView('ingresos',this)">💼 Otros Ingresos</button>
     <button class="nav-btn" onclick="goView('proyeccion',this)">📅 Proyección</button>
     <button class="nav-btn" onclick="goView('productividad',this)">⚙️ Productividad</button>
-    <button class="nav-btn" onclick="abrirWaTemplates()">📲 WhatsApp</button>
+    <button class="nav-btn" onclick="goView('whatsapp',this)">📲 WhatsApp</button>
     <button class="nav-btn" onclick="goView('asistente',this)">🤖 Asistente Offline</button>
     <button class="nav-btn" onclick="goView('archivos',this)">📁 Archivos</button>
     <button class="nav-btn" onclick="goView('gastos',this)">💸 Gastos</button>
@@ -907,6 +907,17 @@
           </div>
         </div>
         <div id="cuotas-tabla"></div>
+      </div>
+    </div>
+
+    <!-- WHATSAPP INTEGRADO -->
+    <div class="view" id="v-whatsapp">
+      <div class="table-wrap" style="margin-bottom:16px">
+        <div class="table-toolbar" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">📲 WhatsApp — Plantillas y Cobros</span>
+          <button class="btn btn-sm" style="background:#25d366;color:#fff;border:none" onclick="abrirCobrosmasivo()">💸 Cobro Masivo</button>
+        </div>
+        <div id="wa-view-content" style="padding:12px"></div>
       </div>
     </div>
 
@@ -1106,7 +1117,7 @@
     <button class="mnav-btn" id="mnav-gastos" onclick="goView('gastos',this,true)">
       <span class="mnav-icon">💸</span>Gastos
     </button>
-    <button class="mnav-btn" onclick="abrirWaTemplates()">
+    <button class="mnav-btn" onclick="goView('whatsapp',this,true)">
       <span class="mnav-icon">📲</span>WhatsApp
     </button>
     <button class="mnav-btn" onclick="abrirDrive()">
@@ -1893,8 +1904,10 @@ function pillEstado(e){
 
 function renderDashboard(){
   const t=DB.trabajos;
-  const totalFact=t.reduce((a,x)=>a+(x.precio||0),0);
-  const totalCob=t.reduce((a,x)=>a+(x.cobrado||0),0);
+  // Excluir cancelados de todos los cálculos financieros
+  const tActivos=t.filter(x=>x.estado!=='Cancelado');
+  const totalFact=tActivos.reduce((a,x)=>a+(x.precio||0),0);
+  const totalCob=tActivos.reduce((a,x)=>a+(x.cobrado||0),0);
   const totalSaldo=totalFact-totalCob;
   const otrosCob=DB.ingresos.reduce((a,x)=>a+(x.cobrado||0),0);
   const otrosPend=DB.ingresos.reduce((a,x)=>a+(x.monto-x.cobrado||0),0);
@@ -1910,33 +1923,36 @@ function renderDashboard(){
   const totalEgresos=totalHer+totalPuntual;
 
   document.getElementById('stats-grid').innerHTML=`
-    <div class="stat-card"><div class="stat-label">Total Facturado</div><div class="stat-val">${fmtS(totalFact)}</div><div class="stat-sub">Acad\u00e9mico</div></div>
-    <div class="stat-card green"><div class="stat-label">Total Cobrado</div><div class="stat-val">${fmtS((totalCob+otrosCob))}</div><div class="stat-sub">Todo</div></div>
-    <div class="stat-card red"><div class="stat-label">Saldo Pendiente</div><div class="stat-val">${fmtS((totalSaldo+otrosPend))}</div><div class="stat-sub">Por cobrar</div></div>
-    <div class="stat-card yellow"><div class="stat-label">Otros Ingresos</div><div class="stat-val">${fmtS(otrosCob)}</div><div class="stat-sub">Cobrado | Pend: ${fmtSRaw(otrosPend)}</div></div>
-    <div class="stat-card accent"><div class="stat-label">En Proceso</div><div class="stat-val">${t.filter(x=>x.estado==='En proceso').length}</div><div class="stat-sub">Activos</div></div>
-    <div class="stat-card" style="border-color:#0e7490;background:#0a1c1c"><div class="stat-label" style="color:#22d3ee">Entregados</div><div class="stat-val" style="color:#22d3ee">${t.filter(x=>x.estado==='Entregado').length}</div><div class="stat-sub" style="color:#22d3ee">Por cobrar</div></div>
-    <div class="stat-card"><div class="stat-label">Total Trabajos</div><div class="stat-val">${t.length}</div><div class="stat-sub">Registrados</div></div>
+    <div class="stat-card" style="cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent2)'" onmouseout="this.style.borderColor=''" onclick="filtrarDashboard('todos')" title="Clic para ver todos los trabajos activos"><div class="stat-label">Total Facturado</div><div class="stat-val">${fmtS(totalFact)}</div><div class="stat-sub">Activos (excl. cancelados) · 🔍 clic</div></div>
+    <div class="stat-card green" style="cursor:pointer" onclick="filtrarDashboard('pagados')" title="Clic para ver trabajos pagados"><div class="stat-label">Total Cobrado</div><div class="stat-val">${fmtS((totalCob+otrosCob))}</div><div class="stat-sub">Todo · 🔍 clic para filtrar</div></div>
+    <div class="stat-card red" style="cursor:pointer" onclick="filtrarDashboard('saldo')" title="Clic para ver trabajos con saldo pendiente"><div class="stat-label">Saldo Pendiente</div><div class="stat-val">${fmtS((totalSaldo+otrosPend))}</div><div class="stat-sub">Por cobrar · 🔍 clic para filtrar</div></div>
+    <div class="stat-card yellow" style="cursor:pointer" onclick="goView('ingresos',document.querySelector('.nav-btn:nth-child(5)'))" title="Ver otros ingresos"><div class="stat-label">Otros Ingresos</div><div class="stat-val">${fmtS(otrosCob)}</div><div class="stat-sub">Cobrado | Pend: ${fmtSRaw(otrosPend)}</div></div>
+    <div class="stat-card accent" style="cursor:pointer" onclick="filtrarDashboard('enproceso')" title="Clic para ver trabajos en proceso"><div class="stat-label">En Proceso</div><div class="stat-val">${tActivos.filter(x=>x.estado==='En proceso').length}</div><div class="stat-sub">Activos · 🔍 clic para filtrar</div></div>
+    <div class="stat-card" style="border-color:#0e7490;background:#0a1c1c;cursor:pointer" onclick="filtrarDashboard('entregados')" title="Clic para ver trabajos entregados"><div class="stat-label" style="color:#22d3ee">Entregados</div><div class="stat-val" style="color:#22d3ee">${tActivos.filter(x=>x.estado==='Entregado').length}</div><div class="stat-sub" style="color:#22d3ee">Por cobrar · 🔍 clic</div></div>
+    <div class="stat-card" style="cursor:pointer" onclick="filtrarDashboard('todos')"><div class="stat-label">Total Trabajos</div><div class="stat-val">${t.length}</div><div class="stat-sub">Registrados (incl. cancelados)</div></div>
     <div class="stat-card red" style="cursor:pointer" onclick="goView('gastos',document.querySelector('.nav-btn:nth-child(9)'))" title="Ver detalle de egresos"><div class="stat-label">💸 Egresos Este Mes</div><div class="stat-val">${fmtS(totalEgresos)}</div><div class="stat-sub">Fijo ${fmtSRaw(totalHer)} + Puntual ${fmtSRaw(totalPuntual)}</div></div>
   `;
   document.getElementById('pct-cobro').textContent=pct+'%';
   document.getElementById('progress-fill').style.width=pct+'%';
 
-  const pagados=t.filter(x=>x.estado==='Pagado').length;
-  const enp=t.filter(x=>x.estado==='En proceso').length;
-  const pend=t.filter(x=>x.estado==='Pendiente').length;
-  const entr=t.filter(x=>x.estado==='Entregado').length;
-  const prepagados=t.filter(x=>x.estado==='Prepagado').length;
-  const venc=t.filter(x=>semaforo(x).label==='Vencido').length;
-  const entregados=t.filter(x=>x.estado==='Entregado').length;
-  const pronto=t.filter(x=>{const d=diffDias(x.fent);return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado'&&x.estado!=='Entregado';}).length;
+  // Contadores excluyen cancelados en las métricas de negocio
+  const pagados=tActivos.filter(x=>x.estado==='Pagado').length;
+  const enp=tActivos.filter(x=>x.estado==='En proceso').length;
+  const pend=tActivos.filter(x=>x.estado==='Pendiente').length;
+  const entr=tActivos.filter(x=>x.estado==='Entregado').length;
+  const prepagados=tActivos.filter(x=>x.estado==='Prepagado').length;
+  const cancelados=t.filter(x=>x.estado==='Cancelado').length;
+  const venc=tActivos.filter(x=>semaforo(x).label==='Vencido').length;
+  const entregados=tActivos.filter(x=>x.estado==='Entregado').length;
+  const pronto=tActivos.filter(x=>{const d=diffDias(x.fent);return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado'&&x.estado!=='Entregado';}).length;
   document.getElementById('counters').innerHTML=`
-    <span class="counter-badge cb-green">✅ Pagados: ${pagados}</span>
-    <span class="counter-badge cb-blue">🔵 En Proceso: ${enp}</span>
-    <span class="counter-badge cb-orange">🟠 Pendientes: ${pend}</span>
-    ${prepagados>0?`<span class="counter-badge" style="background:#1a1200;color:#f59e0b;border:1px solid #92400e">🟡 Prepagados: ${prepagados}</span>`:''}
-    <span class="counter-badge cb-red">🔴 Vencidos: ${venc}</span>
-    <span class="counter-badge cb-yellow">⚠️ Pr\u00f3x 7d: ${pronto}</span>
+    <span class="counter-badge cb-green" style="cursor:pointer" onclick="filtrarDashboard('pagados')">✅ Pagados: ${pagados}</span>
+    <span class="counter-badge cb-blue" style="cursor:pointer" onclick="filtrarDashboard('enproceso')">🔵 En Proceso: ${enp}</span>
+    <span class="counter-badge cb-orange" style="cursor:pointer" onclick="filtrarDashboard('pendientes')">🟠 Pendientes: ${pend}</span>
+    ${prepagados>0?`<span class="counter-badge" style="background:#1a1200;color:#f59e0b;border:1px solid #92400e;cursor:pointer" onclick="filtrarDashboard('prepagados')">🟡 Prepagados: ${prepagados}</span>`:''}
+    <span class="counter-badge cb-red" style="cursor:pointer" onclick="filtrarDashboard('vencidos')">🔴 Vencidos: ${venc}</span>
+    <span class="counter-badge cb-yellow">⚠️ Próx 7d: ${pronto}</span>
+    ${cancelados>0?`<span class="counter-badge" style="background:#1a1a1a;color:#666;border:1px solid #333;cursor:pointer" onclick="filtrarDashboard('cancelados')">⚫ Cancelados: ${cancelados}</span>`:''}
     <span class="counter-badge cb-gray">Total: ${t.length}</span>
   `;
 
@@ -2444,8 +2460,9 @@ function renderProyeccion(){
       var dcls,dtext;
       if(d<0){dcls='background:#1f0505;color:var(--red);border:1px solid #7f1d1d';dtext=Math.abs(d)+'d venc';}
       else if(d===0){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext='Hoy';}
-      else if(d<=7){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext=d+'d';}
-      else{dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';dtext=d+'d';}
+      else if(d===1){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext='Mañana';}
+      else if(d<=7){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dtext='En '+d+'d';}
+      else{dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';dtext='En '+d+'d';}
       var est=c.estado||'pendiente';
       return`<div class="cuota-mcard" onclick="verHistorial(${c.id})">
         <div class="cuota-mcard-top">
@@ -2473,7 +2490,7 @@ function renderProyeccion(){
         <td>${c.tipo}</td>
         <td><span style="color:var(--text3)">C${c.num}</span></td>
         <td>${fmt(c.fecha)}${c.freal&&est==='retraso'?`<br><span style="font-size:10px;color:var(--yellow)">Pagó: ${fmt(c.freal)}</span>`:''}</td>
-        <td><span class="dias-badge" style="${dcls}">${d<0?Math.abs(d)+'d venc':d===0?'Hoy':d+'d'}</span></td>
+        <td><span class="dias-badge" style="${dcls}">${d<0?Math.abs(d)+'d venc':d===0?'Hoy':d===1?'Mañana':'En '+d+'d'}</span></td>
         <td style="font-weight:600;color:var(--accent3)">${fmtSRaw(c.monto)}</td>
         <td><span style="font-size:12px;color:${estColor[est]}">${estIcon[est]} ${estLabel[est]}</span></td>
       </tr>`;
@@ -2481,6 +2498,181 @@ function renderProyeccion(){
   }
 }
 
+
+// ====== TAREAS INLINE POR TRABAJO ======
+function getTareasInline(id){
+  try{ return JSON.parse(localStorage.getItem('tracker_tareas_'+id)||'[]'); }catch(e){return [];}
+}
+function saveTareasInline(id, arr){
+  localStorage.setItem('tracker_tareas_'+id, JSON.stringify(arr));
+}
+function toggleTareasInline(id){
+  const panel = document.getElementById('tareas-inline-'+id);
+  const btn = document.getElementById('btn-tareas-'+id);
+  if(!panel) return;
+  const visible = panel.style.display !== 'none';
+  panel.style.display = visible ? 'none' : 'block';
+  if(btn) btn.style.background = visible ? '' : 'rgba(52,211,153,.15)';
+  if(!visible) renderTareasInline(id);
+}
+function renderTareasInline(id){
+  const panel = document.getElementById('tareas-inline-'+id);
+  if(!panel) return;
+  const tareas = getTareasInline(id);
+  const pendientes = tareas.filter(t=>!t.done).length;
+  panel.innerHTML = `<div style="padding:0 2px">
+    <div style="font-size:10px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
+      Tareas ${pendientes>0?'<span style="color:var(--yellow)">('+pendientes+' pendiente'+(pendientes!==1?'s':'')+')</span>':''}
+    </div>
+    ${tareas.length===0?'<div style="font-size:11px;color:var(--text3);padding:4px 0 8px">Sin tareas aún</div>':''}
+    ${tareas.map((tk,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+      <input type="checkbox" ${tk.done?'checked':''} onchange="toggleTareaInlineItem(${id},${i},this.checked)" style="width:16px;height:16px;accent-color:var(--green);flex-shrink:0">
+      <span style="flex:1;font-size:12px;${tk.done?'text-decoration:line-through;color:var(--text3)':'color:var(--text)'}">${escHtml(tk.texto)}</span>
+      <button onclick="eliminarTareaInline(${id},${i})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:2px 4px">✕</button>
+    </div>`).join('')}
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <input id="nueva-tarea-input-${id}" class="form-input" placeholder="Nueva tarea..." style="font-size:12px;flex:1;padding:6px 10px"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();agregarTareaInline(${id});}">
+      <button class="btn btn-primary btn-sm" onclick="agregarTareaInline(${id})" style="flex-shrink:0">+</button>
+    </div>
+  </div>`;
+}
+function agregarTareaInline(id){
+  const input = document.getElementById('nueva-tarea-input-'+id);
+  if(!input || !input.value.trim()) return;
+  const tareas = getTareasInline(id);
+  tareas.push({texto:input.value.trim(), done:false, fecha:todayStr()});
+  saveTareasInline(id, tareas);
+  input.value = '';
+  renderTareasInline(id);
+  const btn = document.getElementById('btn-tareas-'+id);
+  const pendientes = tareas.filter(t=>!t.done).length;
+  if(btn) btn.textContent = pendientes>0?'✅ Tareas('+pendientes+')':'✅ Tareas';
+}
+function toggleTareaInlineItem(id, idx, checked){
+  const tareas = getTareasInline(id);
+  if(tareas[idx]) tareas[idx].done = checked;
+  saveTareasInline(id, tareas);
+  const btn = document.getElementById('btn-tareas-'+id);
+  const pendientes = tareas.filter(t=>!t.done).length;
+  if(btn) btn.textContent = pendientes>0?'✅ Tareas('+pendientes+')':'✅ Tareas';
+}
+function eliminarTareaInline(id, idx){
+  const tareas = getTareasInline(id);
+  tareas.splice(idx, 1);
+  saveTareasInline(id, tareas);
+  renderTareasInline(id);
+}
+// ====== WHATSAPP RÁPIDO DESDE TARJETA ======
+function enviarWaRapidoTrabajo(id){
+  const t = DB.trabajos.find(x=>x.id===id);
+  if(!t || !t.cel){ showToast('Este cliente no tiene celular registrado'); return; }
+  const saldo = (t.precio||0)-(t.cobrado||0);
+  const arr = typeof getWaTemplates==='function' ? getWaTemplates() : [];
+  const tpl = arr[0];
+  const msg = tpl ? buildWaMessage(tpl, t) : 'Hola '+t.nombre+' ! Tienes un saldo pendiente de S/'+saldo+' por '+t.tipo+'. Gracias!';
+  const num = t.cel.replace(/\D/g,'');
+  const url = num ? 'https://wa.me/51'+num+'?text='+encodeURIComponent(msg) : 'https://wa.me/?text='+encodeURIComponent(msg);
+  window.open(url, '_blank');
+}
+
+function renderWhatsAppView(){
+  const el = document.getElementById('wa-view-content');
+  if(!el) return;
+  const arr = getWaTemplates();
+  // Clientes con saldo pendiente y celular
+  const morosos = DB.trabajos.filter(t=>{
+    const sal = (t.precio||0)-(t.cobrado||0);
+    return sal>0 && t.estado!=='Cancelado' && t.cel;
+  }).sort((a,b)=>((b.precio||0)-(b.cobrado||0))-((a.precio||0)-(a.cobrado||0)));
+
+  el.innerHTML = `
+    <div style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">📋 Plantillas Guardadas</div>
+      <div id="wa-view-templates"></div>
+      <button class="btn btn-ghost btn-sm" onclick="abrirNuevaWaTemplate()" style="margin-top:8px;font-size:11px">+ Nueva Plantilla</button>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">
+        👥 Clientes con Saldo Pendiente <span style="font-weight:400;color:var(--text3)">(${morosos.length} con celular)</span>
+      </div>
+      <div>
+      ${morosos.length === 0 ? '<div style="color:var(--text3);font-size:12px;padding:16px;text-align:center">🎉 Sin clientes con saldo pendiente y celular registrado.</div>' :
+        morosos.slice(0,15).map(t=>{
+          const sal=(t.precio||0)-(t.cobrado||0);
+          const num=t.cel.replace(/\D/g,'');
+          const tplIdx = 0; // usar primera plantilla por defecto
+          const tpl = arr[tplIdx] || arr[0];
+          const msg = tpl ? buildWaMessage(tpl, t) : `Hola ${t.nombre}, tienes un saldo pendiente de S/${sal}.`;
+          const url = num ? `https://wa.me/51${num}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+          return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:13px;margin-bottom:2px">${t.nombre}</div>
+              <div style="font-size:10px;color:var(--text3)">${t.tipo} · 📱 ${t.cel}</div>
+              <div style="font-size:11px;color:var(--red);font-weight:700;margin-top:3px">S/${sal} pendiente</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+              <button class="btn btn-sm" style="background:#25d366;color:#fff;border:none;font-size:11px" onclick="window.open('${url}','_blank')">📲 WA</button>
+              <button class="btn btn-ghost btn-sm" style="font-size:10px" onclick="cobrarTrabajo(${t.id})">💰</button>
+            </div>
+          </div>`;
+        }).join('')
+      }
+      </div>
+    </div>
+  `;
+  // Render templates
+  const tplEl = document.getElementById('wa-view-templates');
+  if(tplEl){
+    tplEl.innerHTML = arr.map((tpl,i)=>`
+      <div class="wa-template-card" style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+          <div style="font-size:12px;font-weight:700;color:var(--text)">${tpl.nombre}</div>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="btn btn-ghost btn-sm" onclick="editarWaTemplate(${i})" title="Editar">✎</button>
+            ${i>=4?`<button class="btn btn-danger btn-sm" onclick="eliminarWaTemplate(${i});renderWhatsAppView()">✕</button>`:''}
+          </div>
+        </div>
+        <div class="wa-template-preview" style="margin:6px 0 8px">${escHtml(tpl.body).replace(/\n/g,'<br>')}</div>
+        <button class="btn btn-sm" style="background:#25d366;color:#fff;border-color:#25d366;font-size:11px" onclick="usarWaTemplateConCliente(${i})">📲 Usar con cliente</button>
+      </div>`).join('');
+  }
+}
+
+function filtrarDashboard(tipo){
+  // Navegar a la vista de registro y aplicar filtro de estado
+  const navBtn = document.querySelector('.nav-btn:nth-child(2)');
+  const mnavBtn = document.querySelector('.mnav-btn:nth-child(2)');
+  const isMobile = window.innerWidth <= 768;
+  goView('registro', isMobile ? mnavBtn : navBtn, isMobile);
+  // Limpiar filtros previos
+  const searchInput = document.getElementById('search-input');
+  if(searchInput) searchInput.value = '';
+  const filterEstado = document.getElementById('filter-estado');
+  const filterTipo = document.getElementById('filter-tipo');
+  if(filterTipo) filterTipo.value = '';
+  if(filterEstado){
+    switch(tipo){
+      case 'pagados': filterEstado.value = 'Pagado'; break;
+      case 'enproceso': filterEstado.value = 'En proceso'; break;
+      case 'pendientes': filterEstado.value = 'Pendiente'; break;
+      case 'entregados': filterEstado.value = 'Entregado'; break;
+      case 'prepagados': filterEstado.value = 'Prepagado'; break;
+      case 'cancelados': filterEstado.value = 'Cancelado'; break;
+      case 'saldo':
+        // Mostrar todos con saldo pendiente (no pagados ni cancelados)
+        filterEstado.value = 'En proceso';
+        showToast('💰 Mostrando trabajos en proceso con saldo pendiente');
+        break;
+      case 'vencidos': filterEstado.value = ''; break;
+      default: filterEstado.value = ''; break;
+    }
+  }
+  setTimeout(()=>{
+    renderTabla();
+    window.scrollTo(0,0);
+  }, 150);
+}
 
 function goView(name, btn, isMobile=false){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -2499,6 +2691,7 @@ function goView(name, btn, isMobile=false){
   renderAll();
   if(name==='productividad') renderProductividad();
   if(name==='asistente') aiCheckKey();
+  if(name==='whatsapp') setTimeout(renderWhatsAppView, 80);
   if(name==='archivos') setTimeout(function(){ if(typeof renderArchivos==='function') renderArchivos(); }, 80);
   if(name==='gastos') setTimeout(function(){ if(typeof renderGastos==='function') renderGastos(); }, 80);
 }
@@ -6291,9 +6484,12 @@ function renderTabla(){
         <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button>
         <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa" title="Historial">📋</button>
         <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa" title="Bitácora">📓</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleTareasInline(${t.id})" style="color:#34d399" title="Ver tareas del trabajo" id="btn-tareas-${t.id}">✅ Tareas</button>
         <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" style="color:#f59e0b" title="Comprobante">🧾</button>
+        ${t.cel ? `<button class="btn btn-ghost btn-sm" onclick="enviarWaRapidoTrabajo(${t.id})" style="color:#25d366" title="WhatsApp">📲</button>` : ''}
         <button class="btn btn-danger btn-sm" onclick="if(confirm('¿Eliminar?'))eliminarTrabajo(${t.id})" title="Eliminar">✕</button>
       </div>
+      <div id="tareas-inline-${t.id}" style="display:none;border-top:1px solid var(--border);padding:10px 0 4px"></div>
     </div>`;
   }).join('');
 }
