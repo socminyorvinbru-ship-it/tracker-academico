@@ -157,8 +157,8 @@
   .mcard-progress{height:3px;background:var(--bg4);border-radius:3px;margin:8px 0;overflow:hidden}
   .mcard-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .4s}
   .mcard-footer{display:flex;gap:4px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:10px;margin-top:2px}
-  .mcard-footer .btn{flex:1;min-width:0;justify-content:center;display:flex;align-items:center;gap:2px;padding:5px 4px;font-size:10px}
-  .mcard-footer .btn-primary{flex:1.5;font-size:11px;font-weight:700}
+  .mcard-footer .btn{width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;min-width:0;position:relative}
+  .mcard-footer .btn-primary{width:34px;font-size:15px;font-weight:700}
 
   /* PILLS */
   .pill{padding:3px 9px;border-radius:12px;font-size:10px;font-weight:600;white-space:nowrap}
@@ -2691,7 +2691,7 @@ function agregarTareaInline(id){
   const hoyStr = todayStr();
   const tieneHoy = tareas.some(tk=>!tk.done && tk.fecha===hoyStr);
   if(btn) {
-    btn.textContent = pendientes>0?'✅ Tareas('+pendientes+')':'✅ Tareas';
+    actualizarBtnTareas(id, tareas);
     btn.style.background = tieneHoy ? 'rgba(239,68,68,.25)' : (pendientes>0 ? 'rgba(52,211,153,.15)' : '');
     btn.style.borderColor = tieneHoy ? 'var(--red)' : '';
   }
@@ -2704,7 +2704,7 @@ function toggleTareaInlineItem(id, idx, checked){
   saveTareasInline(id, tareas);
   const btn = document.getElementById('btn-tareas-'+id);
   const pendientes = tareas.filter(t=>!t.done).length;
-  if(btn) btn.textContent = pendientes>0?'✅ Tareas('+pendientes+')':'✅ Tareas';
+  if(btn) actualizarBtnTareas(id, tareas);
 }
 function eliminarTareaInline(id, idx){
   const tareas = getTareasInline(id);
@@ -2805,22 +2805,104 @@ function completarTareaUrgente(trabajoId, idx, checked){
 }
 
 // Actualizar badge en botones de tareas de los registros
-function actualizarBadgesTareas(){
+function actualizarBtnTareas(id, tareas){
+  const btn = document.getElementById('btn-tareas-'+id);
+  if(!btn) return;
+  const pendientes = tareas.filter(t=>!t.done).length;
   const hoyStr = todayStr();
+  const tieneHoy = tareas.some(tk=>!tk.done && tk.fecha && tk.fecha <= hoyStr);
+  // Mantener solo el emoji, actualizar badge numérico separado
+  const badge = document.getElementById('badge-tareas-'+id);
+  if(badge){
+    if(pendientes>0){ badge.textContent=pendientes; badge.style.display=''; badge.style.background=tieneHoy?'var(--red)':'var(--accent)'; }
+    else { badge.style.display='none'; }
+  }
+  btn.style.background = tieneHoy ? 'rgba(239,68,68,.25)' : pendientes>0 ? 'rgba(52,211,153,.1)' : '';
+  btn.style.borderColor = tieneHoy ? 'var(--red)' : '';
+  btn.style.color = tieneHoy ? 'var(--red)' : '#34d399';
+}
+
+function actualizarBadgesTareas(){
   DB.trabajos.forEach(function(tj){
-    const btn = document.getElementById('btn-tareas-'+tj.id);
-    if(!btn) return;
-    const tareas = getTareasInline(tj.id);
-    const pendientes = tareas.filter(t=>!t.done).length;
-    const tieneHoy = tareas.some(tk=>!tk.done && tk.fecha && tk.fecha <= hoyStr);
-    btn.textContent = pendientes>0?'✅ Tareas('+pendientes+')':'✅ Tareas';
-    btn.style.background = tieneHoy ? 'rgba(239,68,68,.2)' : pendientes>0 ? 'rgba(52,211,153,.1)' : '';
-    btn.style.borderColor = tieneHoy ? 'var(--red)' : '';
-    btn.style.color = tieneHoy ? 'var(--red)' : '';
+    actualizarBtnTareas(tj.id, getTareasInline(tj.id));
   });
 }
 
-// ====== WHATSAPP RÁPIDO DESDE TARJETA ======
+// ====== CAMBIO DE ESTADO RÁPIDO ======
+function cambiarEstadoRapido(id, btn){
+  // Cerrar cualquier menú abierto
+  document.querySelectorAll('.estado-rapido-menu').forEach(m=>m.remove());
+
+  const t = DB.trabajos.find(x=>x.id===id);
+  if(!t) return;
+
+  const estados = [
+    {val:'En proceso',   icon:'🔵', cls:'#60a5fa'},
+    {val:'Pendiente',    icon:'🟠', cls:'var(--orange)'},
+    {val:'Terminado',    icon:'🟣', cls:'#d946ef'},
+    {val:'Entregado',    icon:'🔷', cls:'#22d3ee'},
+    {val:'Prepagado',    icon:'🟡', cls:'#f59e0b'},
+    {val:'Pagado',       icon:'🟢', cls:'var(--green)'},
+    {val:'Cancelado',    icon:'⚫', cls:'#666'},
+  ];
+  // Añadir custom estados si los hay
+  const custom = getEstadosCustom();
+  custom.forEach(c=>estados.push({val:c, icon:'🏷️', cls:'var(--text2)'}));
+
+  const menu = document.createElement('div');
+  menu.className = 'estado-rapido-menu';
+  menu.style.cssText = 'position:fixed;z-index:500;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:6px;box-shadow:0 8px 32px rgba(0,0,0,.6);min-width:180px;max-height:60vh;overflow-y:auto';
+
+  menu.innerHTML = `<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;padding:4px 8px 8px">Cambiar estado</div>`
+    + estados.map(e=>`
+    <div onclick="aplicarEstadoRapido(${id},'${e.val}',this)" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:background .15s;${t.estado===e.val?'background:rgba(124,111,255,.15);':''}">
+      <span style="font-size:15px">${e.icon}</span>
+      <span style="font-size:13px;font-weight:600;color:${e.cls};flex:1">${e.val}</span>
+      ${t.estado===e.val?'<span style="font-size:11px;color:var(--accent3)">✓ actual</span>':''}
+    </div>`).join('');
+
+  document.body.appendChild(menu);
+
+  // Posicionar cerca del botón
+  const rect = btn.getBoundingClientRect();
+  const menuH = Math.min(estados.length * 44 + 40, window.innerHeight * 0.6);
+  let top = rect.top - menuH - 6;
+  if(top < 10) top = rect.bottom + 6;
+  let left = rect.left - 90;
+  if(left < 8) left = 8;
+  if(left + 186 > window.innerWidth) left = window.innerWidth - 194;
+  menu.style.top = top + 'px';
+  menu.style.left = left + 'px';
+
+  // Hover effect
+  menu.querySelectorAll('[onclick^="aplicarEstadoRapido"]').forEach(row=>{
+    row.addEventListener('mouseenter', ()=>row.style.background='rgba(124,111,255,.1)');
+    row.addEventListener('mouseleave', ()=>row.style.background=row.dataset.actual?'rgba(124,111,255,.15)':'');
+  });
+
+  // Cerrar al tocar fuera
+  setTimeout(()=>{
+    document.addEventListener('click', function cerrar(e){
+      if(!menu.contains(e.target)){ menu.remove(); document.removeEventListener('click',cerrar); }
+    });
+  }, 50);
+}
+
+function aplicarEstadoRapido(id, nuevoEstado, el){
+  const idx = DB.trabajos.findIndex(x=>x.id===id);
+  if(idx<0) return;
+  const anterior = DB.trabajos[idx].estado;
+  if(anterior === nuevoEstado){ document.querySelectorAll('.estado-rapido-menu').forEach(m=>m.remove()); return; }
+  DB.trabajos[idx].estado = nuevoEstado;
+  // Registrar en bitácora
+  const log = JSON.parse(localStorage.getItem('bitacora_'+id)||'[]');
+  log.push({fecha: new Date().toISOString(), texto: `Estado cambiado: ${anterior} → ${nuevoEstado} (cambio rápido)`});
+  localStorage.setItem('bitacora_'+id, JSON.stringify(log));
+  save();
+  renderAll();
+  document.querySelectorAll('.estado-rapido-menu').forEach(m=>m.remove());
+  showToast(`✅ Estado → ${nuevoEstado}`);
+}
 function enviarWaRapidoTrabajo(id){
   const t = DB.trabajos.find(x=>x.id===id);
   if(!t || !t.cel){ showToast('Este cliente no tiene celular registrado'); return; }
@@ -6824,8 +6906,9 @@ function renderTabla(){
         <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button>
         <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa" title="Historial">📋</button>
         <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa" title="Bitácora">📓</button>
-        <button class="btn btn-ghost btn-sm" onclick="toggleTareasInline(${t.id})" style="color:#34d399" title="Ver tareas del trabajo" id="btn-tareas-${t.id}">✅</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleTareasInline(${t.id})" style="color:#34d399;position:relative" title="Ver tareas del trabajo" id="btn-tareas-${t.id}">✅<span id="badge-tareas-${t.id}" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;border-radius:50%;font-size:9px;font-weight:700;min-width:14px;height:14px;line-height:14px;text-align:center;padding:0 2px"></span></button>
         <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" style="color:#f59e0b" title="Comprobante">🧾</button>
+        <button class="btn btn-ghost btn-sm" onclick="cambiarEstadoRapido(${t.id},this)" style="color:#c084fc" title="Cambiar estado">📌</button>
         ${t.cel ? `<button class="btn btn-ghost btn-sm" onclick="enviarWaRapidoTrabajo(${t.id})" style="color:#25d366" title="WhatsApp">📲</button>` : ''}
         <button class="btn btn-danger btn-sm" onclick="if(confirm('¿Eliminar?'))eliminarTrabajo(${t.id})" title="Eliminar">✕</button>
       </div>
