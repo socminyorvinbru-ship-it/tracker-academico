@@ -863,13 +863,15 @@
         </div>
         <div id="urgentes-tareas-lista"></div>
       </div>
+      <!-- Trabajos urgentes del dia -->
+      <div class="table-wrap" style="margin-bottom:16px">
         <div class="urgentes-header">
           <span style="font-size:13px;font-weight:700;color:var(--text);flex:1">🚨 Trabajos urgentes</span>
           <span class="urgentes-date-badge" id="urgentes-date-badge">Hoy</span>
         </div>
         <div id="urgentes-lista"></div>
       </div>
-      <!-- También muestra los de mañana -->
+      <!-- Proximos 7 dias - solo en esta pestana -->
       <div class="table-wrap">
         <div class="section-header">
           <span class="section-title">📆 Próximos (siguientes 7 días)</span>
@@ -882,7 +884,7 @@
     <div class="view" id="v-alertas">
       <div class="table-wrap">
         <div class="section-header">
-          <span class="section-title">⚠️ Trabajos Vencidos y Próximos 7 días</span>
+          <span class="section-title">⚠️ Trabajos Vencidos</span>
         </div>
         <div id="alertas-full"></div>
       </div>
@@ -1951,17 +1953,17 @@ function renderDashboard(){
   const pagados=tActivos.filter(x=>x.estado==='Pagado').length;
   const enp=tActivos.filter(x=>x.estado==='En proceso').length;
   const pend=tActivos.filter(x=>x.estado==='Pendiente').length;
-  const entr=tActivos.filter(x=>x.estado==='Entregado'||x.estado==='Terminado').length;
+  const entr=tActivos.filter(x=>x.estado==='Entregado').length;
   const prepagados=tActivos.filter(x=>x.estado==='Prepagado').length;
   const cancelados=t.filter(x=>x.estado==='Cancelado').length;
-  const venc=tActivos.filter(x=>semaforo(x).label==='Vencido').length;
-  const entregados=tActivos.filter(x=>x.estado==='Entregado'||x.estado==='Terminado').length;
+  const venc=tActivos.filter(x=>semaforo(x).label==='Vencido'&&x.estado!=='Pagado'&&x.estado!=='Cancelado').length;
   const pronto=tActivos.filter(x=>{const d=diffDias(x.fent);return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado'&&x.estado!=='Entregado';}).length;
   // Filtros rápidos visuales en el dashboard — tarjetas clickeables
   const terminados=tActivos.filter(x=>x.estado==='Terminado').length;
-  const totalSaldoPendiente=tActivos.filter(x=>x.estado!=='Pagado').reduce((a,x)=>a+((x.precio||0)-(x.cobrado||0)),0);
-  const totalEntregadoMonto=tActivos.filter(x=>x.estado==='Entregado'||x.estado==='Terminado').reduce((a,x)=>a+((x.precio||0)-(x.cobrado||0)),0);
-  const totalPrepagadoMonto=tActivos.filter(x=>x.estado==='Prepagado').reduce((a,x)=>a+((x.precio||0)-(x.cobrado||0)),0);
+  // Por cobrar: todo lo que tiene saldo > 0 y no está cancelado (incluye entregados, terminados, pendientes, en proceso)
+  const totalSaldoPendiente=tActivos.filter(x=>x.estado!=='Pagado'&&x.estado!=='Cancelado').reduce((a,x)=>a+Math.max(0,(x.precio||0)-(x.cobrado||0)),0);
+  const totalEntregadoMonto=tActivos.filter(x=>x.estado==='Entregado').reduce((a,x)=>a+Math.max(0,(x.precio||0)-(x.cobrado||0)),0);
+  const totalPrepagadoMonto=tActivos.filter(x=>x.estado==='Prepagado').reduce((a,x)=>a+Math.max(0,(x.precio||0)-(x.cobrado||0)),0);
 
   document.getElementById('dash-filtros-rapidos').innerHTML=`
     <div onclick="filtrarDashboard('saldo')" style="background:linear-gradient(135deg,#1a1a2e,#1e1b3a);border:1px solid var(--accent);border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--accent3)'" onmouseout="this.style.borderColor='var(--accent)'">
@@ -1985,7 +1987,7 @@ function renderDashboard(){
       <div style="font-size:9px;color:var(--text3);margin-top:3px">Trabajando ahora</div>
     </div>
     <div onclick="filtrarDashboard('entregados')" style="background:#0a1c1c;border:1px solid #0e7490;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#22d3ee'" onmouseout="this.style.borderColor='#0e7490'">
-      <div style="font-size:11px;color:#22d3ee;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🔷 Entregados/Terminados</div>
+      <div style="font-size:11px;color:#22d3ee;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🔷 Entregados</div>
       <div style="font-size:20px;font-weight:700;color:#22d3ee">${entr}</div>
       <div style="font-size:9px;color:var(--text3);margin-top:3px">${fmtS(totalEntregadoMonto)} pendiente</div>
     </div>
@@ -2002,7 +2004,7 @@ function renderDashboard(){
     ${terminados>0?`<div onclick="filtrarDashboard('terminados')" style="background:#1c0a1c;border:1px solid #701a75;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#d946ef'" onmouseout="this.style.borderColor='#701a75'">
       <div style="font-size:11px;color:#d946ef;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🟣 Terminados</div>
       <div style="font-size:20px;font-weight:700;color:#d946ef">${terminados}</div>
-      <div style="font-size:9px;color:var(--text3);margin-top:3px">Listos p/entregar</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">Hecho · pendiente de cobro/cierre</div>
     </div>`:''}
     ${cancelados>0?`<div onclick="filtrarDashboard('cancelados')" style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center">
       <div style="font-size:11px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⚫ Cancelados</div>
@@ -2031,16 +2033,13 @@ function renderTabla(){
   const filtroExtra = window._dashFiltroExtra || null;
   let rows=DB.trabajos.filter(t=>{
     if(q&&!(t.nombre.toLowerCase().includes(q)||t.tipo.toLowerCase().includes(q)||(t.uni||'').toLowerCase().includes(q)))return false;
-    if(filtroExtra==='entregados_y_terminados'){
-      if(t.estado!=='Entregado'&&t.estado!=='Terminado') return false;
-    } else {
-      if(fe&&t.estado!==fe)return false;
-    }
+    if(fe&&t.estado!==fe)return false;
     if(ft&&t.tipo!==ft)return false;
     // Filtros extra desde el dashboard
     if(filtroExtra==='saldo'){
+      if(t.estado==='Cancelado'||t.estado==='Pagado') return false;
       const s=(t.precio||0)-(t.cobrado||0);
-      if(s<=0||t.estado==='Cancelado'||t.estado==='Pagado') return false;
+      if(s<=0) return false;
     }
     if(filtroExtra==='vencidos'){
       if(t.estado==='Pagado'||t.estado==='Cancelado') return false;
@@ -2158,10 +2157,10 @@ function renderAlertas(){
   const isMobile=window.innerWidth<=640;
   const all=DB.trabajos.filter(x=>{
     const d=diffDias(x.fent);
-    return x.estado!=='Pagado'&&x.estado!=='Cancelado'&&(d===null||d<=7);
+    return x.estado!=='Pagado'&&x.estado!=='Cancelado'&&d!==null&&d<0;
   }).sort((a,b)=>(diffDias(a.fent)||999)-(diffDias(b.fent)||999));
   const el=document.getElementById('alertas-full');
-  if(all.length===0){el.innerHTML='<div class="empty">Todo al día ✅</div>';return;}
+  if(all.length===0){el.innerHTML='<div class="empty">✅ Sin trabajos vencidos</div>';return;}
 
   if(isMobile){
     el.innerHTML=all.map((t,i)=>{
@@ -2916,7 +2915,7 @@ function filtrarDashboard(tipo){
       case 'pagados':    filterEstado.value = 'Pagado'; break;
       case 'enproceso':  filterEstado.value = 'En proceso'; break;
       case 'pendientes': filterEstado.value = 'Pendiente'; break;
-      case 'entregados': filterEstado.value = 'Entregado'; window._dashFiltroExtra='entregados_y_terminados'; break;
+      case 'entregados': filterEstado.value = 'Entregado'; break;
       case 'prepagados': filterEstado.value = 'Prepagado'; break;
       case 'terminados': filterEstado.value = 'Terminado'; break;
       case 'cancelados': filterEstado.value = 'Cancelado'; break;
@@ -6706,7 +6705,7 @@ function renderTabla(){
     if(ft&&t.tipo!==ft)return false;
     if(fp&&(t.prioridad||'')!==fp)return false;
     if(activeTagFilter&&!(t.tags||[]).includes(activeTagFilter))return false;
-    if(filtroExtra==='saldo'){const s=(t.precio||0)-(t.cobrado||0);if(s<=0||t.estado==='Cancelado'||t.estado==='Pagado')return false;}
+    if(filtroExtra==='saldo'){if(t.estado==='Cancelado'||t.estado==='Pagado')return false;const s=(t.precio||0)-(t.cobrado||0);if(s<=0)return false;}
     if(filtroExtra==='vencidos'){if(t.estado==='Pagado'||t.estado==='Cancelado')return false;const d=diffDias(t.fent);if(d===null||d>=0)return false;}
     return true;
   });
