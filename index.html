@@ -171,7 +171,7 @@
   .p-entregado{background:#0a1c1c;color:#22d3ee;border:1px solid #0e7490}
   .p-prepagado{background:#1a1200;color:#f59e0b;border:1px solid #92400e}
   /* COLAPSO en tarjetas */
-  .mcard-collapse-btn{background:none;border:none;cursor:pointer;color:var(--accent3);font-size:20px;padding:2px 4px;line-height:1;transition:transform .25s,color .2s;flex-shrink:0;display:flex;align-items:center;opacity:1;visibility:visible}
+  .mcard-collapse-btn{background:none;border:none;cursor:pointer;color:var(--accent3);font-size:28px;padding:2px 4px;line-height:1;transition:transform .25s,color .2s;flex-shrink:0;display:flex;align-items:center;opacity:1;visibility:visible}
   .mcard-collapse-btn:hover{color:var(--accent2)}
   .mcard.collapsed .mcard-body,.mcard.collapsed .pct-bar,.mcard.collapsed .mcard-footer{display:none!important}
   .mcard.collapsed{padding-bottom:14px}
@@ -789,21 +789,9 @@
         </div>
         <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
       </div>
+      <div class="counters" id="counters" style="display:none"></div>
       <!-- FILTROS RÁPIDOS DEL DASHBOARD -->
       <div id="dash-filtros-rapidos" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:16px"></div>
-      <div class="counters" id="counters" style="display:none"></div>
-      <div class="alerts-section" id="dash-alerts" style="margin-bottom:12px">
-        <div class="section-header">
-          <span class="section-title">⚠️ Alertas Próximas 7 días + Vencidos</span>
-        </div>
-        <div id="alerts-list"></div>
-      </div>
-      <div class="alerts-section" id="dash-cuotas-alert">
-        <div class="section-header">
-          <span class="section-title">💳 Cuotas Próximas a Vencer (7 días)</span>
-        </div>
-        <div id="cuotas-alert-list"></div>
-      </div>
     </div>
 
     <!-- REGISTRO -->
@@ -1920,8 +1908,6 @@ function renderDashboard(){
     <div class="stat-card green" style="cursor:pointer" onclick="filtrarDashboard('pagados')" title="Clic para ver trabajos pagados"><div class="stat-label">Total Cobrado</div><div class="stat-val">${fmtS((totalCob+otrosCob))}</div><div class="stat-sub">Todo · 🔍 clic para filtrar</div></div>
     <div class="stat-card red" style="cursor:pointer" onclick="filtrarDashboard('saldo')" title="Clic para ver trabajos con saldo pendiente"><div class="stat-label">Saldo Pendiente</div><div class="stat-val">${fmtS((totalSaldo+otrosPend))}</div><div class="stat-sub">Por cobrar · 🔍 clic para filtrar</div></div>
     <div class="stat-card yellow" style="cursor:pointer" onclick="goView('ingresos',document.querySelector('.nav-btn:nth-child(5)'))" title="Ver otros ingresos"><div class="stat-label">Otros Ingresos</div><div class="stat-val">${fmtS(otrosCob)}</div><div class="stat-sub">Cobrado | Pend: ${fmtSRaw(otrosPend)}</div></div>
-    <div class="stat-card accent" style="cursor:pointer" onclick="filtrarDashboard('enproceso')" title="Clic para ver trabajos en proceso"><div class="stat-label">En Proceso</div><div class="stat-val">${tActivos.filter(x=>x.estado==='En proceso').length}</div><div class="stat-sub">Activos · 🔍 clic para filtrar</div></div>
-    <div class="stat-card" style="border-color:#0e7490;background:#0a1c1c;cursor:pointer" onclick="filtrarDashboard('entregados')" title="Clic para ver trabajos entregados"><div class="stat-label" style="color:#22d3ee">Entregados</div><div class="stat-val" style="color:#22d3ee">${tActivos.filter(x=>x.estado==='Entregado').length}</div><div class="stat-sub" style="color:#22d3ee">Por cobrar · 🔍 clic</div></div>
     <div class="stat-card" style="cursor:pointer" onclick="filtrarDashboard('todos')"><div class="stat-label">Total Trabajos</div><div class="stat-val">${t.length}</div><div class="stat-sub">Registrados (incl. cancelados)</div></div>
     <div class="stat-card red" style="cursor:pointer" onclick="goView('gastos',document.querySelector('.nav-btn:nth-child(9)'))" title="Ver detalle de egresos"><div class="stat-label">💸 Egresos Este Mes</div><div class="stat-val">${fmtS(totalEgresos)}</div><div class="stat-sub">Fijo ${fmtSRaw(totalHer)} + Puntual ${fmtSRaw(totalPuntual)}</div></div>
   `;
@@ -1991,63 +1977,6 @@ function renderDashboard(){
     </div>`:''}
   `;
 
-  const alertas=t.filter(x=>{
-    const d=diffDias(x.fent);
-    return x.estado!=='Pagado'&&x.estado!=='Cancelado'&&(d===null||d<=7);
-  }).sort((a,b)=>(diffDias(a.fent)||999)-(diffDias(b.fent)||999));
-  const list=document.getElementById('alerts-list');
-  if(alertas.length===0){list.innerHTML='<div class="empty">Sin alertas pendientes</div>';return;}
-  list.innerHTML=alertas.map(a=>{
-    const d=diffDias(a.fent);
-    const s=semaforo(a);
-    let dbg,dcls;
-    if(d===null){dbg='Sin fecha';dcls='background:var(--bg4);color:var(--text3)'}
-    else if(d<0){dbg=`${Math.abs(d)}d vencido`;dcls='background:#1f0505;color:var(--red);border:1px solid #7f1d1d'}
-    else if(d===0){dbg='Hoy';dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12'}
-    else if(d===1){dbg='Ma\u00f1ana';dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12'}
-    else{dbg=`${d}d`;dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e'}
-    const sal=a.precio-(a.cobrado||0);
-    return`<div class="alert-row">
-      <span><span class="semaforo ${s.cls}"></span><strong>${a.nombre}</strong><br><span style="color:var(--text3);font-size:10px">${a.tipo}</span></span>
-      <span style="color:var(--text2)">${a.tipo}</span>
-      <span class="dias-badge" style="${dcls}">${dbg}</span>
-      <span class="${sal>0?'saldo-pos':'saldo-zero'}" style="font-weight:600">${fmtSRaw(sal)}</span>
-    </div>`
-  }).join('');
-
-  // Cuotas próximas a vencer (pendientes, ≤7 días)
-  const cuotasAlerta = [];
-  DB.trabajos.forEach(t=>{
-    const arr = t.cuotas && t.cuotas.length>0 ? t.cuotas : [];
-    arr.forEach((c,i)=>{
-      if((c.estado||'pendiente')==='pendiente' && c.f){
-        const d=diffDias(c.f);
-        if(d!==null && d<=7){
-          cuotasAlerta.push({nombre:t.nombre,tipo:t.tipo,cuota:i+1,fecha:c.f,monto:c.m||0,dias:d,id:t.id});
-        }
-      }
-    });
-  });
-  cuotasAlerta.sort((a,b)=>a.dias-b.dias);
-  const cal = document.getElementById('cuotas-alert-list');
-  if(!cal) return;
-  if(cuotasAlerta.length===0){
-    cal.innerHTML='<div class="empty">Sin cuotas próximas a vencer ✅</div>';
-  } else {
-    cal.innerHTML = cuotasAlerta.map(c=>{
-      let dcls,dbg;
-      if(c.dias<0){dcls='background:#1f0505;color:var(--red);border:1px solid #7f1d1d';dbg=Math.abs(c.dias)+'d vencida';}
-      else if(c.dias===0){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dbg='Hoy';}
-      else if(c.dias===1){dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';dbg='Mañana';}
-      else{dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';dbg=c.dias+'d';}
-      return `<div class="alert-row" style="cursor:pointer" onclick="verHistorial(${c.id})">
-        <span><strong>${c.nombre}</strong><br><span style="color:var(--text3);font-size:10px">${c.tipo} — Cuota ${c.cuota}</span></span>
-        <span style="color:var(--text2)">${fmt(c.fecha)}</span>
-        <span class="dias-badge" style="${dcls}">${dbg}</span>
-        <span style="font-weight:600;color:var(--accent3)">${fmtS(c.monto)}</span>
-      </div>`;
-    }).join('');
-  }
 }
 
 function renderTabla(){
@@ -2124,13 +2053,14 @@ function renderTabla(){
     </tr>`
   }).join('');
 
-  // Mobile cards - todos colapsados por defecto
+  // Mobile cards - pagados colapsados por defecto, resto expandidos
   document.getElementById('mobile-cards').innerHTML=rows.map((t,i)=>{
     const saldo=(t.precio||0)-(t.cobrado||0);
     const pct=t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
     const s=semaforo(t);
     const esCancelado=t.estado==='Cancelado';
-    return`<div class="mcard${esCancelado?' estado-cancelado':''} collapsed" id="mcard-${t.id}">
+    const esPagado=t.estado==='Pagado';
+    return`<div class="mcard${esCancelado?' estado-cancelado':''}${esPagado?' collapsed':''}" id="mcard-${t.id}">
       <div class="mcard-header" style="cursor:pointer;user-select:none" onclick="toggleMcard(${t.id})">
         <div class="mcard-nombre"><span class="semaforo ${s.cls}"></span><span>${t.nombre}</span></div>
         <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
