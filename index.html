@@ -798,23 +798,12 @@
     <div class="view" id="v-registro">
       <div class="table-wrap">
         <div class="table-toolbar">
-          <input class="search-input" id="search-input" placeholder="🔍 Buscar cliente..." oninput="renderTabla()" style="flex:1;min-width:120px">
-          <button class="btn btn-ghost btn-sm" id="mob-filter-btn" onclick="toggleMobFilters()" style="display:none" title="Filtros">⚙️</button>
-          <select class="filter-select" id="filter-estado" onchange="renderTabla()">
-            <option value="">Todos los estados</option>
-            <option>En proceso</option><option>Pendiente</option><option>Entregado</option>
-            <option>Prepagado</option><option>Pagado</option><option>Terminado</option><option>Cancelado</option>
-          </select>
-          <select class="filter-select" id="filter-tipo" onchange="renderTabla()">
-            <option value="">Todos los tipos</option>
-          </select>
-          <select class="filter-select" id="filter-prio" onchange="renderTabla()">
-            <option value="">Todas las prioridades</option>
-            <option value="alta">🔴 Alta</option>
-            <option value="media">🟡 Media</option>
-            <option value="baja">🟢 Baja</option>
-          </select>
-          <button class="btn btn-primary" onclick="openModal()">＋ Nuevo</button>
+          <!-- Filtros ocultos pero funcionales para que el JS no falle -->
+          <input type="hidden" id="search-input" value="">
+          <select id="filter-estado" style="display:none" onchange="renderTabla()"><option value="">Todos los estados</option><option>En proceso</option><option>Pendiente</option><option>Entregado</option><option>Prepagado</option><option>Pagado</option><option>Terminado</option><option>Cancelado</option></select>
+          <select id="filter-tipo" style="display:none" onchange="renderTabla()"><option value="">Todos los tipos</option></select>
+          <select id="filter-prio" style="display:none" onchange="renderTabla()"><option value="">Todas las prioridades</option></select>
+          <button class="btn btn-primary" onclick="openModal()">＋ Nuevo trabajo</button>
         </div>
         <!-- Filtro de etiquetas -->
         <div class="tag-filters-wrap" style="background:var(--bg3);border-bottom:1px solid var(--border)">
@@ -885,6 +874,23 @@
     <!-- PROYECCION -->
     <div class="view" id="v-proyeccion">
       <div class="stats-grid proy-grid-mobile" id="proy-grid"></div>
+      <!-- Tarjeta días personalizados -->
+      <div style="margin-bottom:12px">
+        <div id="proy-custom-card" style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:700;color:var(--text2)">🎯 Proyección personalizada:</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;color:var(--text3)">Próximos</span>
+            <input type="number" id="proy-dias-custom" min="1" max="365" placeholder="ej: 45"
+              style="width:72px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--text);font-size:14px;font-weight:700;font-family:inherit;outline:none;text-align:center"
+              oninput="actualizarProyCustom()"
+              onfocus="this.style.borderColor='var(--accent)'"
+              onblur="this.style.borderColor='var(--border2)'">
+            <span style="font-size:12px;color:var(--text3)">días</span>
+          </div>
+          <div id="proy-custom-resultado" style="font-size:20px;font-weight:700;color:var(--accent3);min-width:80px">—</div>
+          <button id="proy-custom-filtrar" onclick="proyFiltrarCustom()" style="display:none" class="btn btn-ghost btn-sm">Ver detalle →</button>
+        </div>
+      </div>
       <div class="divider"></div>
       <div class="table-wrap">
         <div class="table-toolbar" style="justify-content:space-between">
@@ -2062,7 +2068,10 @@ function renderTabla(){
     const esPagado=t.estado==='Pagado';
     return`<div class="mcard${esCancelado?' estado-cancelado':''}${esPagado?' collapsed':''}" id="mcard-${t.id}">
       <div class="mcard-header" style="cursor:pointer;user-select:none" onclick="toggleMcard(${t.id})">
-        <div class="mcard-nombre"><span class="semaforo ${s.cls}"></span><span>${t.nombre}</span></div>
+        <div class="mcard-nombre" style="flex-direction:column;align-items:flex-start;gap:2px">
+          <div style="display:flex;align-items:center;gap:6px"><span class="semaforo ${s.cls}"></span><span>${t.nombre}</span></div>
+          <span style="font-size:10px;color:var(--text3);font-weight:500;margin-left:14px">${t.tipo}</span>
+        </div>
         <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
           <span class="mcard-precio-mini">${fmtS(t.precio||0)}</span>
           ${pillEstado(t.estado)}
@@ -2299,6 +2308,53 @@ function proyClearFilter(){
   renderProyeccion();
 }
 
+function actualizarProyCustom(){
+  const inp = document.getElementById('proy-dias-custom');
+  const res = document.getElementById('proy-custom-resultado');
+  const btn = document.getElementById('proy-custom-filtrar');
+  if(!inp||!res) return;
+  const dias = parseInt(inp.value);
+  if(!dias||dias<1){res.textContent='—';if(btn)btn.style.display='none';return;}
+
+  const t=DB.trabajos;
+  const getSaldo=x=>(x.precio||0)-(x.cobrado||0);
+  const todasCuotas=[];
+  t.forEach(function(tj){
+    if(tj.estado==='Cancelado') return;
+    var arr=[];
+    if(tj.cuotas&&tj.cuotas.length>0){
+      arr=tj.cuotas.map(function(c,i){return Object.assign({},c,{num:i+1});});
+    } else {
+      [[tj.c1f,tj.c1m,1],[tj.c2f,tj.c2m,2],[tj.c3f,tj.c3m,3],[tj.c4f,tj.c4m,4],[tj.c5f,tj.c5m,5],[tj.c6f,tj.c6m,6]]
+        .filter(function(p){return p[0]&&p[1];})
+        .forEach(function(p){arr.push({f:p[0],m:p[1],num:p[2],estado:'pendiente'});});
+    }
+    arr.forEach(function(c){
+      if(c.f&&c.m) todasCuotas.push({monto:parseFloat(c.m)||0,dias:diffDias(c.f),estado:c.estado||'pendiente',trabajoEstado:tj.estado});
+    });
+    if(arr.length===0&&tj.fpago){
+      var sal=getSaldo(tj);
+      if(sal>0) todasCuotas.push({monto:sal,dias:diffDias(tj.fpago),estado:'pendiente',trabajoEstado:tj.estado});
+    }
+  });
+  const monto = todasCuotas.filter(function(c){
+    return c.estado!=='pagada'&&c.estado!=='retraso'&&c.trabajoEstado!=='Pagado'&&c.dias!==null&&c.dias<=dias&&c.dias>=-1;
+  }).reduce(function(a,c){return a+(c.monto||0);},0);
+
+  res.textContent = fmtS(monto);
+  res.style.color = monto>0?'var(--accent3)':'var(--text3)';
+  if(btn) btn.style.display = dias?'':'none';
+}
+
+function proyFiltrarCustom(){
+  const inp = document.getElementById('proy-dias-custom');
+  if(!inp) return;
+  const dias = parseInt(inp.value);
+  if(!dias||dias<1) return;
+  proySel = dias;
+  renderProyeccion();
+}
+
 function proyClickCard(rango){
   proySel = (proySel === rango) ? null : rango;
   renderProyeccion();
@@ -2359,12 +2415,18 @@ function renderProyeccion(){
     }).reduce(function(a,c){return a+montoCuotaPendiente(c);},0);
   }
 
+  const proy15=sumaCuotasEnRango(15);
   const proy30=sumaCuotasEnRango(30);
   const proy60=sumaCuotasEnRango(60);
   const proy90=sumaCuotasEnRango(90);
   const totalPend=t.reduce(function(a,x){return a+getSaldo(x);},0)+DB.ingresos.reduce(function(a,x){return a+(x.monto-x.cobrado||0);},0);
 
   document.getElementById('proy-grid').innerHTML=`
+    <div class="proy-card${proySel===15?' active':''}" onclick="proyClickCard(15)">
+      <div class="proy-periodo">⚡ Próximos 15 días</div>
+      <div class="proy-monto" style="color:#22d3ee">${fmtS(proy15)}</div>
+      <div class="proy-desc">Cobros esperados · clic para filtrar</div>
+    </div>
     <div class="proy-card${proySel===30?' active':''}" onclick="proyClickCard(30)">
       <div class="proy-periodo">📅 Próximos 30 días</div>
       <div class="proy-monto" style="color:var(--green)">${fmtS(proy30)}</div>
@@ -2390,11 +2452,16 @@ function renderProyeccion(){
   // Actualizar label y botón limpiar
   const labelEl=document.getElementById('proy-filtro-label');
   const clearBtn=document.getElementById('proy-clear-btn');
-  if(proySel===30){if(labelEl)labelEl.textContent='— Próximos 30 días';if(clearBtn)clearBtn.style.display='';}
+  if(proySel===15){if(labelEl)labelEl.textContent='— Próximos 15 días';if(clearBtn)clearBtn.style.display='';}
+  else if(proySel===30){if(labelEl)labelEl.textContent='— Próximos 30 días';if(clearBtn)clearBtn.style.display='';}
   else if(proySel===60){if(labelEl)labelEl.textContent='— Próximos 60 días';if(clearBtn)clearBtn.style.display='';}
   else if(proySel===90){if(labelEl)labelEl.textContent='— Próximos 90 días';if(clearBtn)clearBtn.style.display='';}
   else if(proySel==='total'){if(labelEl)labelEl.textContent='— Todo pendiente';if(clearBtn)clearBtn.style.display='';}
+  else if(typeof proySel==='number'){if(labelEl)labelEl.textContent='— Próximos '+proySel+' días';if(clearBtn)clearBtn.style.display='';}
   else{if(labelEl)labelEl.textContent='';if(clearBtn)clearBtn.style.display='none';}
+
+  // Actualizar tarjeta personalizada
+  actualizarProyCustom();
 
   // Filtros
   const mesesDisp=[...new Set(todasCuotas.map(function(c){return c.fecha?c.fecha.slice(0,7):'';}).filter(Boolean))].sort();
@@ -2412,7 +2479,11 @@ function renderProyeccion(){
 
   // Aplicar filtro de rango por card seleccionada (solo pendientes) o filtro de mes
   var cuotasFiltradas;
-  if(proySel===30){
+  if(proySel===15){
+    cuotasFiltradas=cuotasPend.filter(function(c){
+      var d=c.dias; return d!==null&&d!==undefined&&d<=15&&d>=-1;
+    });
+  } else if(proySel===30){
     cuotasFiltradas=cuotasPend.filter(function(c){
       var d=c.dias; return d!==null&&d!==undefined&&d<=30&&d>=-1;
     });
