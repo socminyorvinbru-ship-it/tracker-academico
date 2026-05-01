@@ -247,7 +247,7 @@
   .proy-card:hover{border-color:var(--accent2)}
   .proy-card.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(124,111,255,.3)}
   .proy-periodo{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
-  .proy-monto{font-size:24px;font-weight:700;margin-bottom:3px}
+  .proy-monto{font-size:20px;font-weight:700;margin-bottom:3px}
   .proy-desc{font-size:10px;color:var(--text3)}
 
   .empty{padding:32px;text-align:center;color:var(--text3);font-size:12px}
@@ -637,7 +637,7 @@
   .daily-title{font-size:14px;font-weight:700;color:var(--accent3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .daily-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
   .daily-kpi{background:rgba(124,111,255,.1);border:1px solid rgba(124,111,255,.2);border-radius:8px;padding:10px;text-align:center}
-  .daily-kpi-val{font-size:20px;font-weight:700;color:var(--accent3)}
+  .daily-kpi-val{font-size:15px;font-weight:700;color:var(--accent3)}
   .daily-kpi-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
 
   .backup-item{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:12px}
@@ -3088,20 +3088,25 @@ function openModal(t){
   });
   document.getElementById('f-reminder-date').value = d.reminderDate || '';
   document.getElementById('f-reminder-text').value = d.reminderText || '';
-  // Cargar cuotas desde el objeto guardado
+  // Cargar cuotas — preservar abonos
   cuotasData = [];
   let modoPago = d.modoPago || 'contado';
   if(d.cuotas && d.cuotas.length > 0){
-    cuotasData = d.cuotas.map(c=>({f:c.f||'', m:c.m||0}));
+    // Clonar profundo para no mutar el original hasta guardar
+    cuotasData = d.cuotas.map(c=>({
+      f: c.f||'', m: c.m||0,
+      estado: c.estado||'pendiente',
+      cobrado: c.cobrado||0,
+      abonos: (c.abonos||[]).map(ab=>({...ab}))
+    }));
     modoPago = 'cuotas';
   } else if(d.modoPago==='cuotas'){
-    // Compatibilidad con formato antiguo c1f/c1m...c6f/c6m
     for(let i=1;i<=12;i++){
       if(d['c'+i+'f']||d['c'+i+'m']){
-        cuotasData.push({f:d['c'+i+'f']||'', m:d['c'+i+'m']||0});
+        cuotasData.push({f:d['c'+i+'f']||'', m:d['c'+i+'m']||0, estado:'pendiente', cobrado:0, abonos:[]});
       }
     }
-    if(cuotasData.length===0) cuotasData.push({f:'',m:0});
+    if(cuotasData.length===0) cuotasData.push({f:'',m:0,estado:'pendiente',cobrado:0,abonos:[]});
   }
   document.getElementById('f-modo-pago').value = modoPago;
   toggleModoPago();
@@ -3115,101 +3120,229 @@ function openModal(t){
 // cuotasData: array of {f, m} for the current modal session
 let cuotasData = [];
 
+// ── LÓGICA DE ABONOS PARCIALES ──────────────────────────────
+// Cada cuota tiene: {f, m, estado, abonos:[{monto,fecha,tipo,nota}]}
+// El estado se calcula automáticamente a partir de los abonos y la fecha pactada
+
+function cuotaTotalAbonado(c){
+  if(!c.abonos||!c.abonos.length) return parseFloat(c.cobrado)||0;
+  return c.abonos.reduce((a,ab)=>a+(parseFloat(ab.monto)||0),0);
+}
+
+function cuotaSaldo(c){
+  return Math.max(0,(parseFloat(c.m)||0) - cuotaTotalAbonado(c));
+}
+
+// Calcula el tipo de abono según fecha pactada vs fecha del abono
+function tipoAbono(fechaPactada, fechaAbono){
+  if(!fechaPactada) return 'adelanto';
+  const fp = new Date(fechaPactada+'T00:00:00');
+  const fa = new Date((fechaAbono||todayStr())+'T00:00:00');
+  if(fa < fp) return 'adelanto';
+  if(fa.toISOString().slice(0,10) === fechaPactada) return 'a_tiempo';
+  return 'tarde';
+}
+
+// Recalcula el estado global de la cuota según sus abonos
+function recalcularEstadoCuota(c){
+  const total = parseFloat(c.m)||0;
+  const abonado = cuotaTotalAbonado(c);
+  if(abonado <= 0){ c.estado = 'pendiente'; return; }
+  if(abonado >= total){
+    // Pagada — determinar si fue a tiempo o tarde
+    // Miramos la fecha del último abono que completó el pago
+    const fechaPactada = c.f || '';
+    let acumulado = 0;
+    let fechaCompletado = '';
+    const abonos = c.abonos||[];
+    for(const ab of abonos){
+      acumulado += parseFloat(ab.monto)||0;
+      if(acumulado >= total){ fechaCompletado = ab.fecha; break; }
+    }
+    if(!fechaPactada || !fechaCompletado){
+      c.estado = 'pagada';
+    } else {
+      const fc = new Date(fechaCompletado+'T00:00:00');
+      const fp = new Date(fechaPactada+'T00:00:00');
+      c.estado = fc <= fp ? 'pagada' : 'retraso';
+    }
+  } else {
+    c.estado = 'incompleta';
+  }
+  c.cobrado = abonado;
+}
+
+function agregarAbonoCuota(i){
+  const c = cuotasData[i];
+  if(!c) return;
+  const montoEl = document.getElementById('abono-monto-'+i);
+  const fechaEl = document.getElementById('abono-fecha-'+i);
+  const notaEl  = document.getElementById('abono-nota-'+i);
+  const monto = parseFloat(montoEl ? montoEl.value : 0)||0;
+  if(monto <= 0){ showToast('Ingresa un monto válido'); return; }
+  const fecha = (fechaEl && fechaEl.value) ? fechaEl.value : todayStr();
+  const nota  = notaEl ? (notaEl.value||'') : '';
+  const tipo  = tipoAbono(c.f, fecha);
+  if(!c.abonos) c.abonos = [];
+  c.abonos.push({monto, fecha, tipo, nota});
+  recalcularEstadoCuota(c);
+  actualizarCobradoDesdeCuotas();
+  if(montoEl) montoEl.value = '';
+  if(notaEl) notaEl.value = '';
+  renderCuotasGrid();
+  showToast('Abono registrado ✅');
+}
+
+function eliminarAbonoCuota(ci, ai){
+  const c = cuotasData[ci];
+  if(!c||!c.abonos) return;
+  if(!confirm('¿Eliminar este abono?')) return;
+  c.abonos.splice(ai,1);
+  recalcularEstadoCuota(c);
+  actualizarCobradoDesdeCuotas();
+  renderCuotasGrid();
+}
+
 function renderCuotasGrid(){
   const grid = document.getElementById('cuotas-grid');
   if(!grid) return;
   const n = cuotasData.length;
   document.getElementById('cuotas-count-label').textContent = n + (n===1?' cuota':' cuotas');
+
+  const TIPO_LABELS = {adelanto:'⬆️ Adelanto',a_tiempo:'✅ A tiempo',tarde:'⏰ Con retraso'};
+  const TIPO_COLORS = {adelanto:'#22d3ee',a_tiempo:'var(--green)',tarde:'var(--yellow)'};
+
   grid.innerHTML = cuotasData.map((c,i)=>{
-    const estado = c.estado||'pendiente'; // pendiente | pagada | retraso
-    const colorBorder = estado==='pagada'?'#166534':estado==='retraso'?'#713f12':'var(--border)';
-    const colorBg = estado==='pagada'?'#052e16':estado==='retraso'?'#1c0f00':'var(--bg3)';
+    const estado = c.estado||'pendiente';
+    const totalAbonado = cuotaTotalAbonado(c);
+    const saldo = cuotaSaldo(c);
+    const programado = parseFloat(c.m)||0;
+    const pct = programado>0 ? Math.min(100,Math.round(totalAbonado/programado*100)) : 0;
+
+    const colorBorder = estado==='pagada'?'#166534':estado==='retraso'?'#713f12':estado==='incompleta'?'#92400e':'var(--border)';
+    const colorBg    = estado==='pagada'?'#052e16':estado==='retraso'?'#1c0f00':estado==='incompleta'?'#1c0f00':'var(--bg3)';
+    const estadoIcon = {pagada:'✅',retraso:'⏰',incompleta:'🟡',pendiente:'⏳'}[estado]||'⏳';
+    const estadoLabel = {pagada:'Pagada a tiempo',retraso:'Pagada con retraso',incompleta:'Pago parcial',pendiente:'Pendiente'}[estado]||'Pendiente';
+    const estadoColor = {pagada:'var(--green)',retraso:'var(--yellow)',incompleta:'var(--orange)',pendiente:'var(--text3)'}[estado];
+
+    // Historial de abonos
+    const abonos = c.abonos||[];
+    const abonosHtml = abonos.length>0 ? `
+      <details style="margin-top:8px">
+        <summary style="font-size:10px;font-weight:700;color:var(--accent3);cursor:pointer;padding:4px 0;list-style:none;display:flex;align-items:center;gap:4px">
+          📋 Ver historial (${abonos.length} abono${abonos.length>1?'s':''}) — Total: S/${totalAbonado.toFixed(2)}
+        </summary>
+        <div style="margin-top:6px;background:var(--bg4);border-radius:8px;overflow:hidden;border:1px solid var(--border)">
+          ${abonos.map((ab,ai)=>`
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:6px;padding:6px 10px;border-bottom:1px solid var(--border);align-items:center;font-size:11px">
+              <div>
+                <span style="color:${TIPO_COLORS[ab.tipo]||'var(--text3)'};font-weight:700">${TIPO_LABELS[ab.tipo]||ab.tipo}</span>
+                <span style="color:var(--text3);margin-left:6px">${ab.fecha||'—'}</span>
+                ${ab.nota?`<div style="color:var(--text3);font-size:10px;margin-top:1px">${ab.nota}</div>`:''}
+              </div>
+              <span style="color:var(--accent3);font-weight:700;white-space:nowrap">S/ ${parseFloat(ab.monto).toFixed(2)}</span>
+              <button onclick="eliminarAbonoCuota(${i},${ai})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px;padding:0 2px">✕</button>
+            </div>
+          `).join('')}
+          <div style="padding:6px 10px;font-size:11px;font-weight:700;display:flex;justify-content:space-between;background:var(--bg3)">
+            <span style="color:var(--green)">Total abonado: S/${totalAbonado.toFixed(2)}</span>
+            ${saldo>0?`<span style="color:var(--red)">Falta: S/${saldo.toFixed(2)}</span>`:'<span style="color:var(--green)">¡Completo!</span>'}
+          </div>
+        </div>
+      </details>` : '';
+
     return `<div class="cuota-item" id="cuota-item-${i}" style="border-color:${colorBorder};background:${colorBg};transition:all .2s">
-      <div class="cuota-label" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <span style="font-weight:700">Cuota ${i+1}</span>
-        ${n>1?`<button type="button" onclick="eliminarCuota(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;padding:0 2px" title="Quitar">✕</button>`:''}
+      <div class="cuota-label" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-weight:700;font-size:13px">Cuota ${i+1}</span>
+        ${n>1?`<button type="button" onclick="eliminarCuota(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;padding:0 2px">✕</button>`:''}
       </div>
-      <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Fecha programada</label>
-      <input class="form-input" type="date" value="${c.f||''}" style="margin-bottom:6px"
-        onchange="cuotasData[${i}].f=this.value">
-      <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Monto S/.</label>
-      <input class="form-input" type="number" placeholder="S/." value="${c.m||''}" inputmode="decimal" style="margin-bottom:8px"
-        onchange="cuotasData[${i}].m=parseFloat(this.value)||0;actualizarCobradoDesdeCuotas()">
-      <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Monto cobrado S/. (real)</label>
-      <input class="form-input" type="number" placeholder="0" inputmode="decimal"
-        value="${c.cobrado!==undefined&&c.cobrado!==null?c.cobrado:''}"
-        style="margin-bottom:6px;${c.cobrado>0&&c.cobrado<(c.m||0)?'border-color:var(--yellow)':c.cobrado>=(c.m||1)&&c.cobrado>0?'border-color:var(--green)':''}"
-        oninput="cuotasData[${i}].cobrado=parseFloat(this.value)||0;cuotasAutoEstado(${i});actualizarCobradoDesdeCuotas();renderCuotasGrid()">
-      <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Estado</label>
-      <select class="form-select" style="font-size:12px;padding:6px 8px;margin-bottom:${estado==='retraso'||estado==='incompleta'?'6px':'0'}"
-        onchange="cuotasData[${i}].estado=this.value;actualizarCobradoDesdeCuotas();renderCuotasGrid()">
-        <option value="pendiente" ${estado==='pendiente'?'selected':''}>⏳ Pendiente</option>
-        <option value="pagada" ${estado==='pagada'?'selected':''}>✅ Pagada completa</option>
-        <option value="incompleta" ${estado==='incompleta'?'selected':''}>🟡 Pago parcial</option>
-        <option value="retraso" ${estado==='retraso'?'selected':''}>⏰ Pagada con retraso</option>
-      </select>
-      ${(estado==='retraso'||estado==='incompleta')?`
-        <label style="font-size:9px;color:var(--yellow);text-transform:uppercase;letter-spacing:.4px;margin-top:2px">Fecha real de pago</label>
-        <input class="form-input" type="date" value="${c.freal||''}" style="border-color:var(--yellow);margin-bottom:4px"
-          onchange="cuotasData[${i}].freal=this.value">
-        <input class="form-input" type="text" placeholder="Nota (opcional)" value="${c.nota||''}" style="font-size:12px"
-          onchange="cuotasData[${i}].nota=this.value">
-      `:''}
-      ${estado==='incompleta'&&c.m?`<div style="font-size:10px;color:var(--yellow);margin-top:4px;padding:4px 8px;background:#1c0f00;border-radius:6px;border:1px solid #713f12">💰 Cobrado: S/${parseFloat(c.cobrado)||0} de S/${parseFloat(c.m)||0} — faltan S/${Math.max(0,(parseFloat(c.m)||0)-(parseFloat(c.cobrado)||0)).toFixed(2)}</div>`:''}
+
+      <!-- Fecha programada y monto -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+        <div>
+          <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Fecha pactada</label>
+          <input class="form-input" type="date" value="${c.f||''}" style="margin-top:3px"
+            onchange="cuotasData[${i}].f=this.value;renderCuotasGrid()">
+        </div>
+        <div>
+          <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Monto S/.</label>
+          <input class="form-input" type="number" placeholder="0" value="${c.m||''}" inputmode="decimal" style="margin-top:3px"
+            onchange="cuotasData[${i}].m=parseFloat(this.value)||0;recalcularEstadoCuota(cuotasData[${i}]);actualizarCobradoDesdeCuotas();renderCuotasGrid()">
+        </div>
+      </div>
+
+      <!-- Barra de progreso -->
+      ${programado>0?`
+      <div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:3px">
+          <span style="color:${estadoColor}">${estadoIcon} ${estadoLabel}</span>
+          <span>${pct}% — S/${totalAbonado.toFixed(2)} / S/${programado.toFixed(2)}</span>
+        </div>
+        <div style="height:5px;background:var(--bg4);border-radius:5px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${pct>=100?'var(--green)':'linear-gradient(90deg,var(--accent),var(--accent2))'};border-radius:5px;transition:width .4s"></div>
+        </div>
+        ${saldo>0?`<div style="font-size:10px;color:var(--red);font-weight:700;margin-top:4px">Falta: S/${saldo.toFixed(2)}</div>`:''}
+      </div>`:''}
+
+      <!-- Historial de abonos (expandible) -->
+      ${abonosHtml}
+
+      <!-- Registrar nuevo abono -->
+      <div style="margin-top:10px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:8px 10px">
+        <div style="font-size:10px;font-weight:700;color:var(--accent3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">➕ Registrar abono</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px">
+          <div>
+            <label style="font-size:9px;color:var(--text3)">Monto S/.</label>
+            <input id="abono-monto-${i}" class="form-input" type="number" placeholder="0" inputmode="decimal"
+              style="margin-top:2px;font-size:14px"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();agregarAbonoCuota(${i});}">
+          </div>
+          <div>
+            <label style="font-size:9px;color:var(--text3)">Fecha del pago</label>
+            <input id="abono-fecha-${i}" class="form-input" type="date" value="${todayStr()}" style="margin-top:2px">
+          </div>
+        </div>
+        <input id="abono-nota-${i}" class="form-input" placeholder="Nota opcional (ej: transferencia, yape...)" style="font-size:12px;margin-bottom:6px">
+        <button type="button" onclick="agregarAbonoCuota(${i})"
+          style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:7px;padding:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
+          + Registrar abono
+        </button>
+      </div>
     </div>`;
   }).join('');
 }
 
-// Auto-detecta estado de cuota según monto cobrado vs programado
+// Auto-detecta estado — ahora solo se usa para compatibilidad, la lógica real está en recalcularEstadoCuota
 function cuotasAutoEstado(i){
   const c = cuotasData[i];
   if(!c) return;
-  const cobrado = parseFloat(c.cobrado) || 0;
-  const programado = parseFloat(c.m) || 0;
-  if(cobrado <= 0) {
-    // Solo resetear a pendiente si no era retraso/pagada manualmente
-    if(c.estado !== 'retraso' && c.estado !== 'pagada') c.estado = 'pendiente';
-    return;
-  }
-  if(programado > 0 && cobrado < programado) {
-    c.estado = 'incompleta';
-    return;
-  }
-  if(programado > 0 && cobrado >= programado) {
-    // Si ya tiene estado retraso o tiene fecha real → retraso; si no → pagada
-    if(c.estado === 'retraso' || c.freal) {
-      c.estado = 'retraso';
-    } else {
-      c.estado = 'pagada';
+  if(!c.abonos||!c.abonos.length){
+    // modo legacy: si hay cobrado manual sin abonos, crear un abono virtual
+    const cobrado = parseFloat(c.cobrado)||0;
+    if(cobrado>0){
+      c.abonos = [{monto:cobrado,fecha:todayStr(),tipo:tipoAbono(c.f,todayStr()),nota:'Pago registrado'}];
     }
   }
+  recalcularEstadoCuota(c);
 }
 
 function actualizarCobradoDesdeCuotas(){
-  // El cobrado = suma de cuotas marcadas como pagadas o pagadas con retraso
-  // NO puede superar el precio
-  if(!editId && document.getElementById('modal-trabajo').classList.contains('open')){
-    // Solo para registros nuevos, en edición se calcula al guardar
-  }
-  // Recalcular cobrado en el modal para mostrarlo en tiempo real
   const precio = parseFloat(document.getElementById('f-precio').value)||0;
-  // Cobrado = suma de cuotas pagadas completas + parciales
+  // Cobrado = suma de todos los abonos registrados en todas las cuotas
   const cobradoCuotas = cuotasData.reduce((a,c)=>{
-    if(c.estado==='pagada'||c.estado==='retraso') return a+(parseFloat(c.m)||0);
-    if(c.estado==='incompleta') return a+(parseFloat(c.cobrado)||0);
-    return a;
+    return a + cuotaTotalAbonado(c);
   },0);
-  const cobradoFinal = Math.min(cobradoCuotas, precio);
+  const cobradoFinal = Math.min(cobradoCuotas, precio||Infinity);
   const infoEl = document.getElementById('cobrado-preview');
   if(infoEl){
     const saldo = precio - cobradoFinal;
     const pct = precio>0?Math.round(cobradoFinal/precio*100):0;
-    infoEl.innerHTML = `<span style="color:var(--green)">Cobrado: ${fmtS(cobradoFinal)}</span> &nbsp;|&nbsp; <span style="color:var(--red)">Saldo: ${fmtS(saldo)}</span> &nbsp;<span style="color:var(--text3);font-size:11px">(${pct}%)</span>`;
+    infoEl.innerHTML = `<span style="color:var(--green)">Cobrado: ${fmtS(cobradoFinal)}</span> &nbsp;|&nbsp; <span style="color:${saldo>0?'var(--red)':'var(--green)'}">Saldo: ${fmtS(Math.max(0,saldo))}</span> &nbsp;<span style="color:var(--text3);font-size:11px">(${pct}%)</span>`;
   }
 }
 
 function agregarCuota(){
-  cuotasData.push({f:'',m:0});
+  cuotasData.push({f:'', m:0, estado:'pendiente', cobrado:0, abonos:[]});
   renderCuotasGrid();
 }
 
@@ -3220,7 +3353,7 @@ function quitarCuota(){
 
 function eliminarCuota(i){
   cuotasData.splice(i,1);
-  if(cuotasData.length===0) cuotasData.push({f:'',m:0});
+  if(cuotasData.length===0) cuotasData.push({f:'',m:0,estado:'pendiente',cobrado:0,abonos:[]});
   renderCuotasGrid();
 }
 
@@ -3231,7 +3364,7 @@ function toggleModoPago(){
   if(modo==='cuotas'){
     counter.style.display='flex';
     container.style.display='';
-    if(cuotasData.length===0) cuotasData.push({f:'',m:0});
+    if(cuotasData.length===0) cuotasData.push({f:'',m:0,estado:'pendiente',cobrado:0,abonos:[]});
     renderCuotasGrid();
   } else {
     counter.style.display='none';
@@ -3260,14 +3393,22 @@ function guardarTrabajo(){
   const n=document.getElementById('f-nombre').value.trim();
   if(!n){alert('El nombre del cliente es obligatorio');return;}
   const modoPago=document.getElementById('f-modo-pago').value;
-  // Cuotas: guardar el array cuotasData (solo si modo cuotas)
-  // Las cuotas son PLAN DE PAGO, no afectan el campo cobrado
-  const cuotasGuardadas = modoPago==='cuotas' ? cuotasData.filter(c=>c.f||c.m) : [];
-  // Compatibilidad: también guardar en formato antiguo c1f/c1m para proyección
+
+  // Cuotas: guardar array completo con abonos
+  const cuotasGuardadas = modoPago==='cuotas' ? cuotasData.filter(c=>c.f||c.m||((c.abonos||[]).length>0)) : [];
+
+  // Compatibilidad formato antiguo c1f/c1m
   const cuotasCompat={};
   cuotasGuardadas.forEach((c,i)=>{cuotasCompat['c'+(i+1)+'f']=c.f||'';cuotasCompat['c'+(i+1)+'m']=c.m||0;});
+
+  // Calcular cobrado total desde abonos de todas las cuotas
+  function calcCobradoTotal(lista, precio){
+    const total = lista.reduce((a,c)=> a + cuotaTotalAbonado(c), 0);
+    return precio > 0 ? Math.min(total, precio) : total;
+  }
+
   const obj={
-    nombre:n,cel:document.getElementById('f-cel').value.trim(),
+    nombre:n, cel:document.getElementById('f-cel').value.trim(),
     dni:document.getElementById('f-dni').value.trim(),
     tipo:document.getElementById('f-tipo').value,
     uni:document.getElementById('f-uni').value.trim(),
@@ -3281,39 +3422,28 @@ function guardarTrabajo(){
     tags:getSelectedTags(),
     reminderDate:document.getElementById('f-reminder-date').value,
     reminderText:document.getElementById('f-reminder-text').value.trim(),
-    modoPago:modoPago,
+    modoPago,
     cuotas:cuotasGuardadas,
     ...cuotasCompat
   };
-  // Suma cobrado desde cuotas: pagadas completas + pagos parciales
-  function calcCobradoCuotas(lista, precio){
-    const total = lista.reduce((a,c)=>{
-      if(c.estado==='pagada'||c.estado==='retraso') return a+(parseFloat(c.m)||0);
-      if(c.estado==='incompleta') return a+(parseFloat(c.cobrado)||0);
-      return a;
-    },0);
-    return Math.min(total, precio);
-  }
+
   if(editId){
     const idx=DB.trabajos.findIndex(t=>t.id===editId);
     obj.id=editId;
-    if(modoPago==='cuotas'){
-      obj.cobrado = calcCobradoCuotas(cuotasGuardadas, obj.precio);
-    } else {
-      obj.cobrado = DB.trabajos[idx].cobrado||0;
-    }
+    obj.cobrado = modoPago==='cuotas'
+      ? calcCobradoTotal(cuotasGuardadas, obj.precio)
+      : DB.trabajos[idx].cobrado||0;
     DB.trabajos[idx]=obj;
-  }else{
+  } else {
     obj.id=DB.nextId++;
-    if(modoPago==='cuotas'){
-      obj.cobrado = calcCobradoCuotas(cuotasGuardadas, obj.precio);
-    } else {
-      obj.cobrado = 0;
-    }
+    obj.cobrado = modoPago==='cuotas'
+      ? calcCobradoTotal(cuotasGuardadas, obj.precio)
+      : 0;
     DB.trabajos.push(obj);
   }
+
   if(obj.cobrado>=obj.precio && obj.precio>0) obj.estado='Pagado';
-  save();closeModal();renderAll();
+  save(); closeModal(); renderAll();
   showToast('Trabajo guardado');
 }
 
