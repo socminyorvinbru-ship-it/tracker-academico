@@ -683,6 +683,10 @@
   }
 
 
+  /* TAREA URGENTE BADGE */
+  .tarea-urgente-btn{animation:pulse-urgente 1.5s infinite;border-color:var(--red)!important}
+  @keyframes pulse-urgente{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 4px rgba(239,68,68,.0)}}
+
   /* ===== GOOGLE DRIVE ===== */
   .drive-status{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all .2s;white-space:nowrap}
   .drive-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0}
@@ -723,7 +727,13 @@
     .drive-section{padding:12px 14px}
   }
 
-    @media(min-width:769px){
+    @media(max-width:768px){
+    .table-toolbar{flex-wrap:wrap;gap:6px}
+    .table-toolbar .search-input{min-width:100%!important;flex:unset;width:100%}
+    .table-toolbar .filter-select{flex:1;min-width:90px;font-size:11px}
+    #contador-resultados{display:none!important}
+  }
+  @media(min-width:769px){
     .mobile-nav{display:none}
     .nav{display:flex}
     .main{padding:20px 20px}
@@ -798,22 +808,33 @@
     <div class="view" id="v-registro">
       <div class="table-wrap">
         <div class="table-toolbar">
-          <!-- Filtros ocultos pero funcionales para que el JS no falle -->
-          <input type="hidden" id="search-input" value="">
-          <select id="filter-estado" style="display:none" onchange="renderTabla()"><option value="">Todos los estados</option><option>En proceso</option><option>Pendiente</option><option>Entregado</option><option>Prepagado</option><option>Pagado</option><option>Terminado</option><option>Cancelado</option></select>
-          <select id="filter-tipo" style="display:none" onchange="renderTabla()"><option value="">Todos los tipos</option></select>
-          <select id="filter-prio" style="display:none" onchange="renderTabla()"><option value="">Todas las prioridades</option></select>
+          <input type="text" id="search-input" class="search-input" placeholder="🔍 Buscar cliente, tipo, uni, cel..." oninput="renderTabla()" style="min-width:150px;flex:2">
+          <select id="filter-estado" class="filter-select" onchange="window._dashFiltroExtra=null;renderTabla()">
+            <option value="">Todos los estados</option>
+            <option>En proceso</option><option>Pendiente</option><option>Entregado</option>
+            <option>Prepagado</option><option>Pagado</option><option>Terminado</option><option>Cancelado</option>
+          </select>
+          <select id="filter-tipo" class="filter-select" onchange="renderTabla()"><option value="">Todos los tipos</option></select>
+          <select id="filter-prio" class="filter-select" onchange="renderTabla()">
+            <option value="">Todas las prioridades</option>
+            <option value="alta">🔴 Alta</option><option value="media">🟡 Media</option><option value="baja">🟢 Baja</option>
+          </select>
+          <span id="filtro-activo-badge" style="display:none;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;background:#1a1a2e;border:1px solid var(--accent);font-size:11px;color:var(--accent3);white-space:nowrap">
+            <span id="filtro-activo-label"></span>
+            <button onclick="limpiarFiltros()" style="background:none;border:none;color:var(--accent3);cursor:pointer;font-size:14px;line-height:1;padding:0 2px" title="Quitar filtros">✕</button>
+          </span>
+          <span id="contador-resultados" style="font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0"></span>
           <button class="btn btn-primary" onclick="openModal()">＋ Nuevo trabajo</button>
         </div>
         <!-- Filtro de etiquetas -->
         <div class="tag-filters-wrap" style="background:var(--bg3);border-bottom:1px solid var(--border)">
           <span style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;flex-shrink:0">🏷️</span>
           <button class="tag-filter-btn active" id="tag-filter-all" onclick="setTagFilter('')">Todos</button>
-          <button class="tag-filter-btn" onclick="setTagFilter('urgente')">🔥 Urgente</button>
-          <button class="tag-filter-btn" onclick="setTagFilter('vip')">⭐ VIP</button>
-          <button class="tag-filter-btn" onclick="setTagFilter('dificil')">💀 Difícil</button>
-          <button class="tag-filter-btn" onclick="setTagFilter('revision')">🔍 Revisión</button>
-          <button class="tag-filter-btn" onclick="setTagFilter('express')">⚡ Express</button>
+          <button class="tag-filter-btn" data-tag="urgente" onclick="setTagFilter('urgente')">🔥 Urgente</button>
+          <button class="tag-filter-btn" data-tag="vip" onclick="setTagFilter('vip')">⭐ VIP</button>
+          <button class="tag-filter-btn" data-tag="dificil" onclick="setTagFilter('dificil')">💀 Difícil</button>
+          <button class="tag-filter-btn" data-tag="revision" onclick="setTagFilter('revision')">🔍 Revisión</button>
+          <button class="tag-filter-btn" data-tag="express" onclick="setTagFilter('express')">⚡ Express</button>
         </div>
         <!-- Desktop table -->
         <div style="overflow-x:auto" class="tbl-desktop">
@@ -834,7 +855,14 @@
 
     <!-- URGENTES DEL DÍA -->
     <div class="view" id="v-urgentes">
-      <div class="table-wrap" style="margin-bottom:16px">
+      <!-- TAREAS URGENTES HOY -->
+      <div class="table-wrap" style="margin-bottom:16px;border-color:#7f1d1d">
+        <div class="section-header" style="background:#1f0505;border-bottom-color:#7f1d1d">
+          <span class="section-title" style="color:var(--red)">🔴 Tareas con Fecha HOY / Vencidas</span>
+          <button class="btn btn-ghost btn-sm" style="font-size:10px" onclick="checkTareasUrgentes()">🔄 Actualizar</button>
+        </div>
+        <div id="urgentes-tareas-lista"></div>
+      </div>
         <div class="urgentes-header">
           <span style="font-size:13px;font-weight:700;color:var(--text);flex:1">🚨 Trabajos urgentes</span>
           <span class="urgentes-date-badge" id="urgentes-date-badge">Hoy</span>
@@ -1825,11 +1853,10 @@ function toggleHidePrecios(){
 }
 let editId=null, editIngId=null, cobroId=null;
 
-const today = new Date();
-today.setHours(0,0,0,0);
+function getToday(){const t=new Date();t.setHours(0,0,0,0);return t;}
 function fmt(d){if(!d)return'—';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'})}
-function diffDias(fechaStr){if(!fechaStr)return null;const d=new Date(fechaStr+'T00:00:00');return Math.round((d-today)/(86400000))}
-function todayStr(){return today.toISOString().slice(0,10)}
+function diffDias(fechaStr){if(!fechaStr)return null;const d=new Date(fechaStr+'T00:00:00');return Math.round((d-getToday())/(86400000))}
+function todayStr(){return getToday().toISOString().slice(0,10)}
 
 function loadLocal(){
   const raw=localStorage.getItem('tracker_v1');
@@ -1910,11 +1937,11 @@ function renderDashboard(){
   const totalEgresos=totalHer+totalPuntual;
 
   document.getElementById('stats-grid').innerHTML=`
-    <div class="stat-card" style="cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent2)'" onmouseout="this.style.borderColor=''" onclick="filtrarDashboard('todos')" title="Clic para ver todos los trabajos activos"><div class="stat-label">Total Facturado</div><div class="stat-val">${fmtS(totalFact)}</div><div class="stat-sub">Activos (excl. cancelados) · 🔍 clic</div></div>
-    <div class="stat-card green" style="cursor:pointer" onclick="filtrarDashboard('pagados')" title="Clic para ver trabajos pagados"><div class="stat-label">Total Cobrado</div><div class="stat-val">${fmtS((totalCob+otrosCob))}</div><div class="stat-sub">Todo · 🔍 clic para filtrar</div></div>
-    <div class="stat-card red" style="cursor:pointer" onclick="filtrarDashboard('saldo')" title="Clic para ver trabajos con saldo pendiente"><div class="stat-label">Saldo Pendiente</div><div class="stat-val">${fmtS((totalSaldo+otrosPend))}</div><div class="stat-sub">Por cobrar · 🔍 clic para filtrar</div></div>
+    <div class="stat-card" style="transition:border-color .2s"><div class="stat-label">Total Facturado</div><div class="stat-val">${fmtS(totalFact)}</div><div class="stat-sub">Activos (excl. cancelados)</div></div>
+    <div class="stat-card green"><div class="stat-label">Total Cobrado</div><div class="stat-val">${fmtS((totalCob+otrosCob))}</div><div class="stat-sub">Todo</div></div>
+    <div class="stat-card red"><div class="stat-label">Saldo Pendiente</div><div class="stat-val">${fmtS((totalSaldo+otrosPend))}</div><div class="stat-sub">Por cobrar</div></div>
     <div class="stat-card yellow" style="cursor:pointer" onclick="goView('ingresos',document.querySelector('.nav-btn:nth-child(5)'))" title="Ver otros ingresos"><div class="stat-label">Otros Ingresos</div><div class="stat-val">${fmtS(otrosCob)}</div><div class="stat-sub">Cobrado | Pend: ${fmtSRaw(otrosPend)}</div></div>
-    <div class="stat-card" style="cursor:pointer" onclick="filtrarDashboard('todos')"><div class="stat-label">Total Trabajos</div><div class="stat-val">${t.length}</div><div class="stat-sub">Registrados (incl. cancelados)</div></div>
+    <div class="stat-card"><div class="stat-label">Total Trabajos</div><div class="stat-val">${t.length}</div><div class="stat-sub">Registrados (incl. cancelados)</div></div>
     <div class="stat-card red" style="cursor:pointer" onclick="goView('gastos',document.querySelector('.nav-btn:nth-child(9)'))" title="Ver detalle de egresos"><div class="stat-label">💸 Egresos Este Mes</div><div class="stat-val">${fmtS(totalEgresos)}</div><div class="stat-sub">Fijo ${fmtSRaw(totalHer)} + Puntual ${fmtSRaw(totalPuntual)}</div></div>
   `;
   document.getElementById('pct-cobro').textContent=pct+'%';
@@ -1924,16 +1951,17 @@ function renderDashboard(){
   const pagados=tActivos.filter(x=>x.estado==='Pagado').length;
   const enp=tActivos.filter(x=>x.estado==='En proceso').length;
   const pend=tActivos.filter(x=>x.estado==='Pendiente').length;
-  const entr=tActivos.filter(x=>x.estado==='Entregado').length;
+  const entr=tActivos.filter(x=>x.estado==='Entregado'||x.estado==='Terminado').length;
   const prepagados=tActivos.filter(x=>x.estado==='Prepagado').length;
   const cancelados=t.filter(x=>x.estado==='Cancelado').length;
   const venc=tActivos.filter(x=>semaforo(x).label==='Vencido').length;
-  const entregados=tActivos.filter(x=>x.estado==='Entregado').length;
+  const entregados=tActivos.filter(x=>x.estado==='Entregado'||x.estado==='Terminado').length;
   const pronto=tActivos.filter(x=>{const d=diffDias(x.fent);return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado'&&x.estado!=='Entregado';}).length;
   // Filtros rápidos visuales en el dashboard — tarjetas clickeables
   const terminados=tActivos.filter(x=>x.estado==='Terminado').length;
   const totalSaldoPendiente=tActivos.filter(x=>x.estado!=='Pagado').reduce((a,x)=>a+((x.precio||0)-(x.cobrado||0)),0);
-  const totalEntregadoMonto=tActivos.filter(x=>x.estado==='Entregado').reduce((a,x)=>a+((x.precio||0)-(x.cobrado||0)),0);
+  const totalEntregadoMonto=tActivos.filter(x=>x.estado==='Entregado'||x.estado==='Terminado').reduce((a,x)=>a+((x.precio||0)-(x.cobrado||0)),0);
+  const totalPrepagadoMonto=tActivos.filter(x=>x.estado==='Prepagado').reduce((a,x)=>a+((x.precio||0)-(x.cobrado||0)),0);
 
   document.getElementById('dash-filtros-rapidos').innerHTML=`
     <div onclick="filtrarDashboard('saldo')" style="background:linear-gradient(135deg,#1a1a2e,#1e1b3a);border:1px solid var(--accent);border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--accent3)'" onmouseout="this.style.borderColor='var(--accent)'">
@@ -1957,20 +1985,20 @@ function renderDashboard(){
       <div style="font-size:9px;color:var(--text3);margin-top:3px">Trabajando ahora</div>
     </div>
     <div onclick="filtrarDashboard('entregados')" style="background:#0a1c1c;border:1px solid #0e7490;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#22d3ee'" onmouseout="this.style.borderColor='#0e7490'">
-      <div style="font-size:11px;color:#22d3ee;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🔷 Entregados</div>
+      <div style="font-size:11px;color:#22d3ee;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🔷 Entregados/Terminados</div>
       <div style="font-size:20px;font-weight:700;color:#22d3ee">${entr}</div>
-      <div style="font-size:9px;color:var(--text3);margin-top:3px">${fmtS(totalEntregadoMonto)} p/cobrar</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">${fmtS(totalEntregadoMonto)} pendiente</div>
+    </div>
+    <div onclick="filtrarDashboard('prepagados')" style="background:#1a1200;border:1px solid #92400e;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#92400e'">
+      <div style="font-size:11px;color:#f59e0b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🟡 Prepagados</div>
+      <div style="font-size:20px;font-weight:700;color:#f59e0b">${prepagados}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">${fmtS(totalPrepagadoMonto)} p/terminar</div>
     </div>
     <div onclick="filtrarDashboard('vencidos')" style="background:#1f0505;border:1px solid #7f1d1d;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='#7f1d1d'">
       <div style="font-size:11px;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🔴 Vencidos</div>
       <div style="font-size:20px;font-weight:700;color:var(--red)">${venc}</div>
       <div style="font-size:9px;color:var(--text3);margin-top:3px">Fuera de fecha</div>
     </div>
-    ${prepagados>0?`<div onclick="filtrarDashboard('prepagados')" style="background:#1a1200;border:1px solid #92400e;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#92400e'">
-      <div style="font-size:11px;color:#f59e0b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🟡 Prepagados</div>
-      <div style="font-size:20px;font-weight:700;color:#f59e0b">${prepagados}</div>
-      <div style="font-size:9px;color:var(--text3);margin-top:3px">Con adelanto</div>
-    </div>`:''}
     ${terminados>0?`<div onclick="filtrarDashboard('terminados')" style="background:#1c0a1c;border:1px solid #701a75;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#d946ef'" onmouseout="this.style.borderColor='#701a75'">
       <div style="font-size:11px;color:#d946ef;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🟣 Terminados</div>
       <div style="font-size:20px;font-weight:700;color:#d946ef">${terminados}</div>
@@ -2003,7 +2031,11 @@ function renderTabla(){
   const filtroExtra = window._dashFiltroExtra || null;
   let rows=DB.trabajos.filter(t=>{
     if(q&&!(t.nombre.toLowerCase().includes(q)||t.tipo.toLowerCase().includes(q)||(t.uni||'').toLowerCase().includes(q)))return false;
-    if(fe&&t.estado!==fe)return false;
+    if(filtroExtra==='entregados_y_terminados'){
+      if(t.estado!=='Entregado'&&t.estado!=='Terminado') return false;
+    } else {
+      if(fe&&t.estado!==fe)return false;
+    }
     if(ft&&t.tipo!==ft)return false;
     // Filtros extra desde el dashboard
     if(filtroExtra==='saldo'){
@@ -2338,7 +2370,7 @@ function actualizarProyCustom(){
     }
   });
   const monto = todasCuotas.filter(function(c){
-    return c.estado!=='pagada'&&c.estado!=='retraso'&&c.trabajoEstado!=='Pagado'&&c.dias!==null&&c.dias<=dias&&c.dias>=-1;
+    return c.estado!=='pagada'&&c.estado!=='retraso'&&c.trabajoEstado!=='Pagado'&&c.dias!==null&&c.dias>=0&&c.dias<=dias;
   }).reduce(function(a,c){return a+(c.monto||0);},0);
 
   res.textContent = fmtS(monto);
@@ -2411,7 +2443,7 @@ function renderProyeccion(){
   function sumaCuotasEnRango(dias){
     return cuotasPend.filter(function(c){
       var d=c.dias;
-      return d!==null&&d!==undefined&&d<=dias&&d>=-1;
+      return d!==null&&d!==undefined&&d>=0&&d<=dias;
     }).reduce(function(a,c){return a+montoCuotaPendiente(c);},0);
   }
 
@@ -2481,19 +2513,23 @@ function renderProyeccion(){
   var cuotasFiltradas;
   if(proySel===15){
     cuotasFiltradas=cuotasPend.filter(function(c){
-      var d=c.dias; return d!==null&&d!==undefined&&d<=15&&d>=-1;
+      var d=c.dias; return d!==null&&d!==undefined&&d>=0&&d<=15;
     });
   } else if(proySel===30){
     cuotasFiltradas=cuotasPend.filter(function(c){
-      var d=c.dias; return d!==null&&d!==undefined&&d<=30&&d>=-1;
+      var d=c.dias; return d!==null&&d!==undefined&&d>=0&&d<=30;
     });
   } else if(proySel===60){
     cuotasFiltradas=cuotasPend.filter(function(c){
-      var d=c.dias; return d!==null&&d!==undefined&&d<=60&&d>=-1;
+      var d=c.dias; return d!==null&&d!==undefined&&d>=0&&d<=60;
     });
   } else if(proySel===90){
     cuotasFiltradas=cuotasPend.filter(function(c){
-      var d=c.dias; return d!==null&&d!==undefined&&d<=90&&d>=-1;
+      var d=c.dias; return d!==null&&d!==undefined&&d>=0&&d<=90;
+    });
+  } else if(typeof proySel==='number'&&proySel>0){
+    cuotasFiltradas=cuotasPend.filter(function(c){
+      var d=c.dias; return d!==null&&d!==undefined&&d>=0&&d<=proySel;
     });
   } else if(proySel==='total'){
     cuotasFiltradas=cuotasPend.slice();
@@ -2585,7 +2621,14 @@ function toggleTareasInline(id){
   if(!panel) return;
   const visible = panel.style.display !== 'none';
   panel.style.display = visible ? 'none' : 'block';
-  if(btn) btn.style.background = visible ? '' : 'rgba(52,211,153,.15)';
+  const hoyStr = todayStr();
+  const tareas = getTareasInline(id);
+  const pendientes = tareas.filter(t=>!t.done).length;
+  const tieneHoy = tareas.some(tk=>!tk.done && tk.fecha && tk.fecha <= hoyStr);
+  if(btn){
+    btn.style.background = visible ? (tieneHoy?'rgba(239,68,68,.2)':pendientes>0?'rgba(52,211,153,.1)':'') : 'rgba(52,211,153,.15)';
+    btn.style.borderColor = tieneHoy ? 'var(--red)' : (visible ? '' : '');
+  }
   if(!visible) renderTareasInline(id);
 }
 function renderTareasInline(id){
@@ -2593,34 +2636,68 @@ function renderTareasInline(id){
   if(!panel) return;
   const tareas = getTareasInline(id);
   const pendientes = tareas.filter(t=>!t.done).length;
+  const hoyStr = todayStr();
+
   panel.innerHTML = `<div style="padding:0 2px">
     <div style="font-size:10px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
       Tareas ${pendientes>0?'<span style="color:var(--yellow)">('+pendientes+' pendiente'+(pendientes!==1?'s':'')+')</span>':''}
     </div>
     ${tareas.length===0?'<div style="font-size:11px;color:var(--text3);padding:4px 0 8px">Sin tareas aún</div>':''}
-    ${tareas.map((tk,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
-      <input type="checkbox" ${tk.done?'checked':''} onchange="toggleTareaInlineItem(${id},${i},this.checked)" style="width:16px;height:16px;accent-color:var(--green);flex-shrink:0">
-      <span style="flex:1;font-size:12px;${tk.done?'text-decoration:line-through;color:var(--text3)':'color:var(--text)'}">${escHtml(tk.texto)}</span>
-      <button onclick="eliminarTareaInline(${id},${i})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:2px 4px">✕</button>
-    </div>`).join('')}
-    <div style="display:flex;gap:6px;margin-top:8px">
-      <input id="nueva-tarea-input-${id}" class="form-input" placeholder="Nueva tarea..." style="font-size:12px;flex:1;padding:6px 10px"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();agregarTareaInline(${id});}">
-      <button class="btn btn-primary btn-sm" onclick="agregarTareaInline(${id})" style="flex-shrink:0">+</button>
+    ${tareas.map((tk,i)=>{
+      const esHoy = !tk.done && tk.fecha && tk.fecha === hoyStr;
+      const esPasada = !tk.done && tk.fecha && tk.fecha < hoyStr;
+      const urgenteCls = esHoy ? 'background:#3f0d0d;border:1px solid #7f1d1d;border-radius:6px;padding:4px 6px;margin-bottom:2px' :
+                         esPasada ? 'background:#1f0505;border:1px solid var(--red);border-radius:6px;padding:4px 6px;margin-bottom:2px' : '';
+      const fechaLabel = tk.fecha ? `<span style="font-size:10px;font-weight:600;color:${esHoy?'var(--red)':esPasada?'var(--red)':'#60a5fa'};margin-left:4px">${esHoy?'🔴 HOY':esPasada?'⚠️ '+tk.fecha:tk.fecha}</span>` : '';
+      return`<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);${urgenteCls}">
+        <input type="checkbox" ${tk.done?'checked':''} onchange="toggleTareaInlineItem(${id},${i},this.checked)" style="width:16px;height:16px;accent-color:var(--green);flex-shrink:0;margin-top:2px">
+        <div style="flex:1;min-width:0">
+          <span style="font-size:12px;${tk.done?'text-decoration:line-through;color:var(--text3)':'color:var(--text)'}">${escHtml(tk.texto)}</span>
+          ${fechaLabel}
+        </div>
+        <button onclick="eliminarTareaInline(${id},${i})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:2px 4px">✕</button>
+      </div>`;
+    }).join('')}
+    <div style="margin-top:10px;background:var(--bg4);border-radius:8px;padding:8px">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.4px">➕ Nueva tarea</div>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <input id="nueva-tarea-input-${id}" class="form-input" placeholder="Descripción de la tarea..." style="font-size:12px;flex:1;padding:6px 10px"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();agregarTareaInline(${id});}">
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <div style="flex:1">
+          <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">📅 Fecha límite</label>
+          <input id="nueva-tarea-fecha-${id}" type="date" class="form-input" style="font-size:12px;padding:5px 8px;margin-top:2px">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="agregarTareaInline(${id})" style="flex-shrink:0;margin-top:14px">+</button>
+      </div>
     </div>
   </div>`;
 }
 function agregarTareaInline(id){
   const input = document.getElementById('nueva-tarea-input-'+id);
+  const fechaInput = document.getElementById('nueva-tarea-fecha-'+id);
   if(!input || !input.value.trim()) return;
   const tareas = getTareasInline(id);
-  tareas.push({texto:input.value.trim(), done:false, fecha:todayStr()});
+  const nuevaTarea = {texto:input.value.trim(), done:false, creadaEn:todayStr()};
+  if(fechaInput && fechaInput.value) nuevaTarea.fecha = fechaInput.value;
+  tareas.push(nuevaTarea);
   saveTareasInline(id, tareas);
   input.value = '';
+  if(fechaInput) fechaInput.value = '';
   renderTareasInline(id);
   const btn = document.getElementById('btn-tareas-'+id);
   const pendientes = tareas.filter(t=>!t.done).length;
-  if(btn) btn.textContent = pendientes>0?'✅ Tareas('+pendientes+')':'✅ Tareas';
+  // Check if any task is urgent (today)
+  const hoyStr = todayStr();
+  const tieneHoy = tareas.some(tk=>!tk.done && tk.fecha===hoyStr);
+  if(btn) {
+    btn.textContent = pendientes>0?'✅ Tareas('+pendientes+')':'✅ Tareas';
+    btn.style.background = tieneHoy ? 'rgba(239,68,68,.25)' : (pendientes>0 ? 'rgba(52,211,153,.15)' : '');
+    btn.style.borderColor = tieneHoy ? 'var(--red)' : '';
+  }
+  // Solicitar permiso de notificaciones y programar alerta
+  if(nuevaTarea.fecha) programarRecordatorio(id, nuevaTarea);
 }
 function toggleTareaInlineItem(id, idx, checked){
   const tareas = getTareasInline(id);
@@ -2636,6 +2713,114 @@ function eliminarTareaInline(id, idx){
   saveTareasInline(id, tareas);
   renderTareasInline(id);
 }
+// ====== SISTEMA DE RECORDATORIOS Y TAREAS URGENTES ======
+function programarRecordatorio(trabajoId, tarea){
+  if(!tarea.fecha) return;
+  // Solicitar permiso de notificaciones push
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+  // La alerta visual la maneja checkTareasUrgentes al cargar
+}
+
+function checkTareasUrgentes(){
+  const hoyStr = todayStr();
+  let tareasHoy = [];
+  // Recolectar todas las tareas con fecha hoy de todos los trabajos
+  DB.trabajos.forEach(function(tj){
+    const tareas = getTareasInline(tj.id);
+    tareas.forEach(function(tk, idx){
+      if(!tk.done && tk.fecha){
+        const dias = tk.fecha < hoyStr ? -1 : tk.fecha === hoyStr ? 0 : 1;
+        if(dias <= 0){
+          tareasHoy.push({trabajoId: tj.id, trabajoNombre: tj.nombre, tarea: tk, idx, dias});
+        }
+      }
+    });
+  });
+
+  // Actualizar badge del nav
+  const badge = document.getElementById('nav-urgentes-label');
+  const mbadge = document.getElementById('mnav-urgentes-label');
+  const count = tareasHoy.length;
+  if(badge){
+    const hoy = new Date();
+    badge.textContent = count > 0 ? `${hoy.getDate()}/${hoy.getMonth()+1} 🔴${count}` : `${hoy.getDate()}/${hoy.getMonth()+1}`;
+  }
+
+  // Notificaciones push para tareas de hoy
+  if('Notification' in window && Notification.permission === 'granted' && tareasHoy.length > 0){
+    const notifKey = 'notif_shown_' + hoyStr;
+    if(!localStorage.getItem(notifKey)){
+      tareasHoy.filter(t=>t.dias===0).forEach(function(item){
+        try{
+          new Notification('📅 Tarea para HOY — Tracker', {
+            body: item.trabajoNombre + ': ' + item.tarea.texto,
+            icon: 'icon-192.png'
+          });
+        }catch(e){}
+      });
+      if(tareasHoy.filter(t=>t.dias===0).length > 0){
+        localStorage.setItem(notifKey, '1');
+      }
+    }
+  }
+
+  // Renderizar sección de tareas urgentes en la vista Urgentes
+  renderTareasUrgentesList(tareasHoy);
+  return tareasHoy;
+}
+
+function renderTareasUrgentesList(tareasHoy){
+  const el = document.getElementById('urgentes-tareas-lista');
+  if(!el) return;
+  if(tareasHoy.length === 0){
+    el.innerHTML = '<div class="empty">✅ No hay tareas urgentes para hoy</div>';
+    return;
+  }
+  const hoyStr = todayStr();
+  el.innerHTML = tareasHoy.map(function(item){
+    const esPasada = item.tarea.fecha < hoyStr;
+    const color = esPasada ? 'var(--red)' : 'var(--yellow)';
+    const bg = esPasada ? '#1f0505' : '#1c0f00';
+    const etiqueta = esPasada ? '⚠️ VENCIDA' : '🔴 HOY';
+    return`<div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);background:${bg}">
+      <span style="font-size:16px;flex-shrink:0">${esPasada?'⚠️':'🔴'}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${escHtml(item.tarea.texto)}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">📋 ${item.trabajoNombre} · ${item.tarea.fecha}</div>
+      </div>
+      <span style="font-size:10px;font-weight:700;color:${color};background:${bg};border:1px solid ${color};padding:3px 8px;border-radius:12px;white-space:nowrap">${etiqueta}</span>
+      <input type="checkbox" title="Marcar como completada" onchange="completarTareaUrgente(${item.trabajoId},${item.idx},this.checked)"
+        style="width:18px;height:18px;accent-color:var(--green);flex-shrink:0">
+    </div>`;
+  }).join('');
+}
+
+function completarTareaUrgente(trabajoId, idx, checked){
+  const tareas = getTareasInline(trabajoId);
+  if(tareas[idx]) tareas[idx].done = checked;
+  saveTareasInline(trabajoId, tareas);
+  checkTareasUrgentes();
+  showToast(checked ? '✅ Tarea completada' : 'Tarea reabierta');
+}
+
+// Actualizar badge en botones de tareas de los registros
+function actualizarBadgesTareas(){
+  const hoyStr = todayStr();
+  DB.trabajos.forEach(function(tj){
+    const btn = document.getElementById('btn-tareas-'+tj.id);
+    if(!btn) return;
+    const tareas = getTareasInline(tj.id);
+    const pendientes = tareas.filter(t=>!t.done).length;
+    const tieneHoy = tareas.some(tk=>!tk.done && tk.fecha && tk.fecha <= hoyStr);
+    btn.textContent = pendientes>0?'✅ Tareas('+pendientes+')':'✅ Tareas';
+    btn.style.background = tieneHoy ? 'rgba(239,68,68,.2)' : pendientes>0 ? 'rgba(52,211,153,.1)' : '';
+    btn.style.borderColor = tieneHoy ? 'var(--red)' : '';
+    btn.style.color = tieneHoy ? 'var(--red)' : '';
+  });
+}
+
 // ====== WHATSAPP RÁPIDO DESDE TARJETA ======
 function enviarWaRapidoTrabajo(id){
   const t = DB.trabajos.find(x=>x.id===id);
@@ -2713,10 +2898,10 @@ function renderWhatsAppView(){
 }
 
 function filtrarDashboard(tipo){
-  const navBtn = document.querySelector('.nav-btn:nth-child(2)');
-  const mnavBtn = document.querySelector('.mnav-btn:nth-child(2)');
   const isMobile = window.innerWidth <= 768;
-  goView('registro', isMobile ? mnavBtn : navBtn, isMobile);
+  const navBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b=>b.textContent.includes('Registro'));
+  const mnavBtn = Array.from(document.querySelectorAll('.mnav-btn')).find(b=>b.textContent.includes('Registro'));
+  goView('registro', isMobile ? (mnavBtn||navBtn) : (navBtn||mnavBtn), isMobile);
   const searchInput = document.getElementById('search-input');
   if(searchInput) searchInput.value = '';
   const filterEstado = document.getElementById('filter-estado');
@@ -2731,7 +2916,7 @@ function filtrarDashboard(tipo){
       case 'pagados':    filterEstado.value = 'Pagado'; break;
       case 'enproceso':  filterEstado.value = 'En proceso'; break;
       case 'pendientes': filterEstado.value = 'Pendiente'; break;
-      case 'entregados': filterEstado.value = 'Entregado'; break;
+      case 'entregados': filterEstado.value = 'Entregado'; window._dashFiltroExtra='entregados_y_terminados'; break;
       case 'prepagados': filterEstado.value = 'Prepagado'; break;
       case 'terminados': filterEstado.value = 'Terminado'; break;
       case 'cancelados': filterEstado.value = 'Cancelado'; break;
@@ -2784,6 +2969,8 @@ function renderAll(){
   renderUrgentes();
   renderIngresos();
   renderProyeccion();
+  checkTareasUrgentes();
+  setTimeout(actualizarBadgesTareas, 200);
   if(document.getElementById('v-productividad').classList.contains('active')){
     renderProductividad();
   }
@@ -3347,7 +3534,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
 // Fecha header
 const dias=['domingo','lunes','martes','mi\u00e9rcoles','jueves','viernes','s\u00e1bado'];
 const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-document.getElementById('hdr-date').textContent=`${dias[today.getDay()]}, ${today.getDate()} de ${meses[today.getMonth()]} ${today.getFullYear()}`;
+const _hdrDate=getToday();document.getElementById('hdr-date').textContent=`${dias[_hdrDate.getDay()]}, ${_hdrDate.getDate()} de ${meses[_hdrDate.getMonth()]} ${_hdrDate.getFullYear()}`;
 
 // INICIAR
 function verHistorial(id){
@@ -5854,12 +6041,24 @@ function setTagFilter(tag){
   activeTagFilter = tag;
   document.querySelectorAll('.tag-filter-btn').forEach(b=>b.classList.remove('active'));
   if(!tag){
-    document.getElementById('tag-filter-all').classList.add('active');
+    const all=document.getElementById('tag-filter-all');if(all)all.classList.add('active');
   } else {
-    document.querySelectorAll('.tag-filter-btn').forEach(b=>{
-      if(b.textContent.toLowerCase().includes(tag)) b.classList.add('active');
+    document.querySelectorAll('.tag-filter-btn[data-tag]').forEach(b=>{
+      if(b.getAttribute('data-tag')===tag) b.classList.add('active');
     });
   }
+  renderTabla();
+}
+
+function limpiarFiltros(){
+  window._dashFiltroExtra=null;
+  activeTagFilter='';
+  const si=document.getElementById('search-input');if(si)si.value='';
+  const fe=document.getElementById('filter-estado');if(fe)fe.value='';
+  const ft=document.getElementById('filter-tipo');if(ft)ft.value='';
+  const fp=document.getElementById('filter-prio');if(fp)fp.value='';
+  document.querySelectorAll('.tag-filter-btn').forEach(b=>b.classList.remove('active'));
+  const tall=document.getElementById('tag-filter-all');if(tall)tall.classList.add('active');
   renderTabla();
 }
 
@@ -6492,8 +6691,9 @@ function renderTabla(){
   const fe=document.getElementById('filter-estado').value;
   const ft=document.getElementById('filter-tipo').value;
   const fp=(document.getElementById('filter-prio')||{value:''}).value;
+  const filtroExtra=window._dashFiltroExtra||null;
 
-  const baseEstados=['En proceso','Pagado','Pendiente','Terminado','Cancelado'];
+  const baseEstados=['En proceso','Entregado','Pendiente','Prepagado','Pagado','Terminado','Cancelado'];
   const customEstados=getEstadosCustom();
   const allEstados=[...baseEstados,...customEstados];
   const selEst=document.getElementById('filter-estado');
@@ -6501,13 +6701,37 @@ function renderTabla(){
   selEst.innerHTML='<option value="">Todos los estados</option>'+allEstados.map(e=>`<option ${e===curEst?'selected':''}>${e}</option>`).join('');
 
   let rows=DB.trabajos.filter(t=>{
-    if(q&&!(t.nombre.toLowerCase().includes(q)||t.tipo.toLowerCase().includes(q)||(t.uni||'').toLowerCase().includes(q)))return false;
+    if(q&&!(t.nombre.toLowerCase().includes(q)||t.tipo.toLowerCase().includes(q)||(t.uni||'').toLowerCase().includes(q)||(t.cel||'').replace(/\D/g,'').includes(q.replace(/\D/g,''))))return false;
     if(fe&&t.estado!==fe)return false;
     if(ft&&t.tipo!==ft)return false;
     if(fp&&(t.prioridad||'')!==fp)return false;
     if(activeTagFilter&&!(t.tags||[]).includes(activeTagFilter))return false;
+    if(filtroExtra==='saldo'){const s=(t.precio||0)-(t.cobrado||0);if(s<=0||t.estado==='Cancelado'||t.estado==='Pagado')return false;}
+    if(filtroExtra==='vencidos'){if(t.estado==='Pagado'||t.estado==='Cancelado')return false;const d=diffDias(t.fent);if(d===null||d>=0)return false;}
     return true;
   });
+
+  // Badge de filtro activo
+  const hayFiltro=fe||ft||fp||q||activeTagFilter||filtroExtra;
+  const badge=document.getElementById('filtro-activo-badge');
+  const badgeLabel=document.getElementById('filtro-activo-label');
+  if(badge&&badgeLabel){
+    if(hayFiltro){
+      const partes=[];
+      if(filtroExtra==='saldo')partes.push('Con saldo pendiente');
+      else if(filtroExtra==='vencidos')partes.push('Vencidos');
+      if(fe)partes.push(fe);
+      if(ft)partes.push(ft);
+      if(fp)partes.push('Prio: '+fp);
+      if(q)partes.push('"'+q+'"');
+      if(activeTagFilter)partes.push('🏷️ '+activeTagFilter);
+      badgeLabel.textContent='🔍 '+partes.join(' · ');
+      badge.style.display='inline-flex';
+    }else{badge.style.display='none';}
+  }
+  // Contador
+  const contEl=document.getElementById('contador-resultados');
+  if(contEl)contEl.textContent=(rows.length<DB.trabajos.length)?rows.length+' de '+DB.trabajos.length+' trabajos':'';
 
   // Sort by priority: alta first, then media, then baja, then none
   const prioOrder = {alta:0,media:1,baja:2,'':3};
@@ -7138,6 +7362,16 @@ function init(){
   if(sendBtn) sendBtn.onclick = aiEnviar;
   const ta = document.getElementById('ai-textarea');
   if(ta) ta.onkeydown = function(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();aiEnviar();} };
+  // Solicitar permisos de notificación
+  if('Notification' in window && Notification.permission === 'default'){
+    setTimeout(function(){
+      Notification.requestPermission().then(function(perm){
+        if(perm === 'granted') checkTareasUrgentes();
+      });
+    }, 3000);
+  }
+  // Revisar tareas urgentes cada 30 minutos
+  setInterval(function(){ checkTareasUrgentes(); actualizarBadgesTareas(); }, 1800000);
 }
 
 init();
