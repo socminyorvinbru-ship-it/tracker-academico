@@ -2162,6 +2162,19 @@ function renderTabla(){
   }).join('');
 }
 
+function toggleMcard2(id){
+  const body   = document.getElementById('mcard2-body-'+id);
+  const footer = document.getElementById('mcard2-footer-'+id);
+  const btn    = document.getElementById('mcard2-btn-'+id);
+  const tareas = document.getElementById('tareas-inline-'+id);
+  if(!body) return;
+  const isHidden = body.style.display === 'none';
+  body.style.display   = isHidden ? '' : 'none';
+  if(footer) footer.style.display = isHidden ? '' : 'none';
+  if(tareas && !isHidden) tareas.style.display = 'none'; // cerrar tareas al colapsar
+  if(btn) btn.style.transform = isHidden ? '' : 'rotate(-90deg)';
+}
+
 function toggleMcard(id){
   var el=document.getElementById('mcard-'+id);
   if(!el) return;
@@ -2398,16 +2411,22 @@ function renderProyeccion(){
     }
   });
 
-  // Solo cuotas NO pagadas
+  // Solo cuotas NO completamente pagadas
   const cuotasPend = todasCuotas.filter(function(c){
     return c.estado!=='pagada' && c.estado!=='retraso' && c.trabajoEstado!=='Pagado';
   });
+
+  // Monto pendiente real por cuota (considerando pagos parciales)
+  function montoCuotaPendiente(c){
+    if(c.estado==='incompleta') return Math.max(0,(c.monto||0)-(c.cobrado||0));
+    return c.monto||0;
+  }
 
   function sumaCuotasEnRango(dias){
     return cuotasPend.filter(function(c){
       var d=c.dias;
       return d!==null&&d!==undefined&&d<=dias&&d>=-1;
-    }).reduce(function(a,c){return a+c.monto;},0);
+    }).reduce(function(a,c){return a+montoCuotaPendiente(c);},0);
   }
 
   const proy30=sumaCuotasEnRango(30);
@@ -2533,13 +2552,18 @@ function renderProyeccion(){
       else if(d<=7)dcls='background:#1c0f00;color:var(--yellow);border:1px solid #713f12';
       else dcls='background:#0c1a36;color:#60a5fa;border:1px solid #1e3a6e';
       var est=c.estado||'pendiente';
+      var pendReal = montoCuotaPendiente(c);
+      var esParcial = est==='incompleta';
       return`<tr style="cursor:pointer" onclick="verHistorial(${c.id})">
         <td><strong>${c.nombre}</strong></td>
         <td>${c.tipo}</td>
         <td><span style="color:var(--text3)">C${c.num}</span></td>
-        <td>${fmt(c.fecha)}${c.freal&&est==='retraso'?`<br><span style="font-size:10px;color:var(--yellow)">Pagó: ${fmt(c.freal)}</span>`:''}</td>
+        <td>${fmt(c.fecha)}${c.freal&&(est==='retraso'||est==='incompleta')?`<br><span style="font-size:10px;color:var(--yellow)">Pagó: ${fmt(c.freal)}</span>`:''}</td>
         <td><span class="dias-badge" style="${dcls}">${d<0?Math.abs(d)+'d venc':d===0?'Hoy':d===1?'Mañana':'En '+d+'d'}</span></td>
-        <td style="font-weight:600;color:var(--accent3)">${fmtSRaw(c.monto)}</td>
+        <td style="font-weight:600;color:var(--accent3)">
+          ${fmtSRaw(pendReal)}
+          ${esParcial?`<br><span style="font-size:9px;color:var(--text3)">Abonó: S/${c.cobrado||0} / S/${c.monto}</span>`:''}
+        </td>
         <td><span style="font-size:12px;color:${estColor[est]}">${estIcon[est]} ${estLabel[est]}</span></td>
       </tr>`;
     }).join('')+'</tbody></table>';
@@ -2841,22 +2865,44 @@ function renderCuotasGrid(){
       <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Monto S/.</label>
       <input class="form-input" type="number" placeholder="S/." value="${c.m||''}" inputmode="decimal" style="margin-bottom:8px"
         onchange="cuotasData[${i}].m=parseFloat(this.value)||0;actualizarCobradoDesdeCuotas()">
-      <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Estado del pago</label>
-      <select class="form-select" style="font-size:12px;padding:6px 8px;margin-bottom:${estado==='retraso'?'6px':'0'}"
+      <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Monto cobrado S/. (real)</label>
+      <input class="form-input" type="number" placeholder="0" inputmode="decimal"
+        value="${c.cobrado!==undefined&&c.cobrado!==null?c.cobrado:''}"
+        style="margin-bottom:6px;${c.cobrado>0&&c.cobrado<(c.m||0)?'border-color:var(--yellow)':c.cobrado>=(c.m||1)&&c.cobrado>0?'border-color:var(--green)':''}"
+        oninput="cuotasData[${i}].cobrado=parseFloat(this.value)||0;cuotasAutoEstado(${i});actualizarCobradoDesdeCuotas();renderCuotasGrid()">
+      <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Estado</label>
+      <select class="form-select" style="font-size:12px;padding:6px 8px;margin-bottom:${estado==='retraso'||estado==='incompleta'?'6px':'0'}"
         onchange="cuotasData[${i}].estado=this.value;actualizarCobradoDesdeCuotas();renderCuotasGrid()">
         <option value="pendiente" ${estado==='pendiente'?'selected':''}>⏳ Pendiente</option>
-        <option value="pagada" ${estado==='pagada'?'selected':''}>✅ Pagada a tiempo</option>
+        <option value="pagada" ${estado==='pagada'?'selected':''}>✅ Pagada completa</option>
+        <option value="incompleta" ${estado==='incompleta'?'selected':''}>🟡 Pago parcial</option>
         <option value="retraso" ${estado==='retraso'?'selected':''}>⏰ Pagada con retraso</option>
       </select>
-      ${estado==='retraso'?`
+      ${(estado==='retraso'||estado==='incompleta')?`
         <label style="font-size:9px;color:var(--yellow);text-transform:uppercase;letter-spacing:.4px;margin-top:2px">Fecha real de pago</label>
         <input class="form-input" type="date" value="${c.freal||''}" style="border-color:var(--yellow);margin-bottom:4px"
           onchange="cuotasData[${i}].freal=this.value">
-        <input class="form-input" type="text" placeholder="Nota del retraso (opcional)" value="${c.nota||''}" style="font-size:12px"
+        <input class="form-input" type="text" placeholder="Nota (opcional)" value="${c.nota||''}" style="font-size:12px"
           onchange="cuotasData[${i}].nota=this.value">
       `:''}
+      ${estado==='incompleta'&&c.m?`<div style="font-size:10px;color:var(--yellow);margin-top:4px;padding:4px 8px;background:#1c0f00;border-radius:6px;border:1px solid #713f12">💰 Cobrado: S/${c.cobrado||0} de S/${c.m} — faltan S/${Math.max(0,(c.m||0)-(c.cobrado||0))}</div>`:''}
     </div>`;
   }).join('');
+}
+
+// Auto-detecta estado de cuota según monto cobrado vs programado
+function cuotasAutoEstado(i){
+  const c = cuotasData[i];
+  if(!c) return;
+  const cobrado = c.cobrado || 0;
+  const programado = c.m || 0;
+  if(cobrado <= 0) { c.estado = 'pendiente'; return; }
+  if(programado > 0 && cobrado < programado) { c.estado = 'incompleta'; return; }
+  if(programado > 0 && cobrado >= programado) {
+    // Si la fecha real ya fue puesta → retraso; si no → pagada
+    if(!c.freal) c.freal = '';
+    c.estado = c.freal ? 'retraso' : 'pagada';
+  }
 }
 
 function actualizarCobradoDesdeCuotas(){
@@ -2867,12 +2913,18 @@ function actualizarCobradoDesdeCuotas(){
   }
   // Recalcular cobrado en el modal para mostrarlo en tiempo real
   const precio = parseFloat(document.getElementById('f-precio').value)||0;
-  const cobradoCuotas = cuotasData.filter(c=>c.estado==='pagada'||c.estado==='retraso').reduce((a,c)=>a+(c.m||0),0);
+  // Cobrado = suma de cuotas pagadas completas + parciales
+  const cobradoCuotas = cuotasData.reduce((a,c)=>{
+    if(c.estado==='pagada'||c.estado==='retraso') return a+(c.m||0);
+    if(c.estado==='incompleta') return a+(c.cobrado||0);
+    return a;
+  },0);
   const cobradoFinal = Math.min(cobradoCuotas, precio);
   const infoEl = document.getElementById('cobrado-preview');
   if(infoEl){
     const saldo = precio - cobradoFinal;
-    infoEl.innerHTML = `<span style="color:var(--green)">Cobrado: ${fmtS(cobradoFinal)}</span> &nbsp;|&nbsp; <span style="color:var(--red)">Saldo: ${fmtS(saldo)}</span>`;
+    const pct = precio>0?Math.round(cobradoFinal/precio*100):0;
+    infoEl.innerHTML = `<span style="color:var(--green)">Cobrado: ${fmtS(cobradoFinal)}</span> &nbsp;|&nbsp; <span style="color:var(--red)">Saldo: ${fmtS(saldo)}</span> &nbsp;<span style="color:var(--text3);font-size:11px">(${pct}%)</span>`;
   }
 }
 
@@ -3337,20 +3389,25 @@ function verHistorial(id){
       <div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-weight:600">📅 Detalle de Cuotas</div>`;
     cuotas.forEach((c,i)=>{
       const est = c.estado||'pendiente';
-      const bg = est==='pagada'?'#052e16':est==='retraso'?'#1c0f00':'var(--bg3)';
-      const border = est==='pagada'?'#166534':est==='retraso'?'#713f12':'var(--border)';
-      const icon = est==='pagada'?'✅':est==='retraso'?'⏰':'⏳';
-      const label = est==='pagada'?'Pagada a tiempo':est==='retraso'?'Pagada con retraso':'Pendiente';
-      const labelColor = est==='pagada'?'var(--green)':est==='retraso'?'var(--yellow)':'var(--text3)';
-      html += `<div style="background:${bg};border:1px solid ${border};border-radius:8px;padding:10px 14px;margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center">
-        <div style="font-size:18px">${icon}</div>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text)">Cuota ${i+1} — ${fmtS((c.m||0))}</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">Programada: ${c.f ? fmt(c.f) : '—'}</div>
-          ${est==='retraso'&&c.freal ? `<div style="font-size:10px;color:var(--yellow);margin-top:2px">Pagó el: ${fmt(c.freal)}</div>` : ''}
-          ${est==='retraso'&&c.nota ? `<div style="font-size:10px;color:var(--text3);margin-top:2px;font-style:italic">"${c.nota}"</div>` : ''}
+      const bg = est==='pagada'?'#052e16':est==='retraso'?'#1c0f00':est==='incompleta'?'#1c0f00':'var(--bg3)';
+      const border = est==='pagada'?'#166534':est==='retraso'?'#713f12':est==='incompleta'?'#92400e':'var(--border)';
+      const icon = est==='pagada'?'✅':est==='retraso'?'⏰':est==='incompleta'?'🟡':'⏳';
+      const label = est==='pagada'?'Pagada completa':est==='retraso'?'Pagada con retraso':est==='incompleta'?'Pago parcial':'Pendiente';
+      const labelColor = est==='pagada'?'var(--green)':est==='retraso'?'var(--yellow)':est==='incompleta'?'var(--orange)':'var(--text3)';
+      const pctCuota = c.m>0?Math.min(100,Math.round((c.cobrado||0)/c.m*100)):0;
+      html += `<div style="background:${bg};border:1px solid ${border};border-radius:8px;padding:10px 14px;margin-bottom:8px">
+        <div style="display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center">
+          <div style="font-size:18px">${icon}</div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--text)">Cuota ${i+1} — Prog: ${fmtS((c.m||0))}</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:2px">Programada: ${c.f?fmt(c.f):'—'}</div>
+            ${(est==='retraso'||est==='incompleta')&&c.freal?`<div style="font-size:10px;color:var(--yellow);margin-top:2px">Pagó el: ${fmt(c.freal)}</div>`:''}
+            ${est==='incompleta'?`<div style="font-size:10px;color:var(--orange);margin-top:4px">Cobrado: S/${c.cobrado||0} &nbsp;|&nbsp; <span style="color:var(--red)">Falta: S/${Math.max(0,(c.m||0)-(c.cobrado||0))}</span></div>`:''}
+            ${(est==='retraso'||est==='incompleta')&&c.nota?`<div style="font-size:10px;color:var(--text3);margin-top:2px;font-style:italic">"${c.nota}"</div>`:''}
+          </div>
+          <div style="font-size:11px;font-weight:600;color:${labelColor};text-align:right">${label}</div>
         </div>
-        <div style="font-size:11px;font-weight:600;color:${labelColor};text-align:right">${label}</div>
+        ${est==='incompleta'&&c.m?`<div style="margin-top:8px"><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-bottom:3px"><span>Progreso de pago</span><span>${pctCuota}%</span></div><div style="height:5px;background:var(--bg4);border-radius:5px;overflow:hidden"><div style="height:100%;width:${pctCuota}%;background:linear-gradient(90deg,var(--orange),var(--yellow));border-radius:5px"></div></div></div>`:''}
       </div>`;
     });
     html += '</div>';
@@ -3588,11 +3645,15 @@ function buildFacturaHtml(t, empresa){
       <div class="factura-section-title">📅 Plan de Pagos</div>`;
     cuotas.forEach((c,i)=>{
       const est  = c.estado||'pendiente';
-      const cls  = (est==='pagada'||est==='retraso') ? 'fci-paid' : 'fci-pend';
-      const icon = (est==='pagada'||est==='retraso') ? '✅' : '⏳';
-      cuotasHtml += `<div class="factura-cuota-item ${cls}">
-        <span>${icon} Cuota ${i+1}${c.f?' — '+fmt(c.f):''}</span>
-        <strong>${fmtS((c.m||0))}</strong>
+      const cls  = (est==='pagada'||est==='retraso') ? 'fci-paid' : est==='incompleta'?'fci-pend':'fci-pend';
+      const icon = est==='pagada'?'✅':est==='retraso'?'⏰':est==='incompleta'?'🟡':'⏳';
+      const pctCuota = c.m>0?Math.min(100,Math.round((c.cobrado||0)/c.m*100)):0;
+      cuotasHtml += `<div class="factura-cuota-item ${cls}" style="flex-direction:column;gap:4px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span>${icon} Cuota ${i+1}${c.f?' — '+fmt(c.f):''}</span>
+          <strong>${est==='incompleta'?`S/${c.cobrado||0} / S/${c.m||0}`:`${fmtS((c.m||0))}`}</strong>
+        </div>
+        ${est==='incompleta'&&c.m?`<div style="height:4px;background:rgba(0,0,0,.2);border-radius:4px;overflow:hidden"><div style="height:100%;width:${pctCuota}%;background:var(--yellow);border-radius:4px"></div></div><div style="font-size:9px;text-align:right">${pctCuota}% cobrado — faltan S/${Math.max(0,(c.m||0)-(c.cobrado||0))}</div>`:''}
       </div>`;
     });
     cuotasHtml += '</div>';
@@ -6506,8 +6567,8 @@ function renderTabla(){
     const prioHtml = t.prioridad==='alta' ? '<span style="font-size:10px">🔴</span>' : t.prioridad==='media' ? '<span style="font-size:10px">🟡</span>' : '';
     const tagsHtml = renderTagsPills(t.tags);
     const pctColor = pct>=100?'var(--green)':pct>=50?'var(--accent)':'var(--yellow)';
-    return`<div class="mcard">
-      <div class="mcard-header">
+    return`<div class="mcard" id="mcard2-${t.id}">
+      <div class="mcard-header" style="cursor:pointer;user-select:none" onclick="toggleMcard2(${t.id})">
         <div style="flex:1;min-width:0">
           <div class="mcard-nombre">${prioHtml}<span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block">${t.nombre}</span></div>
           ${t.cel ? `<div class="mcard-cel">📱 ${t.cel}${t.uni?' · 🏫 '+t.uni:''}</div>` : (t.uni ? `<div class="mcard-cel">🏫 ${t.uni}</div>` : '')}
@@ -6516,9 +6577,10 @@ function renderTabla(){
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
           ${pillEstado(t.estado)}
           ${diasBadge}
+          <button class="mcard-collapse-btn" id="mcard2-btn-${t.id}" onclick="event.stopPropagation();toggleMcard2(${t.id})" title="Expandir/Colapsar" style="font-size:16px;margin-top:2px">▾</button>
         </div>
       </div>
-      <div class="mcard-body">
+      <div class="mcard-body" id="mcard2-body-${t.id}">
         <div class="mcard-field"><div class="mcard-field-label">📋 Tipo</div><div class="mcard-field-val" style="font-size:11px">${t.tipo||'—'}</div></div>
         <div class="mcard-field"><div class="mcard-field-label">📅 Entrega</div><div class="mcard-field-val" style="font-size:12px">${t.fent?fmt(t.fent):'—'}</div></div>
         <div class="mcard-field"><div class="mcard-field-label">💰 Precio</div><div class="mcard-field-val" style="color:var(--accent3);font-size:13px">${fmtS(t.precio||0)}</div></div>
@@ -6532,7 +6594,7 @@ function renderTabla(){
           <div style="font-size:9px;color:var(--text3);margin-top:3px;text-align:right">${pct}% cobrado</div>
         </div>
       </div>
-      <div class="mcard-footer">
+      <div class="mcard-footer" id="mcard2-footer-${t.id}">
         <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" style="color:var(--accent3)" title="Ver cliente">👤</button>
         <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button>
         <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button>
