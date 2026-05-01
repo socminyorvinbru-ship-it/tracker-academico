@@ -789,7 +789,9 @@
         </div>
         <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
       </div>
-      <div class="counters" id="counters"></div>
+      <!-- FILTROS RÁPIDOS DEL DASHBOARD -->
+      <div id="dash-filtros-rapidos" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:16px"></div>
+      <div class="counters" id="counters" style="display:none"></div>
       <div class="alerts-section" id="dash-alerts" style="margin-bottom:12px">
         <div class="section-header">
           <span class="section-title">⚠️ Alertas Próximas 7 días + Vencidos</span>
@@ -1105,23 +1107,14 @@
     <button class="mnav-btn" id="mnav-proyeccion" onclick="goView('proyeccion',this,true)">
       <span class="mnav-icon">📅</span>Proyección
     </button>
-    <button class="mnav-btn" id="mnav-productividad" onclick="goView('productividad',this,true)">
-      <span class="mnav-icon">⚙️</span>Tareas
-    </button>
     <button class="mnav-btn" id="mnav-asistente" onclick="goView('asistente',this,true)">
       <span class="mnav-icon">🤖</span>Offline
-    </button>
-    <button class="mnav-btn" id="mnav-archivos" onclick="goView('archivos',this,true)">
-      <span class="mnav-icon">📁</span>Archivos
     </button>
     <button class="mnav-btn" id="mnav-gastos" onclick="goView('gastos',this,true)">
       <span class="mnav-icon">💸</span>Gastos
     </button>
     <button class="mnav-btn" onclick="goView('whatsapp',this,true)">
       <span class="mnav-icon">📲</span>WhatsApp
-    </button>
-    <button class="mnav-btn" onclick="abrirDrive()">
-      <span class="mnav-icon">💾</span>Backup
     </button>
   </div>
 </nav>
@@ -1945,15 +1938,57 @@ function renderDashboard(){
   const venc=tActivos.filter(x=>semaforo(x).label==='Vencido').length;
   const entregados=tActivos.filter(x=>x.estado==='Entregado').length;
   const pronto=tActivos.filter(x=>{const d=diffDias(x.fent);return d!==null&&d>=0&&d<=7&&x.estado!=='Pagado'&&x.estado!=='Entregado';}).length;
-  document.getElementById('counters').innerHTML=`
-    <span class="counter-badge cb-green" style="cursor:pointer" onclick="filtrarDashboard('pagados')">✅ Pagados: ${pagados}</span>
-    <span class="counter-badge cb-blue" style="cursor:pointer" onclick="filtrarDashboard('enproceso')">🔵 En Proceso: ${enp}</span>
-    <span class="counter-badge cb-orange" style="cursor:pointer" onclick="filtrarDashboard('pendientes')">🟠 Pendientes: ${pend}</span>
-    ${prepagados>0?`<span class="counter-badge" style="background:#1a1200;color:#f59e0b;border:1px solid #92400e;cursor:pointer" onclick="filtrarDashboard('prepagados')">🟡 Prepagados: ${prepagados}</span>`:''}
-    <span class="counter-badge cb-red" style="cursor:pointer" onclick="filtrarDashboard('vencidos')">🔴 Vencidos: ${venc}</span>
-    <span class="counter-badge cb-yellow">⚠️ Próx 7d: ${pronto}</span>
-    ${cancelados>0?`<span class="counter-badge" style="background:#1a1a1a;color:#666;border:1px solid #333;cursor:pointer" onclick="filtrarDashboard('cancelados')">⚫ Cancelados: ${cancelados}</span>`:''}
-    <span class="counter-badge cb-gray">Total: ${t.length}</span>
+  // Filtros rápidos visuales en el dashboard — tarjetas clickeables
+  const terminados=tActivos.filter(x=>x.estado==='Terminado').length;
+  const totalSaldoPendiente=tActivos.filter(x=>x.estado!=='Pagado').reduce((a,x)=>a+((x.precio||0)-(x.cobrado||0)),0);
+  const totalEntregadoMonto=tActivos.filter(x=>x.estado==='Entregado').reduce((a,x)=>a+((x.precio||0)-(x.cobrado||0)),0);
+
+  document.getElementById('dash-filtros-rapidos').innerHTML=`
+    <div onclick="filtrarDashboard('saldo')" style="background:linear-gradient(135deg,#1a1a2e,#1e1b3a);border:1px solid var(--accent);border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--accent3)'" onmouseout="this.style.borderColor='var(--accent)'">
+      <div style="font-size:11px;color:var(--accent3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">💰 Por Cobrar</div>
+      <div style="font-size:20px;font-weight:700;color:var(--accent3)">${fmtS(totalSaldoPendiente)}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">Toca para filtrar →</div>
+    </div>
+    <div onclick="filtrarDashboard('pagados')" style="background:#052e16;border:1px solid #166534;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='#166534'">
+      <div style="font-size:11px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">✅ Pagados</div>
+      <div style="font-size:20px;font-weight:700;color:var(--green)">${pagados}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">${fmtS(totalCob)} cobrado</div>
+    </div>
+    <div onclick="filtrarDashboard('pendientes')" style="background:#1c0f00;border:1px solid #7c2d12;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='#7c2d12'">
+      <div style="font-size:11px;color:var(--orange);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🟠 Pendientes</div>
+      <div style="font-size:20px;font-weight:700;color:var(--orange)">${pend}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">Sin iniciar / espera</div>
+    </div>
+    <div onclick="filtrarDashboard('enproceso')" style="background:#0c1a36;border:1px solid #1e3a6e;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#60a5fa'" onmouseout="this.style.borderColor='#1e3a6e'">
+      <div style="font-size:11px;color:#60a5fa;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🔵 En Proceso</div>
+      <div style="font-size:20px;font-weight:700;color:#60a5fa">${enp}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">Trabajando ahora</div>
+    </div>
+    <div onclick="filtrarDashboard('entregados')" style="background:#0a1c1c;border:1px solid #0e7490;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#22d3ee'" onmouseout="this.style.borderColor='#0e7490'">
+      <div style="font-size:11px;color:#22d3ee;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🔷 Entregados</div>
+      <div style="font-size:20px;font-weight:700;color:#22d3ee">${entr}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">${fmtS(totalEntregadoMonto)} p/cobrar</div>
+    </div>
+    <div onclick="filtrarDashboard('vencidos')" style="background:#1f0505;border:1px solid #7f1d1d;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='#7f1d1d'">
+      <div style="font-size:11px;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🔴 Vencidos</div>
+      <div style="font-size:20px;font-weight:700;color:var(--red)">${venc}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">Fuera de fecha</div>
+    </div>
+    ${prepagados>0?`<div onclick="filtrarDashboard('prepagados')" style="background:#1a1200;border:1px solid #92400e;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#92400e'">
+      <div style="font-size:11px;color:#f59e0b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🟡 Prepagados</div>
+      <div style="font-size:20px;font-weight:700;color:#f59e0b">${prepagados}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">Con adelanto</div>
+    </div>`:''}
+    ${terminados>0?`<div onclick="filtrarDashboard('terminados')" style="background:#1c0a1c;border:1px solid #701a75;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor='#d946ef'" onmouseout="this.style.borderColor='#701a75'">
+      <div style="font-size:11px;color:#d946ef;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🟣 Terminados</div>
+      <div style="font-size:20px;font-weight:700;color:#d946ef">${terminados}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">Listos p/entregar</div>
+    </div>`:''}
+    ${cancelados>0?`<div onclick="filtrarDashboard('cancelados')" style="background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;text-align:center">
+      <div style="font-size:11px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⚫ Cancelados</div>
+      <div style="font-size:20px;font-weight:700;color:#666">${cancelados}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">Descartados</div>
+    </div>`:''}
   `;
 
   const alertas=t.filter(x=>{
@@ -2018,6 +2053,8 @@ function renderDashboard(){
 function renderTabla(){
   const q=(document.getElementById('search-input').value||'').toLowerCase();
   const fe=document.getElementById('filter-estado').value;
+  // Si el usuario cambia filtro manualmente, limpiar filtro extra del dashboard
+  if(document.activeElement && document.activeElement.id==='filter-estado') window._dashFiltroExtra=null;
   const ft=document.getElementById('filter-tipo').value;
 
   // Actualizar select de filtro de estado con custom states
@@ -2028,10 +2065,21 @@ function renderTabla(){
   const curEst=selEst.value;
   selEst.innerHTML='<option value="">Todos los estados</option>'+allEstados.map(e=>`<option ${e===curEst?'selected':''}>${e}</option>`).join('');
 
+  const filtroExtra = window._dashFiltroExtra || null;
   let rows=DB.trabajos.filter(t=>{
     if(q&&!(t.nombre.toLowerCase().includes(q)||t.tipo.toLowerCase().includes(q)||(t.uni||'').toLowerCase().includes(q)))return false;
     if(fe&&t.estado!==fe)return false;
     if(ft&&t.tipo!==ft)return false;
+    // Filtros extra desde el dashboard
+    if(filtroExtra==='saldo'){
+      const s=(t.precio||0)-(t.cobrado||0);
+      if(s<=0||t.estado==='Cancelado'||t.estado==='Pagado') return false;
+    }
+    if(filtroExtra==='vencidos'){
+      if(t.estado==='Pagado'||t.estado==='Cancelado') return false;
+      const d=diffDias(t.fent);
+      if(d===null||d>=0) return false;
+    }
     return true;
   });
 
@@ -2102,7 +2150,7 @@ function renderTabla(){
       <div class="pct-bar" style="margin-bottom:10px"><div class="pct-fill" style="width:${pct}%"></div></div>
       <div class="mcard-footer">
         <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" style="color:var(--accent3)" title="Ver cliente">👤</button>
-        <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰 Cobrar</button>
+        <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button>
         <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button>
         <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa" title="Historial">📋</button>
         <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa" title="Bitácora">📓</button>
@@ -2640,31 +2688,37 @@ function renderWhatsAppView(){
 }
 
 function filtrarDashboard(tipo){
-  // Navegar a la vista de registro y aplicar filtro de estado
   const navBtn = document.querySelector('.nav-btn:nth-child(2)');
   const mnavBtn = document.querySelector('.mnav-btn:nth-child(2)');
   const isMobile = window.innerWidth <= 768;
   goView('registro', isMobile ? mnavBtn : navBtn, isMobile);
-  // Limpiar filtros previos
   const searchInput = document.getElementById('search-input');
   if(searchInput) searchInput.value = '';
   const filterEstado = document.getElementById('filter-estado');
   const filterTipo = document.getElementById('filter-tipo');
+  const filterPrio = document.getElementById('filter-prio');
   if(filterTipo) filterTipo.value = '';
+  if(filterPrio) filterPrio.value = '';
+  // Resetear filtro extra global
+  window._dashFiltroExtra = null;
   if(filterEstado){
     switch(tipo){
-      case 'pagados': filterEstado.value = 'Pagado'; break;
-      case 'enproceso': filterEstado.value = 'En proceso'; break;
+      case 'pagados':    filterEstado.value = 'Pagado'; break;
+      case 'enproceso':  filterEstado.value = 'En proceso'; break;
       case 'pendientes': filterEstado.value = 'Pendiente'; break;
       case 'entregados': filterEstado.value = 'Entregado'; break;
       case 'prepagados': filterEstado.value = 'Prepagado'; break;
+      case 'terminados': filterEstado.value = 'Terminado'; break;
       case 'cancelados': filterEstado.value = 'Cancelado'; break;
       case 'saldo':
-        // Mostrar todos con saldo pendiente (no pagados ni cancelados)
-        filterEstado.value = 'En proceso';
-        showToast('💰 Mostrando trabajos en proceso con saldo pendiente');
+        // Todos con saldo > 0, no pagados ni cancelados
+        filterEstado.value = '';
+        window._dashFiltroExtra = 'saldo';
         break;
-      case 'vencidos': filterEstado.value = ''; break;
+      case 'vencidos':
+        filterEstado.value = '';
+        window._dashFiltroExtra = 'vencidos';
+        break;
       default: filterEstado.value = ''; break;
     }
   }
@@ -3419,7 +3473,7 @@ function verCliente(id){
         <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:4px"></div>
       </div>
       <div style="display:flex;gap:5px;flex-wrap:wrap">
-        ${saldo>0 ? `<button class="btn btn-ghost btn-sm" onclick="closeClienteModal();cobrarTrabajo(${t.id})" style="color:var(--green)">💰 Cobrar</button>` : ''}
+        ${saldo>0 ? `<button class="btn btn-ghost btn-sm" onclick="closeClienteModal();cobrarTrabajo(${t.id})" style="color:var(--green)">💰</button>` : ''}
         <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();editarTrabajo(${t.id})">✎ Editar</button>
         <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();verHistorial(${t.id})" style="color:#60a5fa">📋 Pagos</button>
         <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();verFactura(${t.id})" style="color:#f59e0b">🧾 Comp.</button>
@@ -6480,11 +6534,11 @@ function renderTabla(){
       </div>
       <div class="mcard-footer">
         <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" style="color:var(--accent3)" title="Ver cliente">👤</button>
-        <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰 Cobrar</button>
+        <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button>
         <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button>
         <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" style="color:#60a5fa" title="Historial">📋</button>
         <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa" title="Bitácora">📓</button>
-        <button class="btn btn-ghost btn-sm" onclick="toggleTareasInline(${t.id})" style="color:#34d399" title="Ver tareas del trabajo" id="btn-tareas-${t.id}">✅ Tareas</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleTareasInline(${t.id})" style="color:#34d399" title="Ver tareas del trabajo" id="btn-tareas-${t.id}">✅</button>
         <button class="btn btn-ghost btn-sm" onclick="verFactura(${t.id})" style="color:#f59e0b" title="Comprobante">🧾</button>
         ${t.cel ? `<button class="btn btn-ghost btn-sm" onclick="enviarWaRapidoTrabajo(${t.id})" style="color:#25d366" title="WhatsApp">📲</button>` : ''}
         <button class="btn btn-danger btn-sm" onclick="if(confirm('¿Eliminar?'))eliminarTrabajo(${t.id})" title="Eliminar">✕</button>
@@ -6572,7 +6626,7 @@ function verCliente(id){
         <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:4px"></div>
       </div>
       <div style="display:flex;gap:5px;flex-wrap:wrap">
-        ${saldo>0?`<button class="btn btn-ghost btn-sm" onclick="closeClienteModal();cobrarTrabajo(${t.id})" style="color:var(--green)">💰 Cobrar</button>`:''}
+        ${saldo>0?`<button class="btn btn-ghost btn-sm" onclick="closeClienteModal();cobrarTrabajo(${t.id})" style="color:var(--green)">💰</button>`:''}
         <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();editarTrabajo(${t.id})">✎ Editar</button>
         <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" style="color:#a78bfa">📓</button>
         <button class="btn btn-ghost btn-sm" onclick="closeClienteModal();verHistorial(${t.id})" style="color:#60a5fa">📋 Pagos</button>
