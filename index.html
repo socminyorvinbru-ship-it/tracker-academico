@@ -156,9 +156,10 @@
   .mcard-field-val{color:var(--text);font-weight:600}
   .mcard-progress{height:3px;background:var(--bg4);border-radius:3px;margin:8px 0;overflow:hidden}
   .mcard-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .4s}
-  .mcard-footer{display:flex;gap:4px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:10px;margin-top:2px}
-  .mcard-footer .btn{width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;min-width:0;position:relative}
-  .mcard-footer .btn-primary{width:34px;font-size:15px;font-weight:700}
+  .mcard-footer{display:flex;gap:3px;flex-wrap:nowrap;align-items:center;border-top:1px solid var(--border);padding-top:10px;margin-top:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .mcard-footer::-webkit-scrollbar{display:none}
+  .mcard-footer .btn{width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;min-width:32px;position:relative}
+  .mcard-footer .btn-primary{width:32px;font-size:14px;font-weight:700}
 
   /* PILLS */
   .pill{padding:3px 9px;border-radius:12px;font-size:10px;font-weight:600;white-space:nowrap}
@@ -3154,7 +3155,7 @@ function renderCuotasGrid(){
         <input class="form-input" type="text" placeholder="Nota (opcional)" value="${c.nota||''}" style="font-size:12px"
           onchange="cuotasData[${i}].nota=this.value">
       `:''}
-      ${estado==='incompleta'&&c.m?`<div style="font-size:10px;color:var(--yellow);margin-top:4px;padding:4px 8px;background:#1c0f00;border-radius:6px;border:1px solid #713f12">💰 Cobrado: S/${c.cobrado||0} de S/${c.m} — faltan S/${Math.max(0,(c.m||0)-(c.cobrado||0))}</div>`:''}
+      ${estado==='incompleta'&&c.m?`<div style="font-size:10px;color:var(--yellow);margin-top:4px;padding:4px 8px;background:#1c0f00;border-radius:6px;border:1px solid #713f12">💰 Cobrado: S/${parseFloat(c.cobrado)||0} de S/${parseFloat(c.m)||0} — faltan S/${Math.max(0,(parseFloat(c.m)||0)-(parseFloat(c.cobrado)||0)).toFixed(2)}</div>`:''}
     </div>`;
   }).join('');
 }
@@ -3163,14 +3164,24 @@ function renderCuotasGrid(){
 function cuotasAutoEstado(i){
   const c = cuotasData[i];
   if(!c) return;
-  const cobrado = c.cobrado || 0;
-  const programado = c.m || 0;
-  if(cobrado <= 0) { c.estado = 'pendiente'; return; }
-  if(programado > 0 && cobrado < programado) { c.estado = 'incompleta'; return; }
+  const cobrado = parseFloat(c.cobrado) || 0;
+  const programado = parseFloat(c.m) || 0;
+  if(cobrado <= 0) {
+    // Solo resetear a pendiente si no era retraso/pagada manualmente
+    if(c.estado !== 'retraso' && c.estado !== 'pagada') c.estado = 'pendiente';
+    return;
+  }
+  if(programado > 0 && cobrado < programado) {
+    c.estado = 'incompleta';
+    return;
+  }
   if(programado > 0 && cobrado >= programado) {
-    // Si la fecha real ya fue puesta → retraso; si no → pagada
-    if(!c.freal) c.freal = '';
-    c.estado = c.freal ? 'retraso' : 'pagada';
+    // Si ya tiene estado retraso o tiene fecha real → retraso; si no → pagada
+    if(c.estado === 'retraso' || c.freal) {
+      c.estado = 'retraso';
+    } else {
+      c.estado = 'pagada';
+    }
   }
 }
 
@@ -3184,8 +3195,8 @@ function actualizarCobradoDesdeCuotas(){
   const precio = parseFloat(document.getElementById('f-precio').value)||0;
   // Cobrado = suma de cuotas pagadas completas + parciales
   const cobradoCuotas = cuotasData.reduce((a,c)=>{
-    if(c.estado==='pagada'||c.estado==='retraso') return a+(c.m||0);
-    if(c.estado==='incompleta') return a+(c.cobrado||0);
+    if(c.estado==='pagada'||c.estado==='retraso') return a+(parseFloat(c.m)||0);
+    if(c.estado==='incompleta') return a+(parseFloat(c.cobrado)||0);
     return a;
   },0);
   const cobradoFinal = Math.min(cobradoCuotas, precio);
@@ -3274,23 +3285,28 @@ function guardarTrabajo(){
     cuotas:cuotasGuardadas,
     ...cuotasCompat
   };
+  // Suma cobrado desde cuotas: pagadas completas + pagos parciales
+  function calcCobradoCuotas(lista, precio){
+    const total = lista.reduce((a,c)=>{
+      if(c.estado==='pagada'||c.estado==='retraso') return a+(parseFloat(c.m)||0);
+      if(c.estado==='incompleta') return a+(parseFloat(c.cobrado)||0);
+      return a;
+    },0);
+    return Math.min(total, precio);
+  }
   if(editId){
     const idx=DB.trabajos.findIndex(t=>t.id===editId);
     obj.id=editId;
-    // Si es cuotas: cobrado = suma de cuotas pagadas (no puede superar precio)
     if(modoPago==='cuotas'){
-      const cobradoCuotas = cuotasGuardadas.filter(c=>c.estado==='pagada'||c.estado==='retraso').reduce((a,c)=>a+(c.m||0),0);
-      obj.cobrado = Math.min(cobradoCuotas, obj.precio);
+      obj.cobrado = calcCobradoCuotas(cuotasGuardadas, obj.precio);
     } else {
-      // Al contado: preservar cobrado existente
       obj.cobrado = DB.trabajos[idx].cobrado||0;
     }
     DB.trabajos[idx]=obj;
   }else{
     obj.id=DB.nextId++;
     if(modoPago==='cuotas'){
-      const cobradoCuotas = cuotasGuardadas.filter(c=>c.estado==='pagada'||c.estado==='retraso').reduce((a,c)=>a+(c.m||0),0);
-      obj.cobrado = Math.min(cobradoCuotas, obj.precio);
+      obj.cobrado = calcCobradoCuotas(cuotasGuardadas, obj.precio);
     } else {
       obj.cobrado = 0;
     }
@@ -6864,12 +6880,7 @@ function renderTabla(){
     const saldo=(t.precio||0)-(t.cobrado||0);
     const pct=t.precio>0?Math.round((t.cobrado||0)/t.precio*100):0;
     const s=semaforo(t);
-    const diasD=diffDias(t.fent);
-    const diasBadge = t.estado==='Pagado'||t.estado==='Cancelado' ? '' :
-      diasD===null ? '' :
-      diasD<0 ? `<span style="font-size:9px;padding:2px 7px;border-radius:10px;background:#1f0505;color:var(--red);border:1px solid #7f1d1d;font-weight:700">⚠️ ${Math.abs(diasD)}d vencido</span>` :
-      diasD<=3 ? `<span style="font-size:9px;padding:2px 7px;border-radius:10px;background:#1c0f00;color:var(--yellow);border:1px solid #713f12;font-weight:700">⏰ ${diasD}d</span>` :
-      diasD<=7 ? `<span style="font-size:9px;padding:2px 7px;border-radius:10px;background:#1c0f00;color:var(--orange);border:1px solid #7c2d12;font-weight:700">${diasD}d</span>` : '';
+    const diasBadge = '';
     const prioHtml = t.prioridad==='alta' ? '<span style="font-size:10px">🔴</span>' : t.prioridad==='media' ? '<span style="font-size:10px">🟡</span>' : '';
     const tagsHtml = renderTagsPills(t.tags);
     const pctColor = pct>=100?'var(--green)':pct>=50?'var(--accent)':'var(--yellow)';
