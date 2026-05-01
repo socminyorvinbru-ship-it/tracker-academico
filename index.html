@@ -229,8 +229,7 @@
   .modal-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--bg2)}
 
   /* CUOTAS */
-  .cuotas-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-  @media(max-width:768px){.cuotas-grid{grid-template-columns:1fr}.cuota-item{padding:10px}}
+  .cuotas-grid{display:flex;flex-direction:column;gap:4px;margin-top:8px}
   .cuota-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px}
   .cuota-label{font-size:10px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase}
 
@@ -3203,6 +3202,56 @@ function eliminarAbonoCuota(ci, ai){
   renderCuotasGrid();
 }
 
+// Estado expandido de cada cuota en el grid (por índice)
+const _cuotaExpandida = {};
+
+function toggleCuotaExpand(i){
+  _cuotaExpandida[i] = !_cuotaExpandida[i];
+  renderCuotasGrid();
+}
+
+function setCuotaEstadoManual(i, nuevoEstado){
+  const c = cuotasData[i];
+  if(!c) return;
+  // Si cambia a pendiente → limpiar abonos y resetear
+  if(nuevoEstado === 'pendiente'){
+    c.estado = 'pendiente';
+    c.cobrado = 0;
+    // no borrar abonos, solo actualizar estado visual
+    recalcularEstadoCuota(c);
+    // si no hay abonos, forzar pendiente
+    if(!c.abonos || c.abonos.length === 0) c.estado = 'pendiente';
+  } else if(nuevoEstado === 'pagada'){
+    // Marcar como pagada a tiempo: agregar abono completo si no hay abonos
+    if(!c.abonos || c.abonos.length === 0){
+      if(!c.abonos) c.abonos = [];
+      const monto = parseFloat(c.m)||0;
+      if(monto > 0){
+        c.abonos.push({monto, fecha: todayStr(), tipo: tipoAbono(c.f, todayStr()), nota:'Pago completo'});
+      }
+    }
+    recalcularEstadoCuota(c);
+    // forzar a pagada si quiere marcarlo manualmente
+    if(c.estado === 'incompleta') c.estado = 'pagada';
+  } else if(nuevoEstado === 'retraso'){
+    if(!c.abonos || c.abonos.length === 0){
+      if(!c.abonos) c.abonos = [];
+      const monto = parseFloat(c.m)||0;
+      if(monto > 0){
+        c.abonos.push({monto, fecha: todayStr(), tipo:'tarde', nota:'Pago con retraso'});
+      }
+    }
+    recalcularEstadoCuota(c);
+    c.estado = 'retraso';
+  } else if(nuevoEstado === 'incompleta'){
+    // Solo expande la sección de abonos
+    _cuotaExpandida[i] = true;
+  }
+  c.cobrado = cuotaTotalAbonado(c);
+  actualizarCobradoDesdeCuotas();
+  renderCuotasGrid();
+}
+
 function renderCuotasGrid(){
   const grid = document.getElementById('cuotas-grid');
   if(!grid) return;
@@ -3212,83 +3261,116 @@ function renderCuotasGrid(){
   const TIPO_LABELS = {adelanto:'⬆️ Adelanto',a_tiempo:'✅ A tiempo',tarde:'⏰ Con retraso'};
   const TIPO_COLORS = {adelanto:'#22d3ee',a_tiempo:'var(--green)',tarde:'var(--yellow)'};
 
+  const ESTADO_META = {
+    pagada:    {icon:'✅',label:'Pagada a tiempo', border:'#166534',bg:'#052e16',color:'var(--green)'},
+    retraso:   {icon:'⏰',label:'Con retraso',      border:'#713f12',bg:'#1c0f00',color:'var(--yellow)'},
+    incompleta:{icon:'🟡',label:'Pago parcial',     border:'#92400e',bg:'#1c0f00',color:'var(--orange)'},
+    pendiente: {icon:'⏳',label:'Pendiente',         border:'var(--border)',bg:'var(--bg3)',color:'var(--text3)'},
+  };
+
   grid.innerHTML = cuotasData.map((c,i)=>{
-    const estado = c.estado||'pendiente';
-    const totalAbonado = cuotaTotalAbonado(c);
-    const saldo = cuotaSaldo(c);
-    const programado = parseFloat(c.m)||0;
-    const pct = programado>0 ? Math.min(100,Math.round(totalAbonado/programado*100)) : 0;
+    const estado   = c.estado||'pendiente';
+    const meta     = ESTADO_META[estado]||ESTADO_META.pendiente;
+    const abonado  = cuotaTotalAbonado(c);
+    const saldo    = cuotaSaldo(c);
+    const prog     = parseFloat(c.m)||0;
+    const pct      = prog>0 ? Math.min(100,Math.round(abonado/prog*100)) : 0;
+    const abonos   = c.abonos||[];
+    const expandido= !!_cuotaExpandida[i];
 
-    const colorBorder = estado==='pagada'?'#166534':estado==='retraso'?'#713f12':estado==='incompleta'?'#92400e':'var(--border)';
-    const colorBg    = estado==='pagada'?'#052e16':estado==='retraso'?'#1c0f00':estado==='incompleta'?'#1c0f00':'var(--bg3)';
-    const estadoIcon = {pagada:'✅',retraso:'⏰',incompleta:'🟡',pendiente:'⏳'}[estado]||'⏳';
-    const estadoLabel = {pagada:'Pagada a tiempo',retraso:'Pagada con retraso',incompleta:'Pago parcial',pendiente:'Pendiente'}[estado]||'Pendiente';
-    const estadoColor = {pagada:'var(--green)',retraso:'var(--yellow)',incompleta:'var(--orange)',pendiente:'var(--text3)'}[estado];
+    // ── HEADER colapsable ──────────────────────────────────────
+    const header = `
+      <div onclick="toggleCuotaExpand(${i})"
+        style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;border-radius:8px;
+               background:${meta.bg};border:1px solid ${meta.border};user-select:none">
+        <span style="font-size:12px;font-weight:700;color:var(--text);flex:1">Cuota ${i+1}</span>
+        <span style="font-size:11px;color:var(--text3)">${c.f?fmt(c.f):'Sin fecha'}</span>
+        <span style="font-size:12px;font-weight:700;color:var(--accent3)">${prog>0?'S/'+prog:''}</span>
+        <span style="font-size:11px;font-weight:700;color:${meta.color}">${meta.icon} ${meta.label}</span>
+        ${prog>0&&abonado>0&&abonado<prog?`<span style="font-size:10px;color:var(--red);white-space:nowrap">−S/${saldo.toFixed(0)}</span>`:''}
+        ${n>1?`<button type="button" onclick="event.stopPropagation();eliminarCuota(${i})"
+          style="background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;padding:0 2px;margin-left:2px">✕</button>`:''}
+        <span style="color:var(--text3);font-size:12px;transition:transform .2s;display:inline-block;transform:${expandido?'rotate(180deg)':'rotate(0deg)'}">▾</span>
+      </div>`;
 
-    // Historial de abonos
-    const abonos = c.abonos||[];
-    const abonosHtml = abonos.length>0 ? `
-      <details style="margin-top:8px">
-        <summary style="font-size:10px;font-weight:700;color:var(--accent3);cursor:pointer;padding:4px 0;list-style:none;display:flex;align-items:center;gap:4px">
-          📋 Ver historial (${abonos.length} abono${abonos.length>1?'s':''}) — Total: S/${totalAbonado.toFixed(2)}
-        </summary>
-        <div style="margin-top:6px;background:var(--bg4);border-radius:8px;overflow:hidden;border:1px solid var(--border)">
-          ${abonos.map((ab,ai)=>`
-            <div style="display:grid;grid-template-columns:1fr auto auto;gap:6px;padding:6px 10px;border-bottom:1px solid var(--border);align-items:center;font-size:11px">
-              <div>
-                <span style="color:${TIPO_COLORS[ab.tipo]||'var(--text3)'};font-weight:700">${TIPO_LABELS[ab.tipo]||ab.tipo}</span>
-                <span style="color:var(--text3);margin-left:6px">${ab.fecha||'—'}</span>
-                ${ab.nota?`<div style="color:var(--text3);font-size:10px;margin-top:1px">${ab.nota}</div>`:''}
-              </div>
-              <span style="color:var(--accent3);font-weight:700;white-space:nowrap">S/ ${parseFloat(ab.monto).toFixed(2)}</span>
-              <button onclick="eliminarAbonoCuota(${i},${ai})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px;padding:0 2px">✕</button>
-            </div>
-          `).join('')}
-          <div style="padding:6px 10px;font-size:11px;font-weight:700;display:flex;justify-content:space-between;background:var(--bg3)">
-            <span style="color:var(--green)">Total abonado: S/${totalAbonado.toFixed(2)}</span>
-            ${saldo>0?`<span style="color:var(--red)">Falta: S/${saldo.toFixed(2)}</span>`:'<span style="color:var(--green)">¡Completo!</span>'}
-          </div>
+    if(!expandido) return `<div style="margin-bottom:6px">${header}</div>`;
+
+    // ── CUERPO expandido ───────────────────────────────────────
+    // Barra de progreso (solo si hay abonos)
+    const barraHtml = prog>0 ? `
+      <div style="margin:8px 0 4px">
+        <div style="height:5px;background:var(--bg4);border-radius:5px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${pct>=100?'var(--green)':'linear-gradient(90deg,var(--accent),var(--accent2))'};border-radius:5px;transition:width .4s"></div>
         </div>
-      </details>` : '';
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:3px">
+          <span>${pct}% abonado — S/${abonado.toFixed(2)} de S/${prog.toFixed(2)}</span>
+          ${saldo>0?`<span style="color:var(--red);font-weight:700">Falta S/${saldo.toFixed(2)}</span>`:'<span style="color:var(--green);font-weight:700">¡Completo!</span>'}
+        </div>
+      </div>` : '';
 
-    return `<div class="cuota-item" id="cuota-item-${i}" style="border-color:${colorBorder};background:${colorBg};transition:all .2s">
-      <div class="cuota-label" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-weight:700;font-size:13px">Cuota ${i+1}</span>
-        ${n>1?`<button type="button" onclick="eliminarCuota(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;padding:0 2px">✕</button>`:''}
-      </div>
-
-      <!-- Fecha programada y monto -->
+    // Fecha y monto editables
+    const camposBase = `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
         <div>
           <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Fecha pactada</label>
-          <input class="form-input" type="date" value="${c.f||''}" style="margin-top:3px"
+          <input class="form-input" type="date" value="${c.f||''}" style="margin-top:3px;font-size:13px"
             onchange="cuotasData[${i}].f=this.value;renderCuotasGrid()">
         </div>
         <div>
           <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Monto S/.</label>
-          <input class="form-input" type="number" placeholder="0" value="${c.m||''}" inputmode="decimal" style="margin-top:3px"
+          <input class="form-input" type="number" placeholder="0" value="${c.m||''}" inputmode="decimal" style="margin-top:3px;font-size:13px"
             onchange="cuotasData[${i}].m=parseFloat(this.value)||0;recalcularEstadoCuota(cuotasData[${i}]);actualizarCobradoDesdeCuotas();renderCuotasGrid()">
         </div>
-      </div>
+      </div>`;
 
-      <!-- Barra de progreso -->
-      ${programado>0?`
+    // Selector de estado
+    const selectorEstado = `
       <div style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:3px">
-          <span style="color:${estadoColor}">${estadoIcon} ${estadoLabel}</span>
-          <span>${pct}% — S/${totalAbonado.toFixed(2)} / S/${programado.toFixed(2)}</span>
+        <label style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;display:block">Estado del pago</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+          ${[
+            {val:'pendiente', icon:'⏳', label:'Pendiente',    bg:estado==='pendiente'?'rgba(107,104,128,.3)':'var(--bg4)', border:estado==='pendiente'?'var(--border2)':'var(--border)'},
+            {val:'pagada',    icon:'✅', label:'A tiempo',     bg:estado==='pagada'?'#052e16':'var(--bg4)',    border:estado==='pagada'?'#166534':'var(--border)'},
+            {val:'retraso',   icon:'⏰', label:'Con retraso',  bg:estado==='retraso'?'#1c0f00':'var(--bg4)',   border:estado==='retraso'?'#713f12':'var(--border)'},
+            {val:'incompleta',icon:'🟡', label:'Pago parcial', bg:estado==='incompleta'?'#1c0f00':'var(--bg4)',border:estado==='incompleta'?'#92400e':'var(--border)'},
+          ].map(op=>`
+            <button type="button" onclick="setCuotaEstadoManual(${i},'${op.val}')"
+              style="display:flex;align-items:center;gap:5px;padding:6px 8px;border-radius:7px;
+                     background:${op.bg};border:1px solid ${op.border};cursor:pointer;font-family:inherit;
+                     font-size:11px;font-weight:${estado===op.val?'700':'500'};color:${estado===op.val?'var(--text)':'var(--text3)'};
+                     transition:all .15s;text-align:left">
+              ${op.icon} ${op.label}
+            </button>`).join('')}
         </div>
-        <div style="height:5px;background:var(--bg4);border-radius:5px;overflow:hidden">
-          <div style="height:100%;width:${pct}%;background:${pct>=100?'var(--green)':'linear-gradient(90deg,var(--accent),var(--accent2))'};border-radius:5px;transition:width .4s"></div>
+      </div>`;
+
+    // Historial de abonos (solo si hay abonos)
+    const historialHtml = abonos.length>0 ? `
+      <div style="background:var(--bg4);border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-bottom:8px">
+        <div style="padding:6px 10px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)">
+          📋 Historial de abonos
         </div>
-        ${saldo>0?`<div style="font-size:10px;color:var(--red);font-weight:700;margin-top:4px">Falta: S/${saldo.toFixed(2)}</div>`:''}
-      </div>`:''}
+        ${abonos.map((ab,ai)=>`
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:6px;padding:6px 10px;border-bottom:1px solid var(--border);align-items:center">
+            <div>
+              <span style="font-size:11px;color:${TIPO_COLORS[ab.tipo]||'var(--text3)'};font-weight:700">${TIPO_LABELS[ab.tipo]||ab.tipo}</span>
+              <span style="font-size:10px;color:var(--text3);margin-left:5px">${ab.fecha||'—'}</span>
+              ${ab.nota?`<div style="font-size:10px;color:var(--text3);margin-top:1px">${ab.nota}</div>`:''}
+            </div>
+            <span style="font-size:12px;color:var(--accent3);font-weight:700;white-space:nowrap">S/${parseFloat(ab.monto).toFixed(2)}</span>
+            <button type="button" onclick="eliminarAbonoCuota(${i},${ai})"
+              style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px;padding:0 2px">✕</button>
+          </div>`).join('')}
+        <div style="padding:6px 10px;display:flex;justify-content:space-between;font-size:11px;font-weight:700">
+          <span style="color:var(--green)">Abonado: S/${abonado.toFixed(2)}</span>
+          ${saldo>0?`<span style="color:var(--red)">Falta: S/${saldo.toFixed(2)}</span>`:'<span style="color:var(--green)">¡Completo!</span>'}
+        </div>
+      </div>` : '';
 
-      <!-- Historial de abonos (expandible) -->
-      ${abonosHtml}
-
-      <!-- Registrar nuevo abono -->
-      <div style="margin-top:10px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:8px 10px">
+    // Sección de abonos (solo visible si estado es incompleta o ya hay abonos)
+    const mostrarAbonos = estado==='incompleta' || abonos.length>0;
+    const seccionAbonos = mostrarAbonos ? `
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:8px 10px">
         <div style="font-size:10px;font-weight:700;color:var(--accent3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">➕ Registrar abono</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px">
           <div>
@@ -3299,16 +3381,32 @@ function renderCuotasGrid(){
           </div>
           <div>
             <label style="font-size:9px;color:var(--text3)">Fecha del pago</label>
-            <input id="abono-fecha-${i}" class="form-input" type="date" value="${todayStr()}" style="margin-top:2px">
+            <input id="abono-fecha-${i}" class="form-input" type="date" value="${todayStr()}" style="margin-top:2px;font-size:13px">
           </div>
         </div>
-        <input id="abono-nota-${i}" class="form-input" placeholder="Nota opcional (ej: transferencia, yape...)" style="font-size:12px;margin-bottom:6px">
+        <input id="abono-nota-${i}" class="form-input" placeholder="Nota (yape, transferencia...)" style="font-size:12px;margin-bottom:6px">
         <button type="button" onclick="agregarAbonoCuota(${i})"
-          style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:7px;padding:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
+          style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:7px;padding:7px;
+                 font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
           + Registrar abono
         </button>
-      </div>
-    </div>`;
+      </div>` : `
+      <div style="text-align:center;padding:6px 0;font-size:11px;color:var(--text3)">
+        Selecciona <strong style="color:var(--orange)">🟡 Pago parcial</strong> para registrar abonos
+      </div>`;
+
+    return `
+      <div style="margin-bottom:6px">
+        ${header}
+        <div style="border:1px solid ${meta.border};border-top:none;border-radius:0 0 8px 8px;
+                    background:var(--bg2);padding:10px">
+          ${camposBase}
+          ${barraHtml}
+          ${selectorEstado}
+          ${historialHtml}
+          ${seccionAbonos}
+        </div>
+      </div>`;
   }).join('');
 }
 
