@@ -3213,42 +3213,42 @@ function toggleCuotaExpand(i){
 function setCuotaEstadoManual(i, nuevoEstado){
   const c = cuotasData[i];
   if(!c) return;
-  // Si cambia a pendiente → limpiar abonos y resetear
+  const monto = parseFloat(c.m)||0;
+
   if(nuevoEstado === 'pendiente'){
-    c.estado = 'pendiente';
+    // Resetear completamente
+    c.abonos = [];
     c.cobrado = 0;
-    // no borrar abonos, solo actualizar estado visual
-    recalcularEstadoCuota(c);
-    // si no hay abonos, forzar pendiente
-    if(!c.abonos || c.abonos.length === 0) c.estado = 'pendiente';
+    c.estado = 'pendiente';
+
   } else if(nuevoEstado === 'pagada'){
-    // Marcar como pagada a tiempo: agregar abono completo si no hay abonos
-    if(!c.abonos || c.abonos.length === 0){
-      if(!c.abonos) c.abonos = [];
-      const monto = parseFloat(c.m)||0;
-      if(monto > 0){
-        c.abonos.push({monto, fecha: todayStr(), tipo: tipoAbono(c.f, todayStr()), nota:'Pago completo'});
-      }
+    // Reemplazar abonos con un único pago completo a tiempo
+    c.abonos = [];
+    if(monto > 0){
+      const fechaHoy = todayStr();
+      c.abonos.push({monto, fecha: fechaHoy, tipo: tipoAbono(c.f, fechaHoy), nota:'Pago completo'});
     }
     recalcularEstadoCuota(c);
-    // forzar a pagada si quiere marcarlo manualmente
-    if(c.estado === 'incompleta') c.estado = 'pagada';
+
   } else if(nuevoEstado === 'retraso'){
-    if(!c.abonos || c.abonos.length === 0){
-      if(!c.abonos) c.abonos = [];
-      const monto = parseFloat(c.m)||0;
-      if(monto > 0){
-        c.abonos.push({monto, fecha: todayStr(), tipo:'tarde', nota:'Pago con retraso'});
-      }
+    // Reemplazar abonos con un único pago completo tardío
+    c.abonos = [];
+    if(monto > 0){
+      c.abonos.push({monto, fecha: todayStr(), tipo:'tarde', nota:'Pago con retraso'});
     }
     recalcularEstadoCuota(c);
     c.estado = 'retraso';
+
   } else if(nuevoEstado === 'incompleta'){
-    // Solo expande la sección de abonos
+    // Solo cambiar estado y asegurarse de que la sección de abonos sea visible
+    c.estado = 'incompleta';
     _cuotaExpandida[i] = true;
   }
+
   c.cobrado = cuotaTotalAbonado(c);
   actualizarCobradoDesdeCuotas();
+  // Mantener la cuota expandida después del cambio
+  _cuotaExpandida[i] = true;
   renderCuotasGrid();
 }
 
@@ -3280,17 +3280,30 @@ function renderCuotasGrid(){
 
     // ── HEADER colapsable ──────────────────────────────────────
     const header = `
-      <div onclick="toggleCuotaExpand(${i})"
-        style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 10px;border-radius:8px;
-               background:${meta.bg};border:1px solid ${meta.border};user-select:none">
-        <span style="font-size:12px;font-weight:700;color:var(--text);flex:1">Cuota ${i+1}</span>
-        <span style="font-size:11px;color:var(--text3)">${c.f?fmt(c.f):'Sin fecha'}</span>
-        <span style="font-size:12px;font-weight:700;color:var(--accent3)">${prog>0?'S/'+prog:''}</span>
-        <span style="font-size:11px;font-weight:700;color:${meta.color}">${meta.icon} ${meta.label}</span>
-        ${prog>0&&abonado>0&&abonado<prog?`<span style="font-size:10px;color:var(--red);white-space:nowrap">−S/${saldo.toFixed(0)}</span>`:''}
-        ${n>1?`<button type="button" onclick="event.stopPropagation();eliminarCuota(${i})"
-          style="background:none;border:none;color:var(--red);cursor:pointer;font-size:13px;padding:0 2px;margin-left:2px">✕</button>`:''}
-        <span style="color:var(--text3);font-size:12px;transition:transform .2s;display:inline-block;transform:${expandido?'rotate(180deg)':'rotate(0deg)'}">▾</span>
+      <div style="display:flex;align-items:stretch;border-radius:${expandido?'8px 8px 0 0':'8px'};
+                  background:${meta.bg};border:1px solid ${meta.border};overflow:hidden">
+        <!-- Zona de toque para expandir (ocupa todo menos la X) -->
+        <div onclick="toggleCuotaExpand(${i})"
+          style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:11px 12px;flex:1;user-select:none;min-height:48px">
+          <!-- Flecha grande y visible -->
+          <span style="font-size:18px;color:var(--accent3);transition:transform .2s;display:inline-block;
+                       transform:${expandido?'rotate(180deg)':'rotate(0deg)'};flex-shrink:0">▾</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text);flex-shrink:0">Cuota ${i+1}</span>
+          <span style="font-size:11px;color:var(--text3);flex-shrink:0">${c.f?fmt(c.f):'Sin fecha'}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--accent3);flex-shrink:0">${prog>0?'S/'+prog:''}</span>
+          <span style="font-size:11px;font-weight:700;color:${meta.color};flex-shrink:0">${meta.icon} ${meta.label}</span>
+          ${prog>0&&abonado>0&&abonado<prog?`<span style="font-size:10px;color:var(--red);white-space:nowrap;flex-shrink:0">−S/${saldo.toFixed(0)}</span>`:''}
+        </div>
+        <!-- Botón X separado con zona de toque grande -->
+        ${n>1?`<button type="button" onclick="eliminarCuota(${i})"
+          style="background:rgba(239,68,68,.15);border:none;border-left:1px solid ${meta.border};
+                 color:var(--red);cursor:pointer;font-size:16px;font-weight:700;
+                 padding:0 16px;min-width:48px;min-height:48px;
+                 display:flex;align-items:center;justify-content:center;
+                 transition:background .15s;flex-shrink:0"
+          onmouseenter="this.style.background='rgba(239,68,68,.3)'"
+          onmouseleave="this.style.background='rgba(239,68,68,.15)'"
+          title="Eliminar cuota ${i+1}">✕</button>`:''}
       </div>`;
 
     if(!expandido) return `<div style="margin-bottom:6px">${header}</div>`;
