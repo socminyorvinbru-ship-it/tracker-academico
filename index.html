@@ -9542,7 +9542,7 @@ function abrirDrive(){
           ${actionBtn('➕','Adicionales',`hsOpenTrabajoShortcut(${t.id},'adicionales')`, addCount?'alerta':'')}
           ${actionBtn('📝','Correcciones',`hsOpenTrabajoShortcut(${t.id},'correcciones')`, corr.estado||corr.incluidas?'':'')}
           ${t.cel?actionBtn('📲','WhatsApp',`enviarWaRapidoTrabajo(${t.id})`):''}
-          ${actionBtn('🤝','Acuerdo',`hsEnviarAcuerdo(${t.id})`)}
+          ${actionBtn('✕','Eliminar registro',`eliminarTrabajo(${t.id})`,'hs-v13-delete-slot')}
         </div>
 
         <div class="hs-expand-only">
@@ -9760,7 +9760,7 @@ function abrirDrive(){
           ${btn2('📋','Historial',`verHistorial(${t.id})`)}
           ${btn2('📓','Bitácora',`abrirBitacora(${t.id})`)}
           ${btn2('📲','WhatsApp',`${t.cel?'enviarWaRapidoTrabajo('+t.id+')':'verCliente('+t.id+')'}`)}
-          ${btn2('🤝','Acuerdo',`hsEnviarAcuerdo(${t.id})`)}
+          ${btn2('✕','Eliminar registro',`eliminarTrabajo(${t.id})`,'hs-v13-delete-slot')}
         </div>
         <div class="hs-expand-only">
           <div class="hs-expanded-grid">
@@ -19385,15 +19385,20 @@ body{font-size:11.2px!important;letter-spacing:-.015em!important}
 </script>
 <!-- ===================== FIN HS V8 PATCH ===================== -->
 
-<!-- ===================== HS V9 PATCH: MIC HARD STOP + REGISTRO 9x2 REAL ===================== -->
-<style id="hs-v9-mic-grid-style">
-  /* ===== V9: Registro — siempre 9 columnas reales en PC y móvil ===== */
-  #v-registro .actions.hs-v9-action-grid,
-  #v-registro .mcard-footer.hs-v9-action-grid,
-  #mobile-cards .mcard-footer.hs-v9-action-grid{
+<!-- ===================== HS V10 PATCH: FIX CLICKS + MIC STOP + 9x2 ESTABLE ===================== -->
+<style id="hs-v10-fix-clicks-mic-grid-style">
+  /*
+    V10 corrige el congelamiento de V9:
+    - No observa cambios de atributos.
+    - No alterna clases infinitamente.
+    - Fuerza 9 columnas reales en escritorio y móvil.
+  */
+  #v-registro .actions.hs-v10-action-grid,
+  #v-registro .mcard-footer.hs-v10-action-grid,
+  #mobile-cards .mcard-footer.hs-v10-action-grid{
     display:grid!important;
     grid-template-columns:repeat(9,minmax(0,1fr))!important;
-    grid-auto-rows:28px!important;
+    grid-auto-rows:27px!important;
     gap:3px!important;
     align-items:center!important;
     align-content:start!important;
@@ -19405,176 +19410,322 @@ body{font-size:11.2px!important;letter-spacing:-.015em!important}
     overflow:visible!important;
     flex-wrap:unset!important;
     scrollbar-width:none!important;
+    -webkit-overflow-scrolling:auto!important;
   }
-  #v-registro .tbl .actions.hs-v9-action-grid{
-    grid-template-columns:repeat(9,28px)!important;
-    width:276px!important;
-    min-width:276px!important;
-    max-width:276px!important;
+  #v-registro .tbl .actions.hs-v10-action-grid{
+    grid-template-columns:repeat(9,27px)!important;
+    grid-auto-rows:27px!important;
+    width:267px!important;
+    min-width:267px!important;
+    max-width:267px!important;
     justify-content:start!important;
+    justify-items:stretch!important;
   }
-  #v-registro .tbl td:last-child{min-width:292px!important;width:292px!important;max-width:292px!important}
-  #v-registro .tbl th:last-child{min-width:292px!important;width:292px!important;max-width:292px!important}
-  #v-registro .actions.hs-v9-action-grid::-webkit-scrollbar,
-  #mobile-cards .mcard-footer.hs-v9-action-grid::-webkit-scrollbar{display:none!important}
-  #v-registro .actions.hs-v9-action-grid .btn,
-  #v-registro .actions.hs-v9-action-grid .btn-sm,
-  #v-registro .mcard-footer.hs-v9-action-grid .btn,
-  #v-registro .mcard-footer.hs-v9-action-grid .btn-sm,
-  #mobile-cards .mcard-footer.hs-v9-action-grid .btn,
-  #mobile-cards .mcard-footer.hs-v9-action-grid .btn-sm{
+  #v-registro .tbl td:last-child{min-width:284px!important;width:284px!important;max-width:284px!important}
+  #v-registro .tbl th:last-child{min-width:284px!important;width:284px!important;max-width:284px!important}
+  #v-registro .actions.hs-v10-action-grid::-webkit-scrollbar,
+  #mobile-cards .mcard-footer.hs-v10-action-grid::-webkit-scrollbar{display:none!important}
+
+  #v-registro .actions.hs-v10-action-grid .btn,
+  #v-registro .actions.hs-v10-action-grid .btn-sm,
+  #v-registro .mcard-footer.hs-v10-action-grid .btn,
+  #v-registro .mcard-footer.hs-v10-action-grid .btn-sm,
+  #mobile-cards .mcard-footer.hs-v10-action-grid .btn,
+  #mobile-cards .mcard-footer.hs-v10-action-grid .btn-sm{
     width:100%!important;
-    height:28px!important;
+    height:27px!important;
     min-width:0!important;
     max-width:none!important;
     padding:0!important;
     display:flex!important;
     align-items:center!important;
     justify-content:center!important;
-    font-size:12px!important;
+    font-size:11.5px!important;
     line-height:1!important;
     border-radius:7px!important;
     overflow:hidden!important;
     margin:0!important;
+    flex:unset!important;
+    position:relative!important;
   }
-  #mobile-cards .mcard-footer.hs-v9-action-grid{
-    padding-top:7px!important;
-    margin-top:6px!important;
-  }
-  #v-registro .hs-v9-hide-action,
-  #v-registro .hs-v9-overflow-hidden,
-  #v-registro .hs-v9-action-grid .btn[title="Acuerdo"],
-  #v-registro .hs-v9-action-grid .btn[onclick*="hsEnviarAcuerdo"]{
+  #v-registro .hs-v10-hide-action,
+  #v-registro .hs-v10-overflow-hidden,
+  #v-registro .hs-v10-action-grid .btn[title="Acuerdo"],
+  #v-registro .hs-v10-action-grid .btn[title="Acuerdo WhatsApp"],
+  #v-registro .hs-v10-action-grid .btn[onclick*="hsEnviarAcuerdo"]{
     display:none!important;
   }
-  #v-registro .hs-v9-delete-slot{
+  #v-registro .hs-v10-delete-slot{
     display:flex!important;
     background:#7f1d1d!important;
     color:var(--red)!important;
     border-color:var(--red)!important;
   }
+  #mobile-cards .mcard-footer.hs-v10-action-grid,
+  #v-registro .mcard-footer.hs-v10-action-grid{
+    padding-top:7px!important;
+    margin-top:6px!important;
+  }
   @media(max-width:768px){
-    #mobile-cards .mcard-footer.hs-v9-action-grid,
-    #v-registro .mcard-footer.hs-v9-action-grid{
+    #mobile-cards .mcard-footer.hs-v10-action-grid,
+    #v-registro .mcard-footer.hs-v10-action-grid{
       grid-template-columns:repeat(9,minmax(0,1fr))!important;
-      grid-auto-rows:27px!important;
-      gap:3px!important;
+      grid-auto-rows:26px!important;
+      gap:2px!important;
+      justify-content:stretch!important;
+      justify-items:stretch!important;
     }
-    #mobile-cards .mcard-footer.hs-v9-action-grid .btn,
-    #mobile-cards .mcard-footer.hs-v9-action-grid .btn-sm,
-    #v-registro .mcard-footer.hs-v9-action-grid .btn,
-    #v-registro .mcard-footer.hs-v9-action-grid .btn-sm{
-      height:27px!important;
-      font-size:11.5px!important;
-      border-radius:7px!important;
+    #mobile-cards .mcard-footer.hs-v10-action-grid .btn,
+    #mobile-cards .mcard-footer.hs-v10-action-grid .btn-sm,
+    #v-registro .mcard-footer.hs-v10-action-grid .btn,
+    #v-registro .mcard-footer.hs-v10-action-grid .btn-sm{
+      height:26px!important;
+      font-size:10.6px!important;
+      border-radius:6px!important;
     }
   }
   @media(max-width:360px){
-    #mobile-cards .mcard-footer.hs-v9-action-grid,
-    #v-registro .mcard-footer.hs-v9-action-grid{
-      grid-template-columns:repeat(9,minmax(0,1fr))!important;
-      grid-auto-rows:25px!important;
+    #mobile-cards .mcard-footer.hs-v10-action-grid,
+    #v-registro .mcard-footer.hs-v10-action-grid{
+      grid-auto-rows:24px!important;
       gap:2px!important;
     }
-    #mobile-cards .mcard-footer.hs-v9-action-grid .btn,
-    #mobile-cards .mcard-footer.hs-v9-action-grid .btn-sm,
-    #v-registro .mcard-footer.hs-v9-action-grid .btn,
-    #v-registro .mcard-footer.hs-v9-action-grid .btn-sm{
-      height:25px!important;
-      font-size:10.8px!important;
+    #mobile-cards .mcard-footer.hs-v10-action-grid .btn,
+    #mobile-cards .mcard-footer.hs-v10-action-grid .btn-sm,
+    #v-registro .mcard-footer.hs-v10-action-grid .btn,
+    #v-registro .mcard-footer.hs-v10-action-grid .btn-sm{
+      height:24px!important;
+      font-size:10px!important;
       border-radius:6px!important;
     }
   }
 
-  /* ===== V9: Micro — botón con apagado duro ===== */
-  #ai-mic-btn.hs-v9-recording,
-  .ai-btn-mic.hs-v9-recording{
+  /* Micro: estado visual de apagado real */
+  #ai-mic-btn.hs-v10-recording,
+  .ai-btn-mic.hs-v10-recording{
     background:#1f0505!important;
     border-color:var(--red)!important;
     color:var(--red)!important;
     animation:pulse 1s infinite!important;
   }
-  #ai-mic-btn.hs-v9-stopping,
-  .ai-btn-mic.hs-v9-stopping{
+  #ai-mic-btn.hs-v10-stopping,
+  .ai-btn-mic.hs-v10-stopping{
     background:#1c0f00!important;
     border-color:var(--yellow)!important;
     color:var(--yellow)!important;
     animation:none!important;
   }
 </style>
-<script id="hs-v9-mic-grid-script">
+<script id="hs-v10-fix-clicks-mic-grid-script">
 (function(){
   'use strict';
 
-  var HS_V9_VERSION = 'v9-mic-hard-stop-registro-9x2';
-  var MIC_ATTR = 'data-hs-v6-mic';
-  var rec = null;
-  var micActive = false;
-  var micStopping = false;
-  var micFinished = false;
-  var micFinal = '';
-  var micRecent = [];
-  var hardStopTimer = null;
+  var HS_V10_VERSION = 'v10-fix-clicks-mic-stop-9x2-stable';
+  var MIC_ATTR = 'data-hs-v10-mic';
 
   function byId(id){ return document.getElementById(id); }
   function qsa(root, sel){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-  function toast9(msg){ try{ if(typeof toast==='function') return toast(msg); if(typeof showToast==='function') return showToast(msg); }catch(e){} console.log(msg); }
-  function norm9(s){
+  function toast10(msg){ try{ if(typeof toast==='function') return toast(msg); if(typeof showToast==='function') return showToast(msg); }catch(e){} try{ console.log(msg); }catch(_e){} }
+  function setClass(el, cls, on){ if(!el) return; var has=el.classList.contains(cls); if(on && !has) el.classList.add(cls); if(!on && has) el.classList.remove(cls); }
+  function norm10(s){
     try{return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9ñ\s]/g,' ').replace(/\s+/g,' ').trim();}
     catch(e){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
   }
-  function words9(s){ return String(s||'').trim().split(/\s+/).filter(Boolean); }
-  function clean9(text){
-    if(typeof window.hsV6CleanSpeech === 'function'){
-      try{return window.hsV6CleanSpeech(text); }catch(e){}
+  function words10(s){ return String(s||'').trim().split(/\s+/).filter(Boolean); }
+  function merge10(a,b){
+    a=String(a||'').trim(); b=String(b||'').trim();
+    if(!a) return b; if(!b) return a;
+    var aw=words10(a), bw=words10(b), best=0, max=Math.min(aw.length,bw.length,16);
+    for(var k=1;k<=max;k++){
+      if(norm10(aw.slice(aw.length-k).join(' ')) === norm10(bw.slice(0,k).join(' '))) best=k;
     }
-    var tokens = words9(String(text||'').replace(/\s+/g,' ').trim());
+    if(best>0) return aw.concat(bw.slice(best)).join(' ');
+    var na=norm10(a), nb=norm10(b);
+    if(na.endsWith(nb)) return a;
+    if(nb.startsWith(na)) return b;
+    return a+' '+b;
+  }
+  function collapseRepeats10(text){
+    var tokens=words10(String(text||'').replace(/\s+/g,' ').trim());
     if(tokens.length<2) return tokens.join(' ');
-    for(var n=Math.min(12, Math.floor(tokens.length/2)); n>=1; n--){
+    for(var n=Math.min(18,Math.floor(tokens.length/2)); n>=1; n--){
       var out=[], i=0;
       while(i<tokens.length){
-        var dup=false;
+        var repeated=false;
         if(i+2*n<=tokens.length){
-          dup = norm9(tokens.slice(i,i+n).join(' ')) === norm9(tokens.slice(i+n,i+2*n).join(' '));
+          repeated = norm10(tokens.slice(i,i+n).join(' ')) === norm10(tokens.slice(i+n,i+2*n).join(' '));
         }
-        if(dup){ out=out.concat(tokens.slice(i,i+n)); i+=2*n; }
-        else { out.push(tokens[i]); i++; }
+        if(repeated){
+          out=out.concat(tokens.slice(i,i+n));
+          i += 2*n;
+          while(i+n<=tokens.length){
+            var prev=out.slice(out.length-n).join(' '), next=tokens.slice(i,i+n).join(' ');
+            if(norm10(prev)===norm10(next)) i += n; else break;
+          }
+        }else{ out.push(tokens[i]); i++; }
       }
       tokens=out;
     }
-    return tokens.join(' ').replace(/\s+/g,' ').trim();
+    return tokens.join(' ');
   }
-  function merge9(a,b){
-    a=String(a||'').trim(); b=String(b||'').trim();
-    if(!a) return b; if(!b) return a;
-    var aw=words9(a), bw=words9(b), max=Math.min(aw.length,bw.length,14), best=0;
-    for(var k=1;k<=max;k++){
-      if(norm9(aw.slice(aw.length-k).join(' ')) === norm9(bw.slice(0,k).join(' '))) best=k;
+  function cleanSpeech10(text){
+    var t=String(text||'').replace(/[\u200B-\u200D\uFEFF]/g,' ').replace(/\s+/g,' ').trim();
+    if(!t) return '';
+    if(typeof window.hsV6CleanSpeech === 'function'){
+      try{ t = window.hsV6CleanSpeech(t); }catch(e){}
     }
-    if(best) return clean9(aw.concat(bw.slice(best)).join(' '));
-    var na=norm9(a), nb=norm9(b);
-    if(na.endsWith(nb)) return a;
-    if(nb.startsWith(na)) return b;
-    return clean9(a+' '+b);
+    var prev='';
+    for(var i=0;i<5 && prev!==t;i++){ prev=t; t=collapseRepeats10(t); }
+    return t.replace(/\s+/g,' ').trim();
   }
-  function pushSegment9(seg){
-    seg=clean9(seg);
-    var ns=norm9(seg);
-    if(!ns) return;
-    if(micRecent.indexOf(ns)!==-1) return;
-    micFinal = clean9(merge9(micFinal, seg));
-    micRecent.push(ns);
-    if(micRecent.length>10) micRecent.shift();
+  window.hsV10CleanSpeech = cleanSpeech10;
+
+  // =========================================================
+  // 1) Apagar observadores conflictivos de V8/V9 y reemplazarlos por uno estable.
+  // =========================================================
+  function disconnectOldObservers10(){
+    ['v-registro','mobile-cards'].forEach(function(id){
+      var el=byId(id);
+      if(!el) return;
+      ['__hsV9Observer','__hsV8Observer','__hsV10Observer'].forEach(function(k){
+        try{ if(el[k] && typeof el[k].disconnect==='function') el[k].disconnect(); }catch(e){}
+        try{ el[k]=null; }catch(e){}
+      });
+    });
   }
-  function micUi9(state){
+
+  // =========================================================
+  // 2) Registro: 18 iconos visibles; Acuerdo oculto; X de eliminar visible.
+  // =========================================================
+  function isAgreement10(btn){
+    var title=String(btn && btn.getAttribute('title') || '').toLowerCase().trim();
+    var onclick=String(btn && btn.getAttribute('onclick') || '');
+    var text=String(btn && btn.textContent || '').toLowerCase().trim();
+    return title.indexOf('acuerdo')!==-1 || onclick.indexOf('hsEnviarAcuerdo')!==-1 || text==='🤝';
+  }
+  function isDelete10(btn){
+    var title=String(btn && btn.getAttribute('title') || '').toLowerCase().trim();
+    var onclick=String(btn && btn.getAttribute('onclick') || '').toLowerCase();
+    var text=String(btn && btn.textContent || '').trim().toLowerCase();
+    return title.indexOf('eliminar')!==-1 || onclick.indexOf('eliminartrabajo')!==-1 || text==='✕' || text==='x' || (btn && btn.classList && btn.classList.contains('btn-danger'));
+  }
+  function protectedAction10(btn){
+    if(isDelete10(btn)) return true;
+    var title=String(btn.getAttribute('title')||'').toLowerCase();
+    var onclick=String(btn.getAttribute('onclick')||'').toLowerCase();
+    var keep=['cliente','cobrar','editar','estado','comprobante','whatsapp','wsp','nota','checklist','cuota','recordatorio'];
+    for(var i=0;i<keep.length;i++){ if(title.indexOf(keep[i])!==-1 || onclick.indexOf(keep[i])!==-1) return true; }
+    return false;
+  }
+  function lowerPriorityScore10(btn){
+    var title=String(btn.getAttribute('title')||'').toLowerCase();
+    var onclick=String(btn.getAttribute('onclick')||'').toLowerCase();
+    var txt=title+' '+onclick;
+    if(txt.indexOf('perfil')!==-1 || txt.indexOf('vercliente')!==-1) return 90;
+    if(txt.indexOf('historial')!==-1 || txt.indexOf('bitac')!==-1) return 80;
+    if(txt.indexOf('duplic')!==-1 || txt.indexOf('copiar')!==-1) return 70;
+    if(txt.indexOf('factura')!==-1) return 40;
+    return 50;
+  }
+  function normalizeActionBar10(bar){
+    if(!bar) return;
+    bar.classList.add('hs-v10-action-grid');
+    // Se deja la clase V8 por compatibilidad, pero V10 domina por estar al final.
+    bar.classList.add('hs-v8-action-grid');
+
+    var buttons=qsa(bar,'button.btn');
+    if(!buttons.length) return;
+    var agreement=null, del=null;
+    buttons.forEach(function(btn){
+      if(isAgreement10(btn)) agreement=btn;
+      if(isDelete10(btn)) del=btn;
+    });
+    if(del){
+      setClass(del,'hs-v10-delete-slot',true);
+      del.setAttribute('title','Eliminar registro');
+      // Eliminar ocupa el lugar donde antes estaba Acuerdo.
+      if(agreement && agreement.parentNode===bar && del.parentNode===bar && del!==agreement){
+        try{ bar.insertBefore(del, agreement); }catch(e){}
+      }
+    }
+
+    var candidates=[];
+    qsa(bar,'button.btn').forEach(function(btn){
+      var agreementBtn=isAgreement10(btn);
+      setClass(btn,'hs-v10-hide-action',agreementBtn);
+      setClass(btn,'hs-v8-hidden-action',agreementBtn);
+      setClass(btn,'hs-v8-extra-hidden',false);
+      setClass(btn,'hs-v9-hide-action',agreementBtn);
+      setClass(btn,'hs-v9-overflow-hidden',false);
+      setClass(btn,'hs-v10-overflow-hidden',false);
+      if(!agreementBtn) candidates.push(btn);
+    });
+
+    if(candidates.length>18){
+      var hideList=candidates.filter(function(btn){ return !protectedAction10(btn); });
+      hideList.sort(function(a,b){ return lowerPriorityScore10(b)-lowerPriorityScore10(a); });
+      // Si todavía faltara esconder, nunca se sacrifica eliminar primero.
+      candidates.forEach(function(btn){ if(hideList.indexOf(btn)<0 && !isDelete10(btn)) hideList.push(btn); });
+      var need=candidates.length-18;
+      hideList.slice(0,need).forEach(function(btn){ setClass(btn,'hs-v10-overflow-hidden',true); });
+    }
+  }
+  function normalizeAll10(){
+    qsa(document,'#v-registro .actions, #v-registro .mcard-footer, #mobile-cards .mcard-footer').forEach(normalizeActionBar10);
+  }
+  var normTimer10=null;
+  function scheduleNormalize10(delay){
+    clearTimeout(normTimer10);
+    normTimer10=setTimeout(function(){ normalizeAll10(); }, delay==null?35:delay);
+  }
+  function wrapRender10(){
+    if(typeof window.renderTabla==='function' && !window.renderTabla.hsV10Wrapped){
+      var old=window.renderTabla;
+      var wrapped=function(){
+        var r=old.apply(this,arguments);
+        setTimeout(normalizeAll10,0);
+        setTimeout(normalizeAll10,90);
+        setTimeout(normalizeAll10,260);
+        return r;
+      };
+      wrapped.hsV10Wrapped=true;
+      window.renderTabla=wrapped;
+    }
+    if(typeof window.renderAll==='function' && !window.renderAll.hsV10Wrapped){
+      var oldAll=window.renderAll;
+      var wrappedAll=function(){
+        var r=oldAll.apply(this,arguments);
+        setTimeout(normalizeAll10,0);
+        setTimeout(normalizeAll10,120);
+        return r;
+      };
+      wrappedAll.hsV10Wrapped=true;
+      window.renderAll=wrappedAll;
+    }
+  }
+  function installObserver10(){
+    var root=byId('v-registro') || byId('mobile-cards');
+    if(!root || typeof MutationObserver==='undefined') return;
+    if(root.__hsV10Observer) return;
+    var obs=new MutationObserver(function(){ scheduleNormalize10(40); });
+    // IMPORTANTE: solo childList. No attributes, para evitar congelamiento por bucle de clases.
+    obs.observe(root,{childList:true,subtree:true});
+    root.__hsV10Observer=obs;
+  }
+
+  // =========================================================
+  // 3) Micrófono: stop/abort real para WebView Android + limpieza anti duplicado.
+  // =========================================================
+  var rec10=null, micActive10=false, micStopping10=false, micFinished10=false, micFinal10='', micRecent10=[], hardTimer10=null;
+  function micUi10(state){
     var btn=byId('ai-mic-btn'), ta=byId('ai-textarea'), bar=byId('ai-recording-bar');
     if(btn){
-      btn.classList.toggle('recording', state==='recording');
-      btn.classList.toggle('hs-v9-recording', state==='recording');
-      btn.classList.toggle('hs-v9-stopping', state==='stopping');
-      btn.textContent = state==='recording' ? '⏹️' : (state==='stopping' ? '…' : '🎤');
-      btn.title = state==='recording' ? 'Detener micrófono y procesar' : (state==='stopping' ? 'Deteniendo micrófono...' : 'Activar micrófono');
-      btn.disabled = false;
+      btn.disabled=false;
+      setClass(btn,'recording',state==='recording');
+      setClass(btn,'hs-v10-recording',state==='recording');
+      setClass(btn,'hs-v10-stopping',state==='stopping');
+      btn.textContent=state==='recording'?'⏹️':(state==='stopping'?'…':'🎤');
+      btn.title=state==='recording'?'Detener micrófono y procesar':(state==='stopping'?'Deteniendo micrófono...':'Activar micrófono');
     }
     if(bar){
       if(state==='recording'){
@@ -19582,253 +19733,839 @@ body{font-size:11.2px!important;letter-spacing:-.015em!important}
         bar.innerHTML='🎙️ Escuchando... toca ⏹️ para detener. El texto se limpia antes de enviarse.';
       }else if(state==='stopping'){
         bar.style.display='block';
-        bar.innerHTML='⏳ Deteniendo micrófono y limpiando dictado...';
+        bar.innerHTML='⏳ Deteniendo micrófono... si Android demora, lo cortaré automáticamente.';
       }else{
         bar.style.display='none';
       }
     }
-    if(ta){
-      ta.placeholder = state==='recording' ? '🎙️ Te escucho...' : 'Dicta o escribe tu indicación...';
-    }
+    if(ta) ta.placeholder=state==='recording'?'🎙️ Te escucho...':'Dicta o escribe tu indicación...';
   }
-  function safeAbort9(){
-    try{ if(rec) rec.abort(); }catch(e){}
+  function pushSegment10(seg){
+    seg=cleanSpeech10(seg); if(!seg) return;
+    var ns=norm10(seg); if(!ns) return;
+    if(micRecent10.indexOf(ns)!==-1) return;
+    micFinal10=cleanSpeech10(merge10(micFinal10,seg));
+    micRecent10.push(ns); if(micRecent10.length>10) micRecent10.shift();
   }
-  function finishMic9(autosend){
-    if(micFinished) return;
-    micFinished = true;
-    micActive = false;
-    micStopping = false;
-    clearTimeout(hardStopTimer);
-    micUi9('idle');
+  function safeAbort10(){ try{ if(rec10) rec10.abort(); }catch(e){} }
+  function finishMic10(autosend){
+    if(micFinished10) return;
+    micFinished10=true;
+    micActive10=false;
+    micStopping10=false;
+    clearTimeout(hardTimer10);
+    micUi10('idle');
     var ta=byId('ai-textarea');
     if(ta){
-      var finalText = clean9(ta.value || micFinal);
-      ta.value = finalText;
-      ta.setAttribute(MIC_ATTR, '1');
+      var finalText=cleanSpeech10(ta.value || micFinal10);
+      ta.value=finalText;
+      ta.setAttribute(MIC_ATTR,'1');
       try{ ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,120)+'px'; }catch(e){}
-      if(finalText && autosend !== false){
-        setTimeout(function(){ try{ if(typeof window.aiEnviar === 'function') window.aiEnviar(); }catch(e){} }, 120);
+      if(finalText && autosend!==false){
+        setTimeout(function(){ try{ if(typeof window.aiEnviar==='function') window.aiEnviar(); }catch(e){} },130);
       }
     }
-    rec = null;
+    rec10=null;
   }
-  function stopMic9(){
-    if(!micActive && !rec){ micUi9('idle'); return; }
-    micStopping = true;
-    micActive = false;
-    micUi9('stopping');
-    clearTimeout(hardStopTimer);
-    hardStopTimer = setTimeout(function(){
-      safeAbort9();
-      finishMic9(true);
-    }, 650);
-    try{ if(rec) rec.stop(); else finishMic9(true); }
-    catch(e){ safeAbort9(); finishMic9(true); }
+  function stopMic10(){
+    if(!micActive10 && !rec10){ micUi10('idle'); return; }
+    micStopping10=true;
+    micActive10=false;
+    micUi10('stopping');
+    clearTimeout(hardTimer10);
+    hardTimer10=setTimeout(function(){ safeAbort10(); finishMic10(true); },700);
+    try{ if(rec10) rec10.stop(); else finishMic10(true); }
+    catch(e){ safeAbort10(); finishMic10(true); }
   }
-  function requestPermission9(cb){
+  function requestPermission10(cb){
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
       navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
         try{ stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
         cb();
       }).catch(function(){
-        micUi9('idle');
-        if(typeof aiAddMsg==='function') aiAddMsg('bot','⚠️ <strong>Permiso de micrófono denegado.</strong> Activa el micrófono en permisos de la app o navegador.', true);
+        micUi10('idle');
+        if(typeof aiAddMsg==='function') aiAddMsg('bot','⚠️ <strong>Permiso de micrófono denegado.</strong> Activa el micrófono en permisos de Android, APK o navegador.',true);
       });
     }else cb();
   }
-  function startMic9(){
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  function startMic10(){
+    var SR=window.SpeechRecognition || window.webkitSpeechRecognition;
     if(!SR){
-      if(typeof aiAddMsg==='function') aiAddMsg('bot','⚠️ Tu WebView/navegador no soporta reconocimiento de voz. Prueba con Chrome en Android.', true);
+      if(typeof aiAddMsg==='function') aiAddMsg('bot','⚠️ Tu WebView/navegador no soporta reconocimiento de voz. Prueba con Chrome en Android o revisa el WebView.',true);
       return;
     }
-    try{ if(rec) rec.abort(); }catch(e){}
-    clearTimeout(hardStopTimer);
-    micActive = false;
-    micStopping = false;
-    micFinished = false;
-    micFinal = '';
-    micRecent = [];
-    var ta=byId('ai-textarea');
-    if(ta){ ta.value=''; ta.setAttribute(MIC_ATTR, '1'); }
-
-    rec = new SR();
-    rec.lang = 'es-PE';
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.maxAlternatives = 1;
-
-    rec.onstart = function(){
-      micActive = true;
-      micStopping = false;
-      micFinished = false;
-      micUi9('recording');
-    };
-    rec.onresult = function(e){
+    try{ if(rec10) rec10.abort(); }catch(e){}
+    clearTimeout(hardTimer10);
+    micActive10=false; micStopping10=false; micFinished10=false; micFinal10=''; micRecent10=[];
+    var ta=byId('ai-textarea'); if(ta){ ta.value=''; ta.setAttribute(MIC_ATTR,'1'); }
+    rec10=new SR();
+    rec10.lang='es-PE';
+    rec10.continuous=true;
+    rec10.interimResults=true;
+    rec10.maxAlternatives=1;
+    rec10.onstart=function(){ micActive10=true; micStopping10=false; micFinished10=false; micUi10('recording'); };
+    rec10.onresult=function(e){
       var interim='';
-      for(var i=e.resultIndex; i<e.results.length; i++){
-        var raw = (e.results[i] && e.results[i][0] && e.results[i][0].transcript) ? e.results[i][0].transcript : '';
+      for(var i=e.resultIndex;i<e.results.length;i++){
+        var raw=(e.results[i] && e.results[i][0] && e.results[i][0].transcript) ? e.results[i][0].transcript : '';
         if(!raw) continue;
-        if(e.results[i].isFinal) pushSegment9(raw);
-        else interim = merge9(interim, raw);
+        if(e.results[i].isFinal) pushSegment10(raw);
+        else interim=merge10(interim,raw);
       }
-      var combined = clean9(merge9(micFinal, interim));
+      var combined=cleanSpeech10(merge10(micFinal10,interim));
       var box=byId('ai-textarea');
       if(box){
-        box.value = combined;
-        box.setAttribute(MIC_ATTR, '1');
+        box.value=combined;
+        box.setAttribute(MIC_ATTR,'1');
         try{ box.style.height='auto'; box.style.height=Math.min(box.scrollHeight,120)+'px'; }catch(e){}
       }
     };
-    rec.onend = function(){
-      if(micStopping || !micActive){ finishMic9(true); return; }
+    rec10.onend=function(){
+      if(micStopping10 || !micActive10){ finishMic10(true); return; }
       setTimeout(function(){
-        if(micActive && !micStopping && rec){ try{ rec.start(); }catch(e){} }
-      }, 220);
+        if(micActive10 && !micStopping10 && rec10){ try{ rec10.start(); }catch(e){} }
+      },220);
     };
-    rec.onerror = function(e){
-      var err = e && e.error ? String(e.error) : '';
-      if(micStopping || err === 'aborted'){
-        finishMic9(true);
+    rec10.onerror=function(e){
+      var err=e && e.error ? String(e.error) : '';
+      if(micStopping10 || err==='aborted'){ finishMic10(true); return; }
+      if(err==='no-speech'){
+        // No se finaliza; se deja que onend reinicie si el usuario no apagó.
         return;
       }
-      if(err === 'no-speech'){
-        if(micActive && !micStopping){
-          try{ rec.stop(); }catch(ex){}
-        }
-        return;
-      }
-      micActive = false;
-      micStopping = false;
-      micUi9('idle');
-      if(err === 'not-allowed'){
-        if(typeof aiAddMsg==='function') aiAddMsg('bot','⚠️ Permiso de micrófono denegado. Revisa permisos de Android/WebView.', true);
-      }else if(err){
-        toast9('⚠️ Micrófono: '+err);
-      }
-      finishMic9(false);
+      micActive10=false; micStopping10=false; micUi10('idle');
+      if(err==='not-allowed'){
+        if(typeof aiAddMsg==='function') aiAddMsg('bot','⚠️ Permiso de micrófono denegado. Revisa permisos de la app/navegador.',true);
+      }else if(err){ toast10('⚠️ Micrófono: '+err); }
+      finishMic10(false);
     };
-    try{ rec.start(); }
-    catch(e){ micUi9('idle'); toast9('🎙️ El micrófono ya estaba activo. Toca nuevamente para detener.'); }
+    try{ rec10.start(); }
+    catch(e){ micUi10('idle'); toast10('🎙️ El micrófono ya estaba activo. Toca nuevamente para detener.'); }
   }
-  window.toggleMic = function(){
-    if(micActive || micStopping || rec){ stopMic9(); return; }
-    requestPermission9(startMic9);
+  window.toggleMic=function(){
+    if(micActive10 || micStopping10 || rec10){ stopMic10(); return; }
+    requestPermission10(startMic10);
   };
-  window.hsV9StopMic = stopMic9;
-  window.hsV9MicState = function(){ return {active:micActive, stopping:micStopping, hasRecognition:!!rec, final:micFinal}; };
+  window.hsV10StopMic=stopMic10;
+  window.hsV10MicState=function(){ return {active:micActive10, stopping:micStopping10, hasRecognition:!!rec10, final:micFinal10}; };
 
-  // =========================================================
-  // REGISTRO: ocultar Acuerdo y poner X de eliminar en ese espacio.
-  // =========================================================
-  function isAgreement(btn){
-    var title = String(btn && btn.getAttribute('title') || '').toLowerCase().trim();
-    var onclick = String(btn && btn.getAttribute('onclick') || '');
-    var text = String(btn && btn.textContent || '').toLowerCase().trim();
-    return title === 'acuerdo' || title.indexOf('acuerdo') !== -1 || onclick.indexOf('hsEnviarAcuerdo') !== -1 || text === '🤝';
-  }
-  function isDelete(btn){
-    var title = String(btn && btn.getAttribute('title') || '').toLowerCase().trim();
-    var onclick = String(btn && btn.getAttribute('onclick') || '').toLowerCase();
-    var text = String(btn && btn.textContent || '').trim();
-    return title.indexOf('eliminar') !== -1 || onclick.indexOf('eliminartrabajo') !== -1 || text === '✕' || text === 'x' || btn.classList.contains('btn-danger');
-  }
-  function isProtected(btn){
-    if(isDelete(btn)) return true;
-    var title = String(btn.getAttribute('title')||'').toLowerCase();
-    var onclick = String(btn.getAttribute('onclick')||'').toLowerCase();
-    return title.indexOf('cobrar')!==-1 || title.indexOf('editar')!==-1 || title.indexOf('estado')!==-1 || title.indexOf('comprobante')!==-1 || onclick.indexOf('cobrartrabajo')!==-1 || onclick.indexOf('edit')!==-1 || onclick.indexOf('estad')!==-1 || onclick.indexOf('comprobante')!==-1;
-  }
-  function normalizeBar9(bar){
-    if(!bar) return;
-    bar.classList.add('hs-v8-action-grid','hs-v9-action-grid');
-    var buttons = qsa(bar, 'button.btn');
-    var agreement = null, del = null;
-    buttons.forEach(function(btn){
-      btn.classList.remove('hs-v9-hide-action','hs-v9-overflow-hidden','hs-v8-extra-hidden');
-      if(isAgreement(btn)) agreement = btn;
-      if(isDelete(btn)) del = btn;
-    });
-    if(del){
-      del.classList.add('hs-v9-delete-slot');
-      del.classList.remove('hs-v8-extra-hidden','hs-v9-overflow-hidden','hs-v9-hide-action');
-      del.setAttribute('title','Eliminar registro');
-      if(agreement && agreement.parentNode === bar && del.parentNode === bar && del !== agreement){
-        try{ bar.insertBefore(del, agreement); }catch(e){}
+  // Limpieza final antes de enviar, solo si el texto viene del micrófono V10.
+  if(typeof window.aiEnviar==='function' && !window.aiEnviar.hsV10Wrapped){
+    var oldAiEnviar10=window.aiEnviar;
+    var wrappedAiEnviar10=function(){
+      var ta=byId('ai-textarea');
+      if(ta && ta.getAttribute(MIC_ATTR)==='1'){
+        ta.value=cleanSpeech10(ta.value);
+        ta.removeAttribute(MIC_ATTR);
       }
-    }
-    qsa(bar, 'button.btn').forEach(function(btn){
-      if(isAgreement(btn)) btn.classList.add('hs-v9-hide-action','hs-v8-hidden-action');
-      else btn.classList.remove('hs-v9-hide-action');
-    });
-    var visible = qsa(bar, 'button.btn').filter(function(btn){
-      return !btn.classList.contains('hs-v9-hide-action') && !btn.classList.contains('hs-v8-hidden-action');
-    });
-    if(visible.length > 18){
-      var priority = [];
-      var low = ['duplicar','historial','bitácora','bitacora','ver historial','ver cliente','perfil'];
-      low.forEach(function(term){
-        visible.forEach(function(btn){
-          var title = String(btn.getAttribute('title')||'').toLowerCase();
-          if(!isProtected(btn) && priority.indexOf(btn)===-1 && title.indexOf(term)!==-1) priority.push(btn);
-        });
-      });
-      visible.forEach(function(btn){ if(!isProtected(btn) && priority.indexOf(btn)===-1) priority.push(btn); });
-      var need = visible.length - 18;
-      priority.slice(0, need).forEach(function(btn){ btn.classList.add('hs-v9-overflow-hidden'); });
-    }
+      return oldAiEnviar10.apply(this,arguments);
+    };
+    wrappedAiEnviar10.hsV10Wrapped=true;
+    window.aiEnviar=wrappedAiEnviar10;
   }
-  function normalizeAll9(){
-    qsa(document, '#v-registro .actions, #v-registro .mcard-footer, #mobile-cards .mcard-footer').forEach(normalizeBar9);
+
+  function boot10(){
+    disconnectOldObservers10();
+    wrapRender10();
+    normalizeAll10();
+    setTimeout(normalizeAll10,80);
+    setTimeout(normalizeAll10,240);
+    setTimeout(normalizeAll10,900);
+    installObserver10();
   }
-  function wrapRender9(){
-    if(typeof window.renderTabla === 'function' && !window.renderTabla.hsV9Wrapped){
-      var old = window.renderTabla;
-      var wrapped = function(){
-        var r = old.apply(this, arguments);
-        setTimeout(normalizeAll9, 0);
-        setTimeout(normalizeAll9, 80);
-        setTimeout(normalizeAll9, 250);
-        return r;
-      };
-      wrapped.hsV9Wrapped = true;
-      window.renderTabla = wrapped;
-    }
-    if(typeof window.renderAll === 'function' && !window.renderAll.hsV9Wrapped){
-      var oldAll = window.renderAll;
-      var wrappedAll = function(){
-        var r = oldAll.apply(this, arguments);
-        setTimeout(normalizeAll9, 0);
-        setTimeout(normalizeAll9, 100);
-        return r;
-      };
-      wrappedAll.hsV9Wrapped = true;
-      window.renderAll = wrappedAll;
-    }
-  }
-  function boot9(){
-    wrapRender9();
-    normalizeAll9();
-    setTimeout(normalizeAll9, 120);
-    setTimeout(normalizeAll9, 600);
-    setTimeout(normalizeAll9, 1600);
-    try{
-      var target = byId('v-registro') || byId('mobile-cards');
-      if(target && !target.__hsV9Observer){
-        var obs = new MutationObserver(function(){ normalizeAll9(); });
-        obs.observe(target, {childList:true, subtree:true, attributes:true});
-        target.__hsV9Observer = obs;
-      }
-    }catch(e){}
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot9);
-  else boot9();
-  window.addEventListener('load', function(){ setTimeout(boot9, 50); setTimeout(boot9, 1000); });
-  window.HS_V9_VERSION = HS_V9_VERSION;
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot10);
+  else boot10();
+  window.addEventListener('load',function(){ setTimeout(boot10,60); setTimeout(normalizeAll10,1200); });
+  window.HS_V10_VERSION=HS_V10_VERSION;
 })();
 </script>
-<!-- ===================== FIN HS V9 PATCH ===================== -->
+<!-- ===================== FIN HS V10 PATCH ===================== -->
+
+
+
+<!-- ===================== HS V12 PATCH: SIN BUG PDF + ICONOS 9x2 CON X FINAL ===================== -->
+<style id="hs-v12-iconos-9x2-x-final-style">
+  /*
+    V12 se aplica sobre la base estable V10.
+    No se inserta dentro de ningún document.write ni plantilla de impresión.
+    Objetivo: Registro con 18 iconos visibles exactos: 2 filas x 9 columnas.
+    Se oculta Acuerdo 🤝 y la X de eliminar queda como último icono visible.
+  */
+
+  /* Tarjetas móviles / cards ricas */
+  #v-registro .hs-shortcuts-grid.hs-v12-grid-9x2,
+  #mobile-cards .hs-shortcuts-grid.hs-v12-grid-9x2{
+    display:grid!important;
+    grid-template-columns:repeat(9,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,var(--hs-v12-icon-size,26px))!important;
+    grid-auto-rows:var(--hs-v12-icon-size,26px)!important;
+    grid-auto-flow:row!important;
+    gap:var(--hs-v12-icon-gap,2px)!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow:visible!important;
+    padding:0!important;
+    margin:6px 0 0 0!important;
+    align-items:stretch!important;
+    justify-items:stretch!important;
+    flex-wrap:unset!important;
+  }
+
+  #v-registro .hs-shortcuts-grid.hs-v12-grid-9x2 > button,
+  #mobile-cards .hs-shortcuts-grid.hs-v12-grid-9x2 > button,
+  #v-registro .hs-shortcuts-grid.hs-v12-grid-9x2 > .hs-shortcut-btn2,
+  #mobile-cards .hs-shortcuts-grid.hs-v12-grid-9x2 > .hs-shortcut-btn2{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:var(--hs-v12-icon-size,26px)!important;
+    min-height:0!important;
+    max-height:var(--hs-v12-icon-size,26px)!important;
+    padding:0!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:var(--hs-v12-icon-font,11px)!important;
+    line-height:1!important;
+    border-radius:var(--hs-v12-icon-radius,7px)!important;
+    overflow:hidden!important;
+    flex:unset!important;
+    box-sizing:border-box!important;
+    white-space:nowrap!important;
+  }
+
+  /* Escritorio: acciones dentro de la tabla */
+  #v-registro .actions.hs-v12-table-9x2{
+    display:grid!important;
+    grid-template-columns:repeat(9,27px)!important;
+    grid-template-rows:repeat(2,27px)!important;
+    grid-auto-rows:27px!important;
+    grid-auto-flow:row!important;
+    gap:3px!important;
+    width:267px!important;
+    min-width:267px!important;
+    max-width:267px!important;
+    overflow:visible!important;
+    align-items:stretch!important;
+    justify-items:stretch!important;
+    flex-wrap:unset!important;
+  }
+  #v-registro .actions.hs-v12-table-9x2 > .btn,
+  #v-registro .actions.hs-v12-table-9x2 > .btn-sm,
+  #v-registro .actions.hs-v12-table-9x2 > button{
+    width:27px!important;
+    min-width:27px!important;
+    max-width:27px!important;
+    height:27px!important;
+    min-height:27px!important;
+    max-height:27px!important;
+    padding:0!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:11px!important;
+    line-height:1!important;
+    border-radius:7px!important;
+    overflow:hidden!important;
+    flex:unset!important;
+    box-sizing:border-box!important;
+  }
+  #v-registro .tbl td:last-child{min-width:284px!important;width:284px!important;max-width:284px!important}
+  #v-registro .tbl th:last-child{min-width:284px!important;width:284px!important;max-width:284px!important}
+
+  /* Acuerdo se oculta. La X jamás se oculta. */
+  #v-registro .hs-v12-hidden-action,
+  #mobile-cards .hs-v12-hidden-action,
+  #v-registro .hs-v12-agreement-hidden,
+  #mobile-cards .hs-v12-agreement-hidden{
+    display:none!important;
+  }
+  #v-registro .hs-v12-delete-slot,
+  #mobile-cards .hs-v12-delete-slot,
+  #v-registro .hs-shortcuts-grid.hs-v12-grid-9x2 > .hs-v12-delete-slot,
+  #mobile-cards .hs-shortcuts-grid.hs-v12-grid-9x2 > .hs-v12-delete-slot,
+  #v-registro .actions.hs-v12-table-9x2 > .hs-v12-delete-slot{
+    display:flex!important;
+    background:#7f1d1d!important;
+    color:#fecaca!important;
+    border-color:#ef4444!important;
+    font-weight:900!important;
+  }
+
+  /* Ajuste automático por ancho. Siempre 9 columnas, solo cambia tamaño. */
+  @media(max-width:430px){
+    #v-registro .hs-shortcuts-grid.hs-v12-grid-9x2,
+    #mobile-cards .hs-shortcuts-grid.hs-v12-grid-9x2{
+      --hs-v12-icon-size:25px;
+      --hs-v12-icon-gap:2px;
+      --hs-v12-icon-font:10px;
+      --hs-v12-icon-radius:6px;
+    }
+  }
+  @media(max-width:380px){
+    #v-registro .hs-shortcuts-grid.hs-v12-grid-9x2,
+    #mobile-cards .hs-shortcuts-grid.hs-v12-grid-9x2{
+      --hs-v12-icon-size:23px;
+      --hs-v12-icon-gap:1px;
+      --hs-v12-icon-font:9px;
+      --hs-v12-icon-radius:5px;
+    }
+  }
+  @media(max-width:330px){
+    #v-registro .hs-shortcuts-grid.hs-v12-grid-9x2,
+    #mobile-cards .hs-shortcuts-grid.hs-v12-grid-9x2{
+      --hs-v12-icon-size:21px;
+      --hs-v12-icon-gap:1px;
+      --hs-v12-icon-font:8.5px;
+      --hs-v12-icon-radius:5px;
+    }
+  }
+</style>
+<script id="hs-v12-iconos-9x2-x-final-script">
+(function(){
+  'use strict';
+  var HS_V12_VERSION='v12-sin-bug-pdf-iconos-9x2-x-final';
+  var timer=null;
+  var normalizing=false;
+
+  function byId(id){return document.getElementById(id);}
+  function qsa(root,sel){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+  function txt(el){return String(el && el.textContent || '').trim();}
+  function attr(el,n){return String(el && el.getAttribute && el.getAttribute(n) || '');}
+  function hasClass(el,c){return !!(el && el.classList && el.classList.contains(c));}
+  function setClass(el,c,on){if(!el || !el.classList) return; if(on) el.classList.add(c); else el.classList.remove(c);}
+
+  function isAgreement(btn){
+    var title=attr(btn,'title').toLowerCase();
+    var onclick=attr(btn,'onclick').toLowerCase();
+    var t=txt(btn).toLowerCase();
+    return title.indexOf('acuerdo')!==-1 || onclick.indexOf('hsenviaracuerdo')!==-1 || t==='🤝';
+  }
+  function isDelete(btn){
+    var title=attr(btn,'title').toLowerCase();
+    var onclick=attr(btn,'onclick').toLowerCase();
+    var t=txt(btn).toLowerCase();
+    return title.indexOf('eliminar')!==-1 || onclick.indexOf('eliminartrabajo')!==-1 || t==='✕' || t==='x' || hasClass(btn,'btn-danger') || hasClass(btn,'hs-v12-delete-slot');
+  }
+  function parseIdFromHtml(html){
+    var m=String(html||'').match(/(?:verCliente|cobrarTrabajo|editarTrabajo|eliminarTrabajo|hsV7OpenComprobante|hsV7CambiarEstado|hsOpenTrabajoShortcut|hsOpenChecklistTrabajo|verHistorial|abrirBitacora|enviarWaRapidoTrabajo)\((\d+)/);
+    return m?Number(m[1]):null;
+  }
+  function getTrabajoId(el){
+    var node=el, m;
+    while(node && node!==document){
+      m=String(node.id||'').match(/(?:mcard-v3-|mcard2-|mcard-|trabajo-|row-)(\d+)/i);
+      if(m) return Number(m[1]);
+      if(node.dataset && node.dataset.id && /^\d+$/.test(node.dataset.id)) return Number(node.dataset.id);
+      node=node.parentNode;
+    }
+    return parseIdFromHtml(el && el.innerHTML) || null;
+  }
+  function createDeleteBtn(id,mobile){
+    var b=document.createElement('button');
+    b.type='button';
+    b.title='Eliminar registro';
+    b.textContent='✕';
+    b.className=mobile ? 'hs-shortcut-btn2 hs-v12-delete-slot' : 'btn btn-danger btn-sm hs-v12-delete-slot';
+    b.setAttribute('onclick',(mobile?'event.stopPropagation();':'')+'eliminarTrabajo('+id+')');
+    return b;
+  }
+  function protectScore(btn){
+    var body=(attr(btn,'title')+' '+attr(btn,'onclick')+' '+txt(btn)).toLowerCase();
+    if(isDelete(btn)) return -9999;
+    if(body.indexOf('cliente')!==-1) return -900;
+    if(body.indexOf('cobrar')!==-1 || body.indexOf('comprobante')!==-1) return -850;
+    if(body.indexOf('editar')!==-1 || body.indexOf('estado')!==-1) return -800;
+    if(body.indexOf('cuota')!==-1 || body.indexOf('próxima')!==-1 || body.indexOf('proxima')!==-1) return -760;
+    if(body.indexOf('whatsapp')!==-1 || body.indexOf('wsp')!==-1) return -720;
+    if(body.indexOf('checklist')!==-1 || body.indexOf('promesa')!==-1) return -680;
+    if(body.indexOf('historial')!==-1 || body.indexOf('bitácora')!==-1 || body.indexOf('bitacora')!==-1) return 900;
+    if(body.indexOf('perfil')!==-1 || body.indexOf('alias')!==-1) return 850;
+    if(body.indexOf('alcance')!==-1 || body.indexOf('adicional')!==-1 || body.indexOf('correccion')!==-1 || body.indexOf('corrección')!==-1) return 800;
+    if(body.indexOf('bloqueo')!==-1) return 650;
+    return 500;
+  }
+  function prepareButtons(container){
+    qsa(container,'button').forEach(function(b){
+      if(isAgreement(b)){
+        setClass(b,'hs-v12-agreement-hidden',true);
+        setClass(b,'hs-v12-hidden-action',true);
+        setClass(b,'hs-v10-hide-action',true);
+        setClass(b,'hs-v8-hidden-action',true);
+        setClass(b,'hs-v9-hide-action',true);
+      }else{
+        setClass(b,'hs-v12-hidden-action',false);
+        // Se retiran ocultamientos heredados del V8/V9/V10 para recalcular limpio.
+        setClass(b,'hs-v10-overflow-hidden',false);
+        setClass(b,'hs-v8-extra-hidden',false);
+        setClass(b,'hs-v9-overflow-hidden',false);
+      }
+    });
+  }
+  function enforce18(container){
+    var visible=qsa(container,'button').filter(function(b){return !isAgreement(b) && !hasClass(b,'hs-v12-hidden-action');});
+    if(visible.length<=18) return;
+    var canHide=visible.filter(function(b){return !isDelete(b);});
+    canHide.sort(function(a,b){return protectScore(b)-protectScore(a);});
+    var need=visible.length-18;
+    canHide.slice(0,need).forEach(function(b){setClass(b,'hs-v12-hidden-action',true);});
+  }
+  function moveDeleteLast(container,del){
+    if(!container || !del) return;
+    // Solo se mueve si no está ya como último botón. Evita bucles de MutationObserver.
+    var buttons=qsa(container,'button').filter(function(b){return !isAgreement(b) && !hasClass(b,'hs-v12-hidden-action');});
+    var last=buttons[buttons.length-1];
+    if(last!==del){
+      try{container.appendChild(del);}catch(e){}
+    }
+  }
+  function normalizeShortcutGrid(grid){
+    if(!grid || normalizing) return;
+    grid.classList.add('hs-v12-grid-9x2');
+    var id=getTrabajoId(grid);
+    prepareButtons(grid);
+    var del=null;
+    qsa(grid,'button').forEach(function(b){if(isDelete(b)) del=b;});
+    if(!del && id){
+      del=createDeleteBtn(id,true);
+      grid.appendChild(del);
+    }
+    if(del){
+      del.classList.add('hs-v12-delete-slot','hs-shortcut-btn2');
+      del.classList.remove('hs-v12-hidden-action','hs-v12-agreement-hidden','hs-v10-overflow-hidden','hs-v8-extra-hidden','hs-v9-overflow-hidden');
+      del.title='Eliminar registro';
+      if(!attr(del,'onclick') && id) del.setAttribute('onclick','event.stopPropagation();eliminarTrabajo('+id+')');
+    }
+    enforce18(grid);
+    if(del) moveDeleteLast(grid,del);
+  }
+  function normalizeDesktopActions(actions){
+    if(!actions || normalizing) return;
+    actions.classList.add('hs-v12-table-9x2','hs-v10-action-grid','hs-v8-action-grid');
+    var id=getTrabajoId(actions);
+    prepareButtons(actions);
+    var del=null;
+    qsa(actions,'button').forEach(function(b){if(isDelete(b)) del=b;});
+    if(!del && id){
+      del=createDeleteBtn(id,false);
+      actions.appendChild(del);
+    }
+    if(del){
+      del.classList.add('hs-v12-delete-slot');
+      del.classList.remove('hs-v12-hidden-action','hs-v12-agreement-hidden','hs-v10-overflow-hidden','hs-v8-extra-hidden','hs-v9-overflow-hidden');
+      del.title='Eliminar registro';
+      if(!attr(del,'onclick') && id) del.setAttribute('onclick','eliminarTrabajo('+id+')');
+    }
+    enforce18(actions);
+    if(del) moveDeleteLast(actions,del);
+  }
+  function normalizeAll(){
+    if(normalizing) return;
+    normalizing=true;
+    try{
+      qsa(document,'#v-registro .hs-shortcuts-grid, #mobile-cards .hs-shortcuts-grid').forEach(normalizeShortcutGrid);
+      qsa(document,'#tabla-body .actions, #v-registro .tbl .actions').forEach(normalizeDesktopActions);
+    }finally{
+      normalizing=false;
+    }
+  }
+  function schedule(delay){
+    clearTimeout(timer);
+    timer=setTimeout(normalizeAll, delay==null?80:delay);
+  }
+  function wrapRender(){
+    if(typeof window.renderTabla==='function' && !window.renderTabla.hsV12Wrapped){
+      var old=window.renderTabla;
+      var wrapped=function(){
+        var r=old.apply(this,arguments);
+        setTimeout(normalizeAll,0);
+        setTimeout(normalizeAll,120);
+        setTimeout(normalizeAll,400);
+        setTimeout(normalizeAll,900);
+        return r;
+      };
+      wrapped.hsV12Wrapped=true;
+      window.renderTabla=wrapped;
+    }
+    if(typeof window.renderAll==='function' && !window.renderAll.hsV12Wrapped){
+      var oldAll=window.renderAll;
+      var wrappedAll=function(){
+        var r=oldAll.apply(this,arguments);
+        setTimeout(normalizeAll,0);
+        setTimeout(normalizeAll,160);
+        setTimeout(normalizeAll,650);
+        return r;
+      };
+      wrappedAll.hsV12Wrapped=true;
+      window.renderAll=wrappedAll;
+    }
+  }
+  function installObserver(){
+    var root=byId('v-registro') || byId('mobile-cards');
+    if(!root || typeof MutationObserver==='undefined' || root.__hsV12Observer) return;
+    var obs=new MutationObserver(function(){schedule(90);});
+    // Solo childList. No attributes, para no congelar la interfaz.
+    obs.observe(root,{childList:true,subtree:true});
+    root.__hsV12Observer=obs;
+  }
+  function boot(){
+    wrapRender();
+    normalizeAll();
+    setTimeout(normalizeAll,100);
+    setTimeout(normalizeAll,350);
+    setTimeout(normalizeAll,1100);
+    setTimeout(normalizeAll,2200);
+    installObserver();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+  else boot();
+  window.addEventListener('load',function(){setTimeout(boot,120); setTimeout(normalizeAll,1700);});
+  window.HS_V12_VERSION=HS_V12_VERSION;
+})();
+</script>
+<!-- ===================== FIN HS V12 PATCH ===================== -->
+
+
+<!-- ===================== HS V13 PATCH: ICONOS REGISTRO 9x2 DEFINITIVO + X FINAL ===================== -->
+<style id="hs-v13-iconos-9x2-definitivo-style">
+  /*
+    V13: fuerza el grid visible del Registro a 2 filas x 9 iconos.
+    Se aplica directo sobre .hs-shortcuts-grid, sin depender de clases previas.
+    Oculta/elimina Acuerdo 🤝 y pone Eliminar ✕ como último icono.
+  */
+
+  #v-registro .hs-shortcuts-grid,
+  #mobile-cards .hs-shortcuts-grid,
+  .mobile-cards .hs-shortcuts-grid{
+    display:grid!important;
+    grid-template-columns:repeat(9,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,var(--hs-v13-icon-h,32px))!important;
+    grid-auto-rows:var(--hs-v13-icon-h,32px)!important;
+    grid-auto-flow:row!important;
+    gap:var(--hs-v13-gap,4px)!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow:visible!important;
+    padding:0!important;
+    margin:7px 0 0 0!important;
+    align-items:stretch!important;
+    justify-items:stretch!important;
+    flex-wrap:unset!important;
+    box-sizing:border-box!important;
+  }
+
+  #v-registro .hs-shortcuts-grid > button,
+  #mobile-cards .hs-shortcuts-grid > button,
+  .mobile-cards .hs-shortcuts-grid > button,
+  #v-registro .hs-shortcuts-grid > .hs-shortcut-btn2,
+  #mobile-cards .hs-shortcuts-grid > .hs-shortcut-btn2,
+  .mobile-cards .hs-shortcuts-grid > .hs-shortcut-btn2{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:var(--hs-v13-icon-h,32px)!important;
+    min-height:0!important;
+    max-height:var(--hs-v13-icon-h,32px)!important;
+    padding:0!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:var(--hs-v13-font,12px)!important;
+    line-height:1!important;
+    border-radius:var(--hs-v13-radius,8px)!important;
+    overflow:hidden!important;
+    flex:unset!important;
+    box-sizing:border-box!important;
+    white-space:nowrap!important;
+  }
+
+  #v-registro .hs-shortcuts-grid > .hs-v13-delete-slot,
+  #mobile-cards .hs-shortcuts-grid > .hs-v13-delete-slot,
+  .mobile-cards .hs-shortcuts-grid > .hs-v13-delete-slot,
+  #v-registro .actions > .hs-v13-delete-slot{
+    display:flex!important;
+    background:#7f1d1d!important;
+    color:#fecaca!important;
+    border-color:#ef4444!important;
+    font-weight:900!important;
+    box-shadow:0 0 0 1px rgba(239,68,68,.18) inset!important;
+  }
+
+  #v-registro .hs-v13-hidden-action,
+  #mobile-cards .hs-v13-hidden-action,
+  .mobile-cards .hs-v13-hidden-action,
+  #v-registro .hs-v13-agreement-hidden,
+  #mobile-cards .hs-v13-agreement-hidden,
+  .mobile-cards .hs-v13-agreement-hidden{
+    display:none!important;
+  }
+
+  /* Tabla escritorio: 2 filas x 9, con X al final. */
+  #v-registro .actions.hs-v13-table-9x2,
+  #tabla-body .actions.hs-v13-table-9x2{
+    display:grid!important;
+    grid-template-columns:repeat(9,28px)!important;
+    grid-template-rows:repeat(2,28px)!important;
+    grid-auto-rows:28px!important;
+    grid-auto-flow:row!important;
+    gap:4px!important;
+    width:284px!important;
+    min-width:284px!important;
+    max-width:284px!important;
+    overflow:visible!important;
+    align-items:stretch!important;
+    justify-items:stretch!important;
+    flex-wrap:unset!important;
+    box-sizing:border-box!important;
+  }
+  #v-registro .actions.hs-v13-table-9x2 > button,
+  #v-registro .actions.hs-v13-table-9x2 > .btn,
+  #v-registro .actions.hs-v13-table-9x2 > .btn-sm,
+  #tabla-body .actions.hs-v13-table-9x2 > button,
+  #tabla-body .actions.hs-v13-table-9x2 > .btn,
+  #tabla-body .actions.hs-v13-table-9x2 > .btn-sm{
+    width:28px!important;
+    min-width:28px!important;
+    max-width:28px!important;
+    height:28px!important;
+    min-height:28px!important;
+    max-height:28px!important;
+    padding:0!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:11px!important;
+    line-height:1!important;
+    border-radius:7px!important;
+    overflow:hidden!important;
+    flex:unset!important;
+    box-sizing:border-box!important;
+  }
+  #v-registro .tbl td:last-child{min-width:302px!important;width:302px!important;max-width:302px!important;}
+  #v-registro .tbl th:last-child{min-width:302px!important;width:302px!important;max-width:302px!important;}
+
+  @media(max-width:430px){
+    #v-registro .hs-shortcuts-grid,
+    #mobile-cards .hs-shortcuts-grid,
+    .mobile-cards .hs-shortcuts-grid{
+      --hs-v13-icon-h:31px;
+      --hs-v13-gap:4px;
+      --hs-v13-font:11px;
+      --hs-v13-radius:7px;
+    }
+  }
+  @media(max-width:380px){
+    #v-registro .hs-shortcuts-grid,
+    #mobile-cards .hs-shortcuts-grid,
+    .mobile-cards .hs-shortcuts-grid{
+      --hs-v13-icon-h:29px;
+      --hs-v13-gap:3px;
+      --hs-v13-font:10px;
+      --hs-v13-radius:7px;
+    }
+  }
+  @media(max-width:340px){
+    #v-registro .hs-shortcuts-grid,
+    #mobile-cards .hs-shortcuts-grid,
+    .mobile-cards .hs-shortcuts-grid{
+      --hs-v13-icon-h:27px;
+      --hs-v13-gap:2px;
+      --hs-v13-font:9px;
+      --hs-v13-radius:6px;
+    }
+  }
+</style>
+<script id="hs-v13-iconos-9x2-definitivo-script">
+(function(){
+  'use strict';
+  var VERSION='v13-iconos-9x2-definitivo-x-final';
+  var busy=false;
+  var timer=null;
+  var bootCount=0;
+
+  function qsa(root, sel){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+  function attr(el,n){return String(el && el.getAttribute && el.getAttribute(n) || '');}
+  function text(el){return String(el && el.textContent || '').trim();}
+  function low(s){return String(s||'').toLowerCase();}
+  function add(el,c){if(el && el.classList) el.classList.add(c);}
+  function rem(el,c){if(el && el.classList) el.classList.remove(c);}
+  function has(el,c){return !!(el && el.classList && el.classList.contains(c));}
+  function visible(el){return !!(el && el.nodeType===1 && getComputedStyle(el).display!=='none');}
+
+  function isAgreement(btn){
+    var body=low(attr(btn,'title')+' '+attr(btn,'aria-label')+' '+attr(btn,'onclick')+' '+text(btn));
+    return body.indexOf('acuerdo')!==-1 || body.indexOf('hsenviaracuerdo')!==-1 || text(btn)==='🤝';
+  }
+  function isDelete(btn){
+    var body=low(attr(btn,'title')+' '+attr(btn,'aria-label')+' '+attr(btn,'onclick')+' '+text(btn));
+    return body.indexOf('eliminar')!==-1 || body.indexOf('eliminartrabajo')!==-1 || text(btn)==='✕' || text(btn)==='x' || has(btn,'btn-danger') || has(btn,'hs-v12-delete-slot') || has(btn,'hs-v13-delete-slot');
+  }
+  function parseId(html){
+    var m=String(html||'').match(/(?:verCliente|cobrarTrabajo|editarTrabajo|eliminarTrabajo|verFactura|cambiarEstadoRapido|hsV7OpenComprobante|hsV7CambiarEstado|hsOpenTrabajoShortcut|hsOpenChecklistTrabajo|verHistorial|abrirBitacora|enviarWaRapidoTrabajo)\((\d+)/);
+    return m?Number(m[1]):null;
+  }
+  function getId(el){
+    var n=el, m;
+    while(n && n!==document){
+      m=String(n.id||'').match(/(?:mcard-v3-|mcard2-|mcard-|trabajo-|row-)(\d+)/i);
+      if(m) return Number(m[1]);
+      if(n.dataset && /^\d+$/.test(String(n.dataset.id||''))) return Number(n.dataset.id);
+      n=n.parentNode;
+    }
+    return parseId(el && el.innerHTML);
+  }
+  function clearHidden(btn){
+    ['hs-v13-hidden-action','hs-v13-agreement-hidden','hs-v12-hidden-action','hs-v12-agreement-hidden','hs-v10-overflow-hidden','hs-v10-hide-action','hs-v9-overflow-hidden','hs-v9-hide-action','hs-v8-extra-hidden','hs-v8-hidden-action'].forEach(function(c){rem(btn,c);});
+  }
+  function hide(btn){add(btn,'hs-v13-hidden-action');}
+  function makeDelete(id, mobile){
+    var b=document.createElement('button');
+    b.type='button';
+    b.title='Eliminar registro';
+    b.setAttribute('aria-label','Eliminar registro');
+    b.textContent='✕';
+    b.className=mobile ? 'hs-shortcut-btn2 hs-v13-delete-slot' : 'btn btn-danger btn-sm hs-v13-delete-slot';
+    b.setAttribute('onclick',(mobile?'event.stopPropagation();':'')+'eliminarTrabajo('+id+')');
+    return b;
+  }
+  function score(btn){
+    var body=low(attr(btn,'title')+' '+attr(btn,'onclick')+' '+text(btn));
+    if(isDelete(btn)) return -99999;
+    if(body.indexOf('cliente')!==-1) return -950;
+    if(body.indexOf('cobrar')!==-1) return -930;
+    if(body.indexOf('editar')!==-1) return -910;
+    if(body.indexOf('cuotas')!==-1 || body.indexOf('cuota')!==-1) return -890;
+    if(body.indexOf('próxima')!==-1 || body.indexOf('proxima')!==-1) return -870;
+    if(body.indexOf('checklist')!==-1) return -850;
+    if(body.indexOf('bloqueo')!==-1) return -830;
+    if(body.indexOf('promesa')!==-1) return -810;
+    if(body.indexOf('alcance')!==-1) return -790;
+    if(body.indexOf('adicional')!==-1) return -770;
+    if(body.indexOf('correccion')!==-1 || body.indexOf('corrección')!==-1) return -750;
+    if(body.indexOf('perfil')!==-1 || body.indexOf('alias')!==-1) return -730;
+    if(body.indexOf('historial')!==-1) return -710;
+    if(body.indexOf('bitácora')!==-1 || body.indexOf('bitacora')!==-1) return -690;
+    if(body.indexOf('whatsapp')!==-1 || body.indexOf('wsp')!==-1) return -670;
+    if(body.indexOf('comprobante')!==-1 || body.indexOf('factura')!==-1) return -650;
+    if(body.indexOf('estado')!==-1) return -630;
+    return 1000;
+  }
+
+  function removeAgreements(container){
+    qsa(container,'button').forEach(function(btn){
+      if(isAgreement(btn)){
+        // Se elimina del DOM para liberar físicamente el casillero. Si falla, se oculta.
+        try{btn.parentNode && btn.parentNode.removeChild(btn);}catch(e){add(btn,'hs-v13-agreement-hidden'); hide(btn);}
+      }
+    });
+  }
+  function ensureDelete(container, mobile){
+    var id=getId(container);
+    var del=null;
+    qsa(container,'button').forEach(function(btn){if(isDelete(btn)) del=btn;});
+    if(!del && id){del=makeDelete(id, mobile); container.appendChild(del);}
+    if(del){
+      clearHidden(del);
+      add(del,'hs-v13-delete-slot');
+      if(mobile) add(del,'hs-shortcut-btn2');
+      del.title='Eliminar registro';
+      del.setAttribute('aria-label','Eliminar registro');
+      del.textContent='✕';
+      if(id) del.setAttribute('onclick',(mobile?'event.stopPropagation();':'')+'eliminarTrabajo('+id+')');
+    }
+    return del;
+  }
+  function cap18(container, del){
+    var buttons=qsa(container,'button').filter(function(btn){return !isAgreement(btn);});
+    buttons.forEach(function(btn){ if(btn!==del) clearHidden(btn); });
+    var shown=buttons.filter(function(btn){return !has(btn,'hs-v13-hidden-action') && btn!==del;});
+    var total=shown.length + (del?1:0);
+    if(total>18){
+      shown.sort(function(a,b){return score(b)-score(a);});
+      shown.slice(0,total-18).forEach(hide);
+    }
+  }
+  function putDeleteLast(container, del){
+    if(!container || !del) return;
+    try{ if(container.lastElementChild!==del) container.appendChild(del); }catch(e){}
+  }
+  function normalizeGrid(grid){
+    if(!grid) return;
+    add(grid,'hs-v13-grid-9x2');
+    grid.style.gridTemplateColumns='repeat(9,minmax(0,1fr))';
+    grid.style.gridAutoFlow='row';
+    grid.style.overflow='visible';
+    removeAgreements(grid);
+    var del=ensureDelete(grid,true);
+    cap18(grid,del);
+    putDeleteLast(grid,del);
+  }
+  function normalizeActions(actions){
+    if(!actions) return;
+    add(actions,'hs-v13-table-9x2');
+    removeAgreements(actions);
+    var del=ensureDelete(actions,false);
+    cap18(actions,del);
+    putDeleteLast(actions,del);
+  }
+  function normalizeAll(){
+    if(busy) return;
+    busy=true;
+    try{
+      qsa(document,'#v-registro .hs-shortcuts-grid, #mobile-cards .hs-shortcuts-grid, .mobile-cards .hs-shortcuts-grid').forEach(normalizeGrid);
+      qsa(document,'#v-registro .actions, #tabla-body .actions').forEach(normalizeActions);
+    }catch(e){try{console.warn('HS V13 icon patch',e);}catch(_){}}
+    busy=false;
+  }
+  function schedule(ms){clearTimeout(timer); timer=setTimeout(normalizeAll, ms==null?60:ms);}
+  function wrap(fnName){
+    var fn=window[fnName];
+    if(typeof fn!=='function' || fn.__hsV13Wrapped) return;
+    var wrapped=function(){
+      var out=fn.apply(this,arguments);
+      setTimeout(normalizeAll,0);
+      setTimeout(normalizeAll,80);
+      setTimeout(normalizeAll,240);
+      setTimeout(normalizeAll,700);
+      return out;
+    };
+    wrapped.__hsV13Wrapped=true;
+    window[fnName]=wrapped;
+  }
+  function boot(){
+    // Desactiva observadores viejos de V12 si quedaron en el mismo contenedor, para evitar peleas.
+    try{var r=document.getElementById('v-registro'); if(r && r.__hsV12Observer && r.__hsV12Observer.disconnect) r.__hsV12Observer.disconnect();}catch(e){}
+    wrap('renderTabla');
+    wrap('renderAll');
+    normalizeAll();
+    [80,180,400,800,1400,2400,4000].forEach(function(ms){setTimeout(normalizeAll,ms);});
+    if(typeof MutationObserver!=='undefined' && !document.documentElement.__hsV13Observer){
+      var obs=new MutationObserver(function(muts){
+        for(var i=0;i<muts.length;i++){
+          if(muts[i].addedNodes && muts[i].addedNodes.length){schedule(80); return;}
+          if(muts[i].removedNodes && muts[i].removedNodes.length){schedule(120); return;}
+        }
+      });
+      obs.observe(document.body || document.documentElement,{childList:true,subtree:true});
+      document.documentElement.__hsV13Observer=obs;
+    }
+    document.addEventListener('click',function(){schedule(120);},true);
+    document.addEventListener('touchend',function(){schedule(120);},true);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+  else boot();
+  window.addEventListener('load',function(){boot(); setTimeout(normalizeAll,1200);});
+  var iv=setInterval(function(){bootCount++; normalizeAll(); if(bootCount>20) clearInterval(iv);},500);
+  window.HS_V13_VERSION=VERSION;
+})();
+</script>
+<!-- ===================== FIN HS V13 PATCH ===================== -->
 
 </body>
 </html>
