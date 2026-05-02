@@ -18759,5 +18759,387 @@ body{font-size:11.2px!important;letter-spacing:-.015em!important}
 </script>
 <!-- ===================== FIN HS V6 PATCH ===================== -->
 
+<!-- ===================== HS V7 PATCH: COMPROBANTE + ESTADO DIRECTO ===================== -->
+<script>
+(function(){
+  'use strict';
+
+  var HS_V7_VERSION = 'v7-comprobante-estado';
+
+  function ready(fn){
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else setTimeout(fn, 0);
+  }
+  function $(id){ return document.getElementById(id); }
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>'"]/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
+    });
+  }
+  function money(v){
+    var n = Number(v || 0);
+    try{
+      if(typeof fmtSRaw === 'function') return fmtSRaw(n);
+      if(typeof fmtS === 'function') return fmtS(n);
+    }catch(e){}
+    return 'S/ ' + n.toLocaleString('es-PE', {minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2});
+  }
+  function fmtDate(v){
+    if(!v) return '—';
+    try{ if(typeof fmt === 'function') return fmt(v); }catch(e){}
+    var s = String(v);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(s)){
+      var p = s.split('-'); return p[2] + '/' + p[1] + '/' + p[0];
+    }
+    return s;
+  }
+  function todayLabel(){
+    try{ return new Date().toLocaleDateString('es-PE', {day:'2-digit', month:'2-digit', year:'numeric'}); }
+    catch(e){ return new Date().toLocaleDateString(); }
+  }
+  function nowLabel(){
+    try{ return new Date().toLocaleString('es-PE', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}); }
+    catch(e){ return new Date().toLocaleString(); }
+  }
+  function notify(msg){
+    try{ if(typeof showToast === 'function') showToast(msg); else console.log(msg); }catch(e){}
+  }
+  function getJobs(){ return (window.DB && Array.isArray(DB.trabajos)) ? DB.trabajos : []; }
+  function getJob(id){ return getJobs().find(function(x){ return Number(x.id) === Number(id); }); }
+  function getEmpresa(){
+    try{ if(typeof getEmpresaData === 'function') return getEmpresaData(); }catch(e){}
+    try{ return JSON.parse(localStorage.getItem('tracker_empresa') || 'null') || {}; }catch(e){ return {}; }
+  }
+  function normalPhone(raw){
+    var d = String(raw || '').replace(/\D/g, '');
+    if(!d) return '';
+    if(d.length === 9) return '51' + d;
+    if(d.length === 11 && d.indexOf('51') === 0) return d;
+    if(d.length > 9 && d.indexOf('51') !== 0) return d;
+    return d;
+  }
+  function waUrl(phone, msg){
+    var n = normalPhone(phone);
+    return n ? ('https://wa.me/' + n + '?text=' + encodeURIComponent(msg)) : ('https://wa.me/?text=' + encodeURIComponent(msg));
+  }
+  function currentFacturaId(){
+    try{ return facturaActualId; }catch(e){ return window.facturaActualId || null; }
+  }
+
+  function injectCss(){
+    if($('hs-v7-style')) return;
+    var st = document.createElement('style');
+    st.id = 'hs-v7-style';
+    st.textContent = `
+      .hs-v7-comprobante-btn{color:#f59e0b!important;border-color:rgba(245,158,11,.45)!important;background:rgba(245,158,11,.08)!important}
+      .hs-v7-comprobante-btn:hover{background:rgba(245,158,11,.16)!important;border-color:#f59e0b!important;color:#fbbf24!important}
+      .hs-v7-estado-btn{color:#c084fc!important;border-color:rgba(192,132,252,.45)!important;background:rgba(192,132,252,.08)!important}
+      .hs-v7-estado-btn:hover{background:rgba(192,132,252,.16)!important;border-color:#c084fc!important;color:#e9d5ff!important}
+      .hs-v7-factura-warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:10px 12px;font-size:10px;line-height:1.45;margin-top:12px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.25px}
+      .hs-v7-factura-note{font-size:9.5px;color:#78716c;line-height:1.45;margin-top:6px;text-align:center}
+      .hs-v7-cuota-mini{font-size:9px;color:#6b7280;margin-top:2px}
+      .hs-v7-mini-state{font-size:9px;font-weight:800;padding:2px 7px;border-radius:999px;background:#f3f4f6;color:#374151;white-space:nowrap}
+      .hs-v7-actions-added{outline:0}
+      .hs-v7-toolbar-hint{font-size:9px;color:var(--text3);padding:2px 0 0 2px}
+      @media(max-width:768px){
+        .hs-v7-comprobante-btn,.hs-v7-estado-btn{box-shadow:0 0 0 1px rgba(255,255,255,.02) inset}
+        .mcard-footer .hs-v7-comprobante-btn,.mcard-footer .hs-v7-estado-btn{width:28px!important;height:28px!important;min-width:28px!important;font-size:12px!important}
+      }
+      @media print{
+        .hs-v7-factura-warn{border:1px solid #999!important;background:#fafafa!important;color:#111!important}
+      }
+    `;
+    document.head.appendChild(st);
+  }
+
+  function parseIdFromHtml(html){
+    var m = String(html || '').match(/(?:verCliente|cobrarTrabajo|editarTrabajo|eliminarTrabajo|verFactura|cambiarEstadoRapido|hsV7OpenComprobante|hsV7CambiarEstado)\((\d+)/);
+    return m ? Number(m[1]) : null;
+  }
+  function makeSmallButton(cls, title, icon, onclick){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn btn-ghost btn-sm ' + cls;
+    b.title = title;
+    b.textContent = icon;
+    b.setAttribute('onclick', onclick);
+    return b;
+  }
+  function insertBeforeDelete(actions, btn){
+    var del = actions.querySelector('.btn-danger, [onclick*="eliminarTrabajo"]');
+    if(del) actions.insertBefore(btn, del);
+    else actions.appendChild(btn);
+  }
+  function injectDesktopButtons(){
+    var rows = document.querySelectorAll('#tabla-body .actions');
+    rows.forEach(function(actions){
+      if(actions.dataset.hsV7Injected === '1') return;
+      var id = parseIdFromHtml(actions.innerHTML);
+      if(!id) return;
+      var hasFactura = actions.querySelector('[onclick*="verFactura"], [onclick*="hsV7OpenComprobante"]');
+      var hasEstado = actions.querySelector('[onclick*="cambiarEstadoRapido"], [onclick*="hsV7CambiarEstado"]');
+      if(!hasFactura){
+        insertBeforeDelete(actions, makeSmallButton('hs-v7-comprobante-btn', 'Emitir comprobante referencial', '🧾', 'hsV7OpenComprobante(' + id + ')'));
+      }
+      if(!hasEstado){
+        insertBeforeDelete(actions, makeSmallButton('hs-v7-estado-btn', 'Cambiar estado directo', '🔄', 'hsV7CambiarEstado(' + id + ', this)'));
+      }
+      actions.dataset.hsV7Injected = '1';
+    });
+  }
+  function mobileButton(cls, title, icon, onclick){
+    return '<button class="hs-shortcut-btn2 ' + cls + '" onclick="event.stopPropagation();' + onclick + '" title="' + esc(title) + '">' + icon + '</button>';
+  }
+  function injectMobileButtons(){
+    document.querySelectorAll('.mcard').forEach(function(card){
+      if(card.dataset.hsV7Injected === '1') return;
+      var id = null;
+      var m = String(card.id || '').match(/(?:mcard-v3-|mcard2-)(\d+)/);
+      if(m) id = Number(m[1]);
+      if(!id) id = parseIdFromHtml(card.innerHTML);
+      if(!id) return;
+      var grid = card.querySelector('.hs-shortcuts-grid');
+      if(grid){
+        var hasFactura = grid.querySelector('[onclick*="verFactura"], [onclick*="hsV7OpenComprobante"]');
+        var hasEstado = grid.querySelector('[onclick*="cambiarEstadoRapido"], [onclick*="hsV7CambiarEstado"]');
+        if(!hasFactura){ grid.insertAdjacentHTML('beforeend', mobileButton('hs-v7-comprobante-btn good', 'Comprobante referencial', '🧾', 'hsV7OpenComprobante(' + id + ')')); }
+        if(!hasEstado){ grid.insertAdjacentHTML('beforeend', mobileButton('hs-v7-estado-btn', 'Cambiar estado', '🔄', 'hsV7CambiarEstado(' + id + ', this)')); }
+        card.dataset.hsV7Injected = '1';
+        return;
+      }
+      var footer = card.querySelector('.mcard-footer');
+      if(footer){
+        var hasF = footer.querySelector('[onclick*="verFactura"], [onclick*="hsV7OpenComprobante"]');
+        var hasE = footer.querySelector('[onclick*="cambiarEstadoRapido"], [onclick*="hsV7CambiarEstado"]');
+        if(!hasF) footer.insertBefore(makeSmallButton('hs-v7-comprobante-btn', 'Comprobante referencial', '🧾', 'hsV7OpenComprobante(' + id + ')'), footer.querySelector('.btn-danger'));
+        if(!hasE) footer.insertBefore(makeSmallButton('hs-v7-estado-btn', 'Cambiar estado directo', '🔄', 'hsV7CambiarEstado(' + id + ', this)'), footer.querySelector('.btn-danger'));
+        card.dataset.hsV7Injected = '1';
+      }
+    });
+  }
+  function injectRegistroIcons(){
+    try{ injectCss(); injectDesktopButtons(); injectMobileButtons(); }catch(e){ console.warn('HS V7 inject error', e); }
+  }
+
+  function cuotasFromTrabajo(t){
+    var out = [];
+    if(Array.isArray(t.cuotas) && t.cuotas.length){
+      t.cuotas.forEach(function(c, idx){
+        var monto = Number(c.m != null ? c.m : (c.monto != null ? c.monto : c.importe)) || 0;
+        var cobrado = Number(c.cobrado || 0);
+        if(Array.isArray(c.abonos) && c.abonos.length){
+          cobrado = c.abonos.reduce(function(a, ab){ return a + (Number(ab.monto) || 0); }, 0);
+        }
+        out.push({
+          num: c.num || (idx + 1),
+          fecha: c.f || c.fecha || c.vencimiento || '',
+          monto: monto,
+          cobrado: Math.min(cobrado, monto || cobrado),
+          estado: c.estado || (cobrado >= monto && monto > 0 ? 'pagada' : 'pendiente'),
+          abonos: Array.isArray(c.abonos) ? c.abonos : []
+        });
+      });
+    }else{
+      for(var i=1; i<=4; i++){
+        var m = Number(t['c' + i + 'm'] || 0);
+        var f = t['c' + i + 'f'] || '';
+        if(m || f) out.push({num:i, fecha:f, monto:m, cobrado:0, estado:'pendiente', abonos:[]});
+      }
+    }
+    return out.filter(function(c){ return c.monto || c.fecha || c.cobrado || c.estado !== 'pendiente'; });
+  }
+  function cuotaEstadoLabel(c){
+    var e = String(c.estado || '').toLowerCase();
+    if(e === 'pagada' || e === 'retraso' || e === 'pagado') return 'Pagada';
+    if(e === 'incompleta' || e === 'parcial') return 'Pago parcial';
+    if(e === 'cancelada') return 'Cancelada';
+    return 'Pendiente';
+  }
+  function buildCuotasHtml(cuotas){
+    if(!cuotas.length) return '<div class="factura-cuotas"><div class="factura-section-title">📅 Plan de pagos</div><div style="font-size:11px;color:#6b7280;padding:8px 0">Sin cuotas registradas. Modalidad al contado o pago único.</div></div>';
+    var html = '<div class="factura-cuotas"><div class="factura-section-title">📅 Plan de pagos / cuotas</div>';
+    cuotas.forEach(function(c){
+      var pendiente = Math.max(0, (Number(c.monto)||0) - (Number(c.cobrado)||0));
+      var estado = cuotaEstadoLabel(c);
+      var paid = pendiente <= 0 && Number(c.monto) > 0;
+      html += '<div class="factura-cuota-item ' + (paid ? 'fci-paid' : 'fci-pend') + '" style="flex-direction:column;align-items:stretch;gap:4px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'
+        + '<span>' + (paid ? '✅' : (c.cobrado > 0 ? '🟡' : '⏳')) + ' Cuota ' + esc(c.num) + (c.fecha ? ' — ' + esc(fmtDate(c.fecha)) : '') + '</span>'
+        + '<strong>' + money(c.monto) + '</strong>'
+        + '</div>'
+        + '<div class="hs-v7-cuota-mini">Estado: <strong>' + esc(estado) + '</strong> · Cobrado: <strong>' + money(c.cobrado) + '</strong> · Pendiente: <strong>' + money(pendiente) + '</strong></div>';
+      if(c.abonos && c.abonos.length){
+        html += '<div class="hs-v7-cuota-mini">Abonos: ' + c.abonos.map(function(a){ return money(a.monto) + (a.fecha ? ' (' + fmtDate(a.fecha) + ')' : ''); }).join(' · ') + '</div>';
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+    return html;
+  }
+  function estadoClass(estado){
+    var e = String(estado || '').toLowerCase();
+    if(e.indexOf('pag') >= 0) return 'fbe-pagado';
+    if(e.indexOf('termin') >= 0) return 'fbe-terminado';
+    if(e.indexOf('cancel') >= 0) return 'fbe-cancelado';
+    if(e.indexOf('proceso') >= 0) return 'fbe-proceso';
+    return 'fbe-pendiente';
+  }
+
+  window.buildFacturaHtml = function(t, empresa){
+    empresa = empresa || getEmpresa();
+    var total = Number(t.precio || 0);
+    var cobrado = Number(t.cobrado || 0);
+    var saldo = Math.max(0, total - cobrado);
+    var fecha = todayLabel();
+    var numComp = 'REF-' + String(t.id || 0).padStart(5, '0');
+    var cuotas = cuotasFromTrabajo(t);
+    var modalidad = cuotas.length ? 'Pago en cuotas' : 'Pago único / contado';
+    var emisor = empresa.nombre || 'Emisor no configurado';
+    var ruc = empresa.ruc || 'RUC no configurado';
+    var tipoComp = empresa.tipoComp || 'Comprobante referencial de pago';
+    return '<div class="factura-wrap" id="factura-printable">'
+      + '<div class="factura-header">'
+      + '<div class="factura-logo"><div class="factura-logo-icon">🧾</div><div>'
+      + '<div class="factura-logo-txt">' + esc(emisor) + '</div>'
+      + '<div class="factura-logo-sub">RUC: ' + esc(ruc) + ' &nbsp;·&nbsp; ' + esc(tipoComp) + '</div>'
+      + '</div></div>'
+      + '<div class="factura-num"><div class="factura-num-label">N.° Referencial</div><div class="factura-num-val">' + esc(numComp) + '</div><div class="factura-num-fecha">Emitido: ' + esc(fecha) + '</div></div>'
+      + '</div>'
+      + '<div class="hs-v7-factura-warn">Documento referencial interno. No tiene carácter de comprobante de pago electrónico, boleta, factura, recibo por honorarios ni registro tributario ante SUNAT.</div>'
+      + '<div class="factura-section" style="margin-top:16px"><div class="factura-section-title">👤 Datos del cliente</div>'
+      + '<div class="factura-client-box"><div class="factura-client-name">' + esc(t.nombre || 'Cliente') + '</div>'
+      + '<div class="factura-client-detail">'
+      + (t.cel ? '📱 ' + esc(t.cel) : '📱 Sin celular')
+      + (t.dni ? '&nbsp;·&nbsp; DNI/RUC cliente: ' + esc(t.dni) : '')
+      + (t.uni ? '&nbsp;·&nbsp; 🏫 ' + esc(t.uni) : '')
+      + '</div></div></div>'
+      + '<div class="factura-section"><div class="factura-section-title">📋 Detalle del servicio</div>'
+      + '<table class="factura-table"><thead><tr><th>Descripción</th><th style="text-align:right">Importe</th></tr></thead><tbody><tr><td>'
+      + '<strong>' + esc(t.tipo || 'Servicio académico') + '</strong>'
+      + (t.notas ? '<br><span style="font-size:11px;color:#6b7280">' + esc(t.notas) + '</span>' : '')
+      + '<br><span style="font-size:10px;color:#9ca3af">'
+      + (t.fenc ? 'Encargo: ' + esc(fmtDate(t.fenc)) : '')
+      + (t.fent ? (t.fenc ? ' · ' : '') + 'Entrega: ' + esc(fmtDate(t.fent)) : '')
+      + (t.fpago ? ' · Pago: ' + esc(fmtDate(t.fpago)) : '')
+      + '</span></td><td style="text-align:right;font-weight:800;font-size:14px">' + money(total) + '</td></tr></tbody></table></div>'
+      + '<div class="factura-totals">'
+      + '<div class="factura-total-row grand"><span>Total del servicio</span><span>' + money(total) + '</span></div>'
+      + '<div class="factura-total-row cobrado"><span>✅ Pagado / cobrado</span><span>' + money(cobrado) + '</span></div>'
+      + '<div class="factura-total-row saldo"><span>⏳ Saldo pendiente</span><span>' + money(saldo) + '</span></div>'
+      + '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+      + '<span class="factura-badge-estado ' + estadoClass(t.estado) + '">' + esc(t.estado || 'Pendiente') + '</span>'
+      + '<span class="hs-v7-mini-state">' + esc(modalidad) + '</span>'
+      + '</div></div>'
+      + buildCuotasHtml(cuotas)
+      + '<div class="factura-footer">'
+      + '<strong>' + esc(emisor) + '</strong> · RUC ' + esc(ruc) + ' · Emitido: ' + esc(nowLabel()) + '<br>'
+      + '<div class="hs-v7-factura-note">Este documento solo deja constancia referencial del servicio, monto pactado, pagos efectuados, cuotas y saldo pendiente. Para efectos tributarios corresponde emitir el comprobante autorizado por SUNAT cuando resulte aplicable.</div>'
+      + '</div></div>';
+  };
+
+  function whatsappText(t){
+    var empresa = getEmpresa();
+    var total = Number(t.precio || 0);
+    var cobrado = Number(t.cobrado || 0);
+    var saldo = Math.max(0, total - cobrado);
+    var cuotas = cuotasFromTrabajo(t);
+    var msg = '🧾 *COMPROBANTE REFERENCIAL DE PAGO*\n'
+      + (empresa.nombre || 'Emisor') + ' · RUC ' + (empresa.ruc || 'no configurado') + '\n'
+      + 'N.° REF-' + String(t.id || 0).padStart(5, '0') + ' · ' + todayLabel() + '\n'
+      + '━━━━━━━━━━━━━━━━━━━━━━━\n'
+      + '👤 *Cliente:* ' + (t.nombre || '') + '\n'
+      + (t.dni ? '🪪 *DNI/RUC cliente:* ' + t.dni + '\n' : '')
+      + (t.uni ? '🏫 *Institución:* ' + t.uni + '\n' : '')
+      + '📋 *Servicio:* ' + (t.tipo || 'Servicio académico') + '\n'
+      + (t.notas ? '📝 *Detalle:* ' + t.notas + '\n' : '')
+      + (t.fent ? '📆 *Entrega:* ' + fmtDate(t.fent) + '\n' : '')
+      + '━━━━━━━━━━━━━━━━━━━━━━━\n'
+      + '💰 *Total:* ' + money(total) + '\n'
+      + '✅ *Pagado:* ' + money(cobrado) + '\n'
+      + '⏳ *Saldo:* ' + money(saldo) + '\n'
+      + '📌 *Estado:* ' + (t.estado || 'Pendiente') + '\n';
+    if(cuotas.length){
+      msg += '\n📅 *Cuotas:*\n';
+      cuotas.forEach(function(c){
+        var pendiente = Math.max(0, (Number(c.monto)||0) - (Number(c.cobrado)||0));
+        msg += '• Cuota ' + c.num + (c.fecha ? ' (' + fmtDate(c.fecha) + ')' : '') + ': ' + money(c.monto) + ' · cobrado ' + money(c.cobrado) + ' · saldo ' + money(pendiente) + '\n';
+      });
+    }
+    msg += '\n⚠️ *Aviso:* documento referencial interno. No tiene carácter de comprobante de pago electrónico, boleta, factura, recibo por honorarios ni registro tributario ante SUNAT.';
+    return msg;
+  }
+
+  window.compartirWhatsAppTexto = function(t){
+    if(!t) return;
+    window.open(waUrl(t.cel, whatsappText(t)), '_blank');
+  };
+  window.compartirWhatsApp = function(){
+    var fid = currentFacturaId();
+    if(!fid){ notify('No hay comprobante abierto'); return; }
+    var t = getJob(fid);
+    if(!t){ notify('No encontré el trabajo'); return; }
+    window.open(waUrl(t.cel, whatsappText(t)), '_blank');
+    if(t.cel) notify('Abriendo WhatsApp del cliente ✅');
+    else notify('El cliente no tiene celular: se abre WhatsApp sin destinatario');
+  };
+
+  var oldVerFactura = window.verFactura;
+  window.verFactura = function(id){
+    if(typeof oldVerFactura === 'function') oldVerFactura.apply(this, arguments);
+    else hsV7OpenComprobante(id);
+    setTimeout(function(){
+      var btn = $('btn-wsp');
+      if(btn){
+        btn.innerHTML = '<span style="font-size:14px">📲</span> Enviar al WhatsApp del cliente';
+        btn.title = 'Enviar el comprobante referencial como texto al WhatsApp registrado del cliente';
+        btn.onclick = window.compartirWhatsApp;
+      }
+      var title = document.querySelector('#modal-factura .modal-title');
+      if(title) title.textContent = '🧾 Comprobante referencial de pago';
+    }, 30);
+  };
+
+  window.hsV7OpenComprobante = function(id){
+    if(typeof window.verFactura === 'function') window.verFactura(id);
+  };
+  window.hsV7CambiarEstado = function(id, btn){
+    if(typeof window.cambiarEstadoRapido === 'function'){
+      window.cambiarEstadoRapido(id, btn || document.body);
+      return;
+    }
+    var t = getJob(id); if(!t) return;
+    var estados = ['En proceso','Pendiente','Entregado','Prepagado','Terminado','Pagado','Cancelado'];
+    var actual = t.estado || 'En proceso';
+    var nuevo = prompt('Estado actual: ' + actual + '\nNuevo estado:\n' + estados.join(' / '), actual);
+    if(!nuevo) return;
+    t.estado = nuevo;
+    try{ if(typeof save === 'function') save(); }catch(e){}
+    try{ if(typeof renderAll === 'function') renderAll(); else if(typeof renderTabla === 'function') renderTabla(); }catch(e){}
+    notify('✅ Estado → ' + nuevo);
+  };
+
+  var oldRenderTabla = window.renderTabla;
+  if(typeof oldRenderTabla === 'function' && !oldRenderTabla.hsV7Wrapped){
+    var wrapped = function(){
+      var r = oldRenderTabla.apply(this, arguments);
+      setTimeout(injectRegistroIcons, 0);
+      return r;
+    };
+    wrapped.hsV7Wrapped = true;
+    window.renderTabla = wrapped;
+  }
+
+  ready(function(){
+    injectCss();
+    setTimeout(injectRegistroIcons, 80);
+    setTimeout(injectRegistroIcons, 700);
+    setTimeout(injectRegistroIcons, 1800);
+  });
+  window.hsV7InjectRegistroIcons = injectRegistroIcons;
+  window.HS_V7_VERSION = HS_V7_VERSION;
+})();
+</script>
+<!-- ===================== FIN HS V7 PATCH ===================== -->
+
 </body>
 </html>
