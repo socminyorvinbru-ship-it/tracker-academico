@@ -743,6 +743,59 @@
     .modal{border-radius:16px;max-width:580px}
   }
 </style>
+
+<style id="hs-compact-ux-v2">
+/* ===== AJUSTE VISUAL V2: dashboard compacto + registros con accesos directos ===== */
+@media(max-width:768px){
+  .main{padding:8px 8px 76px!important}
+  #v-dashboard .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;margin-bottom:8px!important}
+  #v-dashboard .stat-card{padding:8px 9px!important;min-height:62px!important;border-radius:10px!important}
+  #v-dashboard .stat-label{font-size:8px!important;line-height:1.15!important;margin-bottom:3px!important;letter-spacing:.35px!important}
+  #v-dashboard .stat-val{font-size:16px!important;line-height:1.05!important;letter-spacing:-.4px!important;word-break:break-word!important}
+  #v-dashboard .stat-sub{font-size:8px!important;line-height:1.15!important;margin-top:2px!important;max-height:19px!important;overflow:hidden!important}
+  #v-dashboard .progress-wrap{padding:8px 10px!important;margin-bottom:8px!important;border-radius:10px!important}
+  #v-dashboard .progress-title{font-size:10px!important}.progress-pct{font-size:14px!important}.progress-bar{height:6px!important}
+  #daily-summary-box{padding:10px 11px!important;margin-bottom:8px!important;border-radius:10px!important}
+  #daily-summary-box .daily-title{font-size:12px!important;margin-bottom:6px!important}
+  #v-dashboard .daily-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+  #v-dashboard .daily-kpi{padding:7px 5px!important;border-radius:8px!important}
+  #v-dashboard .daily-kpi-val{font-size:13px!important}.daily-kpi-label{font-size:7.5px!important;line-height:1.1!important}
+  #v-dashboard #dash-filtros-rapidos{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin-bottom:8px!important}
+  #v-dashboard #dash-filtros-rapidos>div{padding:8px 5px!important;border-radius:10px!important;min-height:58px!important}
+  #v-dashboard #dash-filtros-rapidos>div div:nth-child(1){font-size:8px!important;line-height:1.1!important;margin-bottom:2px!important}
+  #v-dashboard #dash-filtros-rapidos>div div:nth-child(2){font-size:14px!important;line-height:1.05!important;letter-spacing:-.3px!important}
+  #v-dashboard #dash-filtros-rapidos>div div:nth-child(3){font-size:7.5px!important;line-height:1.1!important;margin-top:2px!important}
+  #hs-hoy-box{margin-bottom:8px!important}.reminder-item{padding:7px 9px!important;font-size:11px!important}
+}
+
+/* Registro: toolbar más limpio */
+#v-registro .table-wrap{border-radius:14px!important}
+#v-registro .table-toolbar{gap:6px!important;padding:8px 9px!important}
+#v-registro .tag-filters-wrap{padding:6px 9px!important}
+.hs-toolbar-extra{gap:5px!important;display:flex!important;overflow-x:auto!important;flex-wrap:nowrap!important;scrollbar-width:none;width:100%}
+.hs-toolbar-extra::-webkit-scrollbar{display:none}
+.hs-toolbar-extra .btn,.hs-toolbar-extra .filter-select{flex:0 0 auto!important;font-size:10px!important;padding:5px 8px!important;border-radius:8px!important}
+
+/* Nueva tarjeta de registro */
+.mcard.hs-card-v2{padding:0!important;overflow:hidden;border-radius:12px!important;background:linear-gradient(180deg,var(--bg2),#14141b)!important;border-color:var(--border)!important;margin-bottom:8px!important}
+.mcard.hs-card-v2.hs-bloqueado{border-color:#92400e!important;box-shadow:inset 3px 0 0 #f59e0b}
+.mcard.hs-card-v2.hs-espera{box-shadow:inset 3px 0 0 #3b82f6}
+.hs-card-tap{padding:10px 11px 7px;cursor:pointer;user-select:none}
+.hs-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.hs-card-title{min-width:0;flex:1}.hs-card-title strong{display:block;font-size:13.5px;line-height:1.15;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs-card-meta{display:flex;flex-wrap:wrap;gap:5px 8px;margin-top:3px;font-size:10px;color:var(--text3);line-height:1.2}.hs-card-meta span{white-space:nowrap}
+.hs-card-status{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;max-width:120px}.hs-card-status .pill{font-size:9.5px!important;padding:3px 8px!important}.hs-card-status .hs-chip{font-size:9.5px!important;padding:3px 7px!important}
+.hs-card-resume{display:grid;grid-template-columns:1.1fr .9fr .9fr;gap:5px;margin-top:8px}.hs-mini-box{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055);border-radius:8px;padding:5px 7px;min-width:0}.hs-mini-box .l{font-size:7.5px;text-transform:uppercase;letter-spacing:.35px;color:var(--text3);font-weight:800;line-height:1.1}.hs-mini-box .v{font-size:10.5px;color:var(--text);font-weight:750;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hs-mini-box .v.money{color:var(--accent3)}.hs-mini-box .v.saldo{color:var(--red)}
+.hs-card-flags{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}.hs-card-flags:empty{display:none}.hs-card-flags .hs-chip{font-size:9.5px!important;padding:3px 7px!important}
+.hs-card-progress{display:flex;align-items:center;gap:7px;margin-top:7px}.hs-card-progress .bar{height:5px;flex:1;background:var(--bg4);border-radius:20px;overflow:hidden}.hs-card-progress .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:20px}.hs-card-progress .pct{font-size:9px;color:var(--text3);min-width:34px;text-align:right}
+.hs-card-arrow{font-size:13px;color:var(--accent3);transition:transform .2s;margin-top:2px}.hs-card-v2.is-expanded .hs-card-arrow{transform:rotate(180deg)}
+.hs-quick-actions{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;padding:7px 8px 9px;border-top:1px solid rgba(255,255,255,.055);background:rgba(255,255,255,.018)}
+.hs-qa-btn{height:31px;border-radius:9px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;font-family:inherit;padding:0}.hs-qa-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.hs-qa-btn.danger{background:#2a0d0d;border-color:#7f1d1d;color:var(--red)}.hs-qa-btn:hover{filter:brightness(1.15)}
+.hs-expand-panel{display:none;padding:0 10px 10px}.hs-card-v2.is-expanded .hs-expand-panel{display:block}.hs-expand-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:2px}.hs-expand-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 8px}.hs-expand-box.full{grid-column:1/-1}.hs-expand-box .l{font-size:8px;color:var(--text3);font-weight:800;text-transform:uppercase;letter-spacing:.35px;margin-bottom:2px}.hs-expand-box .v{font-size:11.5px;font-weight:700;color:var(--text);line-height:1.25}.hs-expand-box .muted{font-size:10px;color:var(--text3);font-weight:500;line-height:1.35}
+.hs-card-v2.estado-cancelado{opacity:.58;border-style:dashed!important}.hs-card-v2.estado-cancelado .hs-card-title strong{text-decoration:line-through}
+@media(max-width:360px){.hs-card-resume{grid-template-columns:1fr 1fr}.hs-mini-box:nth-child(3){grid-column:1/-1}.hs-quick-actions{grid-template-columns:repeat(4,1fr)}#v-dashboard #dash-filtros-rapidos{grid-template-columns:repeat(2,1fr)!important}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -8803,7 +8856,7 @@ function abrirDrive(){
   window.hsExpandAll=function(){ if(DB&&DB.trabajos) DB.trabajos.forEach(t=>expandedCards.add(t.id)); if(typeof renderTabla==='function') renderTabla(); };
   window.hsToggleCard=function(id){ if(expandedCards.has(id)) expandedCards.delete(id); else expandedCards.add(id); if(typeof renderTabla==='function') renderTabla(); };
 
-  // Reemplazo de renderTabla: búsqueda inteligente + orden configurable + tarjetas contraídas.
+  // Reemplazo de renderTabla V2: tarjetas compactas, sin espacios vacíos y con accesos directos visibles.
   window.renderTabla = function(){
     ensureDB(); injectRegistroToolbar(); ensureStatusOptions();
     const q=(get('search-input')&&get('search-input').value)||'';
@@ -8831,6 +8884,7 @@ function abrirDrive(){
     const cont=get('contador-resultados'); if(cont) cont.textContent=(rows.length<(DB.trabajos||[]).length)?rows.length+' de '+DB.trabajos.length+' trabajos':'';
     const tbody=get('tabla-body'), mobile=get('mobile-cards');
     if(!rows.length){ if(tbody) tbody.innerHTML='<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--text3)">Sin resultados</td></tr>'; if(mobile) mobile.innerHTML='<div class="empty">Sin resultados</div>'; return; }
+
     if(tbody) tbody.innerHTML=rows.map((t,i)=>{
       const saldo=saldoTotal(t), total=precioTotal(t), cob=cobradoTotal(t), pct=total>0?Math.min(100,Math.round(cob/total*100)):0, s=typeof semaforo==='function'?semaforo(t):{cls:'s-blue',label:''};
       const riesgo=hsRiskBadge(t); const prox=(t.proximaAccion||{}).accion||''; const bloq=t.bloqueado&&t.bloqueado.activo;
@@ -8844,23 +8898,51 @@ function abrirDrive(){
         <td><div class="actions"><button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" title="Cliente">👤</button><button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button><button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button><button class="btn btn-ghost btn-sm" onclick="hsEnviarAcuerdo(${t.id})" title="Acuerdo WhatsApp" style="color:#25d366">🤝</button><button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button></div></td>
       </tr>`;
     }).join('');
+
     if(mobile) mobile.innerHTML=rows.map((t,i)=>{
-      const saldo=saldoTotal(t), total=precioTotal(t), cob=cobradoTotal(t), pct=total>0?Math.min(100,Math.round(cob/total*100)):0, s=typeof semaforo==='function'?semaforo(t):{cls:'s-blue',label:''};
+      const saldo=saldoTotal(t), total=precioTotal(t), cob=cobradoTotal(t), pct=total>0?Math.min(100,Math.round(cob/total*100)):0;
+      const s=typeof semaforo==='function'?semaforo(t):{cls:'s-blue',label:''};
       const expanded=expandedCards.has(t.id); const bloq=t.bloqueado&&t.bloqueado.activo; const espera=t.esperandoRespuesta&&t.esperandoRespuesta.activo; const prox=t.proximaAccion||{}; const prom=t.promesaPago||{}; const corr=t.correcciones||{};
-      const cls=['mcard', expanded?'':'collapsed', t.estado==='Cancelado'?'estado-cancelado':'', bloq?'hs-bloqueado':'', espera?'hs-espera':''].join(' ');
-      return `<div class="${cls}" id="mcard-hs-${t.id}">
-        <div class="mcard-header" style="cursor:pointer;user-select:none" onclick="hsToggleCard(${t.id})">
-          <div style="flex:1;min-width:0"><div class="mcard-nombre"><span>${esc(t.nombre)}</span></div>${t.alias?`<div class="mcard-cel" style="color:var(--accent3)">🏷️ ${esc(t.alias)}</div>`:''}<div class="mcard-cel">${t.cel?'📱 '+esc(t.cel)+' · ':''}${t.uni?'🏫 '+esc(t.uni):''}</div>${typeof renderTagsPills==='function'?`<div style="margin-top:5px;display:flex;gap:3px;flex-wrap:wrap">${renderTagsPills(t.tags)}</div>`:''}</div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">${typeof pillEstado==='function'?pillEstado(t.estado):esc(t.estado||'')}<span class="hs-chip">${money(saldo)} pend.</span><button class="mcard-collapse-btn" onclick="event.stopPropagation();hsToggleCard(${t.id})" style="font-size:16px">▾</button></div>
+      const tags = (typeof renderTagsPills==='function' && t.tags && t.tags.length) ? `<div class="hs-card-flags">${renderTagsPills(t.tags)}</div>` : '';
+      const flags = `${bloq?`<span class="hs-chip hs-warn">⛔ ${esc(t.bloqueado.motivo||'Bloqueado')}</span>`:''}${espera?`<span class="hs-chip" style="color:#60a5fa">💬 Sin respuesta${t.esperandoRespuesta.desde?' '+Math.max(0,dateDiff(t.esperandoRespuesta.desde)*-1)+'d':''}</span>`:''}${prox.accion?`<span class="hs-chip">✅ ${esc(prox.accion)}</span>`:''}${prom.fecha?`<span class="hs-chip hs-warn">💵 ${typeof fmt==='function'?fmt(prom.fecha):prom.fecha}</span>`:''}`;
+      const cancelCls=t.estado==='Cancelado'?'estado-cancelado':'';
+      return `<div class="mcard hs-card-v2 ${expanded?'is-expanded':'is-collapsed'} ${cancelCls} ${bloq?'hs-bloqueado':''} ${espera?'hs-espera':''}" id="mcard-hs-${t.id}">
+        <div class="hs-card-tap" onclick="hsToggleCard(${t.id})">
+          <div class="hs-card-top">
+            <div class="hs-card-title"><strong>${esc(t.nombre||'Sin nombre')}</strong>${t.alias?`<div class="hs-card-meta"><span>🏷️ ${esc(t.alias)}</span></div>`:''}<div class="hs-card-meta">${t.cel?`<span>📱 ${esc(t.cel)}</span>`:''}${t.uni?`<span>🏫 ${esc(t.uni)}</span>`:''}</div></div>
+            <div class="hs-card-status">${typeof pillEstado==='function'?pillEstado(t.estado):esc(t.estado||'')}<span class="hs-chip ${saldo>0?'hs-danger':'hs-ok'}">${saldo>0?money(saldo)+' pend.':'Pagado'}</span><span class="hs-card-arrow">▾</span></div>
+          </div>
+          ${tags}
+          <div class="hs-card-resume">
+            <div class="hs-mini-box"><div class="l">Tipo</div><div class="v">${esc(t.tipo||'—')}</div></div>
+            <div class="hs-mini-box"><div class="l">Entrega</div><div class="v">${t.fent&&typeof fmt==='function'?fmt(t.fent):'—'}</div></div>
+            <div class="hs-mini-box"><div class="l">Cobrado</div><div class="v money">${money(cob)} / ${money(total)}</div></div>
+          </div>
+          <div class="hs-card-flags">${flags}</div>
+          <div class="hs-card-progress"><div class="bar"><div class="fill" style="width:${pct}%"></div></div><span class="pct">${pct}%</span></div>
         </div>
-        <div class="hs-card-extra" style="display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 9px">${bloq?`<span class="hs-chip hs-warn">⛔ ${esc(t.bloqueado.motivo||'Bloqueado')}</span>`:''}${espera?`<span class="hs-chip" style="color:#60a5fa">💬 Sin respuesta ${t.esperandoRespuesta.desde?Math.max(0,dateDiff(t.esperandoRespuesta.desde)*-1):''}d</span>`:''}${prox.accion?`<span class="hs-chip">✅ ${esc(prox.accion)}</span>`:''}${prom.fecha?`<span class="hs-chip hs-warn">💵 Promesa ${typeof fmt==='function'?fmt(prom.fecha):prom.fecha}</span>`:''}</div>
-        <div class="mcard-body">
-          <div class="mcard-field"><div class="mcard-field-label">📋 Tipo</div><div class="mcard-field-val">${esc(t.tipo||'—')}</div></div><div class="mcard-field"><div class="mcard-field-label">📅 Entrega</div><div class="mcard-field-val">${t.fent&&typeof fmt==='function'?fmt(t.fent):'—'}</div></div>
-          <div class="mcard-field"><div class="mcard-field-label">💰 Total</div><div class="mcard-field-val" style="color:var(--accent3)">${money(total)}</div></div><div class="mcard-field"><div class="mcard-field-label">✅ Cobrado</div><div class="mcard-field-val" style="color:var(--green)">${money(cob)}</div></div>
-          <div class="mcard-field" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between"><div class="mcard-field-label">Saldo / avance</div><div style="font-size:11px;font-weight:800;color:${saldo>0?'var(--red)':'var(--green)'}">${saldo>0?money(saldo):'¡Pagado!'}</div></div><div class="mcard-progress"><div class="mcard-progress-fill" style="width:${pct}%"></div></div><div class="hs-mini" style="text-align:right">${pct}% cobrado · ${esc(s.label||'')}</div></div>
-          ${(corr.estado||corr.incluidas||corr.usadas)?`<div class="mcard-field" style="grid-column:1/-1"><div class="mcard-field-label">Correcciones</div><div class="mcard-field-val">${esc(corr.estado||'—')} · ${Number(corr.usadas)||0}/${Number(corr.incluidas)||0} usadas ${corr.vencimiento?'· vence '+(typeof fmt==='function'?fmt(corr.vencimiento):corr.vencimiento):''}</div></div>`:''}
+        <div class="hs-quick-actions" onclick="event.stopPropagation()">
+          <button class="hs-qa-btn" onclick="verCliente(${t.id})" title="Ficha cliente">👤</button>
+          <button class="hs-qa-btn primary" onclick="cobrarTrabajo(${t.id})" title="Cobrar / abonar">💰</button>
+          <button class="hs-qa-btn" onclick="editarTrabajo(${t.id})" title="Editar todo">✏️</button>
+          <button class="hs-qa-btn" onclick="hsEnviarAcuerdo(${t.id})" title="Acuerdo WhatsApp" style="color:#25d366">🤝</button>
+          <button class="hs-qa-btn" onclick="verHistorial(${t.id})" title="Historial de pagos/cuotas">📋</button>
+          <button class="hs-qa-btn" onclick="abrirBitacora(${t.id})" title="Bitácora / notas">📓</button>
+          ${t.cel?`<button class="hs-qa-btn" onclick="enviarWaRapidoTrabajo(${t.id})" title="WhatsApp rápido" style="color:#25d366">📲</button>`:`<button class="hs-qa-btn" disabled title="Sin celular">📲</button>`}
+          <button class="hs-qa-btn danger" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button>
         </div>
-        <div class="mcard-footer"><button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" title="Cliente">👤</button><button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button><button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button><button class="btn btn-ghost btn-sm" onclick="hsEnviarAcuerdo(${t.id})" style="color:#25d366" title="Acuerdo">🤝</button><button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" title="Historial">📋</button><button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" title="Bitácora">📓</button>${t.cel?`<button class="btn btn-ghost btn-sm" onclick="enviarWaRapidoTrabajo(${t.id})" style="color:#25d366" title="WhatsApp">📲</button>`:''}<button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button></div>
+        <div class="hs-expand-panel">
+          <div class="hs-expand-grid">
+            <div class="hs-expand-box"><div class="l">Total</div><div class="v" style="color:var(--accent3)">${money(total)}</div></div>
+            <div class="hs-expand-box"><div class="l">Saldo</div><div class="v" style="color:${saldo>0?'var(--red)':'var(--green)'}">${saldo>0?money(saldo):'Sin deuda'}</div></div>
+            <div class="hs-expand-box"><div class="l">Semáforo</div><div class="v"><span class="semaforo ${s.cls}"></span>${esc(s.label||'—')}</div></div>
+            <div class="hs-expand-box"><div class="l">Próxima acción</div><div class="v">${esc(prox.accion||'—')}</div><div class="muted">${prox.fecha?('Vence: '+(typeof fmt==='function'?fmt(prox.fecha):prox.fecha)):'Sin fecha'}${prox.responsable?' · '+esc(prox.responsable):''}</div></div>
+            ${bloq?`<div class="hs-expand-box full"><div class="l">Bloqueo</div><div class="v" style="color:var(--yellow)">${esc(t.bloqueado.motivo||'Bloqueado')}</div><div class="muted">Responsable: ${esc(t.bloqueado.responsable||'—')} ${t.bloqueado.desde?'· Desde '+(typeof fmt==='function'?fmt(t.bloqueado.desde):t.bloqueado.desde):''}</div></div>`:''}
+            ${prom.fecha?`<div class="hs-expand-box full"><div class="l">Promesa de pago</div><div class="v" style="color:var(--yellow)">${money(prom.monto||saldo)} · ${typeof fmt==='function'?fmt(prom.fecha):prom.fecha}</div><div class="muted">${esc(prom.nota||'Sin nota')} · Estado: ${esc(prom.estado||'pendiente')}</div></div>`:''}
+            ${(corr.estado||corr.incluidas||corr.usadas)?`<div class="hs-expand-box full"><div class="l">Correcciones post-entrega</div><div class="v">${esc(corr.estado||'—')} · ${Number(corr.usadas)||0}/${Number(corr.incluidas)||0} usadas</div><div class="muted">${corr.vencimiento?'Vence '+(typeof fmt==='function'?fmt(corr.vencimiento):corr.vencimiento):'Sin vencimiento'}</div></div>`:''}
+            ${(t.alcance&&t.alcance.incluye)?`<div class="hs-expand-box full"><div class="l">Alcance</div><div class="muted">Incluye: ${esc(t.alcance.incluye)}</div>${t.alcance.noIncluye?`<div class="muted">No incluye: ${esc(t.alcance.noIncluye)}</div>`:''}</div>`:''}
+          </div>
+        </div>
       </div>`;
     }).join('');
   };
@@ -9000,6 +9082,531 @@ function abrirDrive(){
     injectStyles(); ensureDB(); injectRegistroToolbar(); injectCobroFields(); injectTrabajoExtras(); ensureStatusOptions(); save(); renderAll();
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(startHS,100)); else setTimeout(startHS,100);
+})();
+</script>
+<style id="hs-density-patch">
+  /* ===== PATCH VISUAL V2: tarjetas más diferenciadas y dashboard más compacto ===== */
+  @media(max-width:768px){
+    #v-dashboard .stats-grid{grid-template-columns:1fr 1fr!important;gap:7px!important;margin-bottom:10px!important}
+    #v-dashboard .stat-card{padding:9px 10px!important;border-radius:10px!important}
+    #v-dashboard .stat-label{font-size:8px!important;margin-bottom:3px!important}
+    #v-dashboard .stat-val{font-size:16px!important}
+    #v-dashboard .stat-sub{font-size:9px!important;margin-top:1px!important;line-height:1.25}
+    #v-dashboard .progress-wrap{padding:11px 12px!important;margin-bottom:10px!important}
+    #v-dashboard #dash-filtros-rapidos{grid-template-columns:1fr 1fr!important;gap:7px!important;margin-bottom:10px!important}
+    #v-dashboard #dash-filtros-rapidos > div{padding:9px 10px!important;border-radius:10px!important}
+    #v-dashboard #dash-filtros-rapidos > div div:first-child{font-size:9px!important;margin-bottom:2px!important}
+    #v-dashboard #dash-filtros-rapidos > div div:nth-child(2){font-size:16px!important}
+    #v-dashboard #dash-filtros-rapidos > div div:nth-child(3){font-size:8px!important;margin-top:2px!important}
+    #v-dashboard .daily-summary{padding:12px!important;margin-bottom:10px!important}
+    #v-dashboard .daily-title{font-size:12px!important;margin-bottom:8px!important}
+    #v-dashboard .daily-grid{gap:6px!important}
+    #v-dashboard .daily-kpi{padding:8px!important}
+    #v-dashboard .daily-kpi-val{font-size:14px!important}
+    #v-dashboard .daily-kpi-label{font-size:8px!important}
+    #hs-hoy-box .reminder-item{padding:8px 10px!important}
+  }
+
+  .mcard{position:relative;overflow:hidden}
+  .mcard.hs-rich-card{padding:12px 12px 10px!important}
+  .mcard.hs-rich-card .mcard-header{margin-bottom:7px!important}
+  .mcard.hs-rich-card .mcard-nombre{font-size:14px!important}
+  .mcard.hs-rich-card .mcard-cel{font-size:10px!important;line-height:1.35}
+  .mcard.hs-rich-card.collapsed{background:linear-gradient(180deg,var(--bg2),#15151d)}
+  .mcard.hs-rich-card:not(.collapsed){background:linear-gradient(180deg,#171722,#111118);border-color:var(--accent);box-shadow:0 0 0 1px rgba(124,111,255,.12)}
+  .mcard.hs-rich-card:not(.collapsed)::after{content:'';position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+  .hs-compact-line{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:5px}
+  .hs-mini-main{display:flex;gap:5px;flex-wrap:wrap;min-width:0}
+  .hs-mini-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;background:var(--bg3);border:1px solid var(--border);color:var(--text2);line-height:1}
+  .hs-mini-pill strong{color:var(--text);font-weight:800}
+  .hs-compact-progress{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.05)}
+  .hs-compact-progress-top{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px}
+  .hs-compact-progress-top .l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+  .hs-compact-progress-top .v{font-size:11px;font-weight:800;color:var(--text)}
+  .hs-shortcuts-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:7px 0 1px}
+  .hs-shortcuts-row::-webkit-scrollbar{display:none}
+  .hs-shortcut-btn{min-width:34px;height:34px;border-radius:10px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);display:inline-flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex-shrink:0}
+  .hs-shortcut-btn:hover{border-color:var(--accent);color:var(--accent3);background:#242435}
+  .hs-shortcut-btn.alerta{border-color:#7c2d12;color:var(--orange)}
+  .hs-expand-only{display:block;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+  .mcard.collapsed .hs-expand-only{display:none!important}
+  .hs-expanded-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .hs-expanded-box{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:9px 10px}
+  .hs-expanded-box.full{grid-column:1/-1}
+  .hs-expanded-title{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;color:var(--accent3);text-transform:uppercase;letter-spacing:.45px;margin-bottom:6px}
+  .hs-expanded-txt{font-size:11px;color:var(--text2);line-height:1.45}
+  .hs-expanded-txt strong{color:var(--text)}
+  .hs-expanded-empty{color:var(--text3);font-style:italic}
+  .hs-rich-card .mcard-footer{padding-top:8px!important;margin-top:8px!important;gap:4px!important}
+  .hs-rich-card .mcard-footer .btn{width:34px!important;height:34px!important;border-radius:10px!important;font-size:14px!important}
+  .hs-meta-icons{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+  .hs-status-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .hs-collapsed-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+  .hs-collapsed-badges .hs-chip{font-size:9px!important;padding:2px 7px!important}
+</style>
+<script id="hs-registro-patch-v2">
+(function(){
+  function get2(id){ return document.getElementById(id); }
+  function esc2(s){ if(typeof esc==='function') return esc(s); return String(s==null?'':s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function money2(v){ return typeof money==='function' ? money(v||0) : 'S/'+Number(v||0).toFixed(0); }
+  function fmt2(v){ return (typeof fmt==='function' && v) ? fmt(v) : (v||'—'); }
+  function dateDiff2(v){ return typeof dateDiff==='function' ? dateDiff(v) : null; }
+  function tags2(t){ return typeof renderTagsPills==='function' ? renderTagsPills(t.tags) : ''; }
+  function sem2(t){ return typeof semaforo==='function' ? semaforo(t) : {cls:'s-blue',label:'Normal'}; }
+  function saldo2(t){ return typeof saldoTotal==='function' ? saldoTotal(t) : Math.max(0,(t.precio||0)-(t.cobrado||0)); }
+  function precio2(t){ return typeof precioTotal==='function' ? precioTotal(t) : Number(t.precio||0); }
+  function cobrado2(t){ return typeof cobradoTotal==='function' ? cobradoTotal(t) : Number(t.cobrado||0); }
+  function trunc(s,n){ s=String(s||''); return s.length>n ? s.slice(0,n-1)+'…' : s; }
+  function hasAdds(t){ return Array.isArray(t.adicionales) && t.adicionales.length; }
+  function addsText(t){ if(!hasAdds(t)) return ''; return t.adicionales.slice(0,3).map(a=>`${a.concepto||a.c||'Adicional'} ${a.monto?money2(a.monto):''}`.trim()).join(' · '); }
+  function cuotasText(t){
+    const c=Array.isArray(t.cuotas)?t.cuotas:[];
+    if(!c.length) return 'Sin cuotas registradas';
+    const pend=c.filter(x=> String(x.estado||'').toLowerCase()!=='pagado' && Number((x.monto||0)-(x.cobrado||0))>0).length;
+    const total=c.length;
+    const prox=c.filter(x=>x.f).sort((a,b)=>String(a.f).localeCompare(String(b.f)))[0];
+    return `${total} cuota${total!==1?'s':''} · ${pend} pendiente${pend!==1?'s':''}${prox?` · próxima ${fmt2(prox.f)}`:''}`;
+  }
+  function corrText(t){
+    const c=t.correcciones||{};
+    if(!(c.estado||c.incluidas||c.usadas||c.vencimiento)) return '';
+    return `${c.estado||'Seguimiento'} · ${Number(c.usadas)||0}/${Number(c.incluidas)||0} usadas${c.vencimiento?` · vence ${fmt2(c.vencimiento)}`:''}`;
+  }
+  function blockText(t){
+    const b=t.bloqueado||{}; const e=t.esperandoRespuesta||{}; const p=t.promesaPago||{};
+    const arr=[];
+    if(b.activo) arr.push(`Bloqueado: ${b.motivo||'sin motivo'}`);
+    if(e.activo) arr.push(`Sin respuesta${e.desde?` desde ${fmt2(e.desde)}`:''}`);
+    if(p.fecha && p.estado!=='cumplio') arr.push(`Promesa: ${fmt2(p.fecha)}${p.monto?` · ${money2(p.monto)}`:''}`);
+    return arr.join(' · ');
+  }
+  function alcanceText(t){
+    const a=t.alcance||{};
+    const arr=[];
+    if(a.incluye) arr.push(`Incluye: ${a.incluye}`);
+    if(a.noIncluye) arr.push(`No incluye: ${a.noIncluye}`);
+    return arr.join(' · ');
+  }
+  function proximaText(t){
+    const p=t.proximaAccion||{};
+    if(!(p.accion||p.fecha||p.responsable||p.nota)) return '';
+    return `${p.accion||'Sin acción'}${p.fecha?` · ${fmt2(p.fecha)}`:''}${p.responsable?` · ${p.responsable}`:''}${p.nota?` · ${p.nota}`:''}`;
+  }
+  window.hsOpenTrabajoShortcut = function(id, section){
+    const focusMap = {
+      proxima:'hs-prox-accion', tareas:'hs-prox-accion', bloqueo:'hs-bloqueado', alcance:'hs-alcance-incluye', adicionales:'hs-adicionales', correcciones:'hs-corr-estado'
+    };
+    if(section==='cuotas'){
+      if(typeof cobrarTrabajo==='function') cobrarTrabajo(id);
+      return;
+    }
+    if(typeof editarTrabajo==='function') editarTrabajo(id);
+    setTimeout(function(){
+      const target=get2(focusMap[section]||'hs-prox-accion');
+      if(target){
+        try{ target.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){}
+        try{ if(target.type==='checkbox') target.click(); else target.focus(); }catch(e){}
+      }
+    }, 220);
+  };
+
+  function actionBtn(icon,title,fn,extraCls){ return `<button class="hs-shortcut-btn ${extraCls||''}" onclick="event.stopPropagation();${fn}" title="${esc2(title)}">${icon}</button>`; }
+  function expandedBox(icon,title,text,full){ return `<div class="hs-expanded-box ${full?'full':''}"><div class="hs-expanded-title">${icon} ${esc2(title)}</div><div class="hs-expanded-txt">${text?esc2(text):'<span class="hs-expanded-empty">Sin datos</span>'}</div></div>`; }
+
+  const oldRenderTablaV2 = window.renderTabla;
+  window.renderTabla = function(){
+    if(typeof ensureDB==='function') ensureDB();
+    if(typeof injectRegistroToolbar==='function') injectRegistroToolbar();
+    if(typeof ensureStatusOptions==='function') ensureStatusOptions();
+    const q=(get2('search-input')&&get2('search-input').value)||'';
+    const fe=(get2('filter-estado')&&get2('filter-estado').value)||'';
+    const ft=(get2('filter-tipo')&&get2('filter-tipo').value)||'';
+    const fp=(get2('filter-prio')&&get2('filter-prio').value)||'';
+    const filtroExtra=window._dashFiltroExtra||null;
+    const tag = (typeof activeTagFilter!=='undefined') ? activeTagFilter : '';
+    const tipos=[...new Set((DB.trabajos||[]).map(t=>t.tipo).filter(Boolean))].sort();
+    const sel=get2('filter-tipo');
+    if(sel){ const cur=sel.value; sel.innerHTML='<option value="">Todos los tipos</option>'+tipos.map(t=>`<option ${t===cur?'selected':''}>${esc2(t)}</option>`).join(''); }
+    let rows=(DB.trabajos||[]).filter(t=>{
+      if(typeof hsMigrateTrabajo==='function') hsMigrateTrabajo(t);
+      if(q&&typeof smartMatch==='function'&&!smartMatch(t,q)) return false;
+      if(fe&&t.estado!==fe) return false;
+      if(ft&&t.tipo!==ft) return false;
+      if(fp&&(t.prioridad||'')!==fp) return false;
+      if(tag&&!(t.tags||[]).includes(tag)) return false;
+      if(filtroExtra==='saldo' && (t.estado==='Cancelado'||t.estado==='Pagado'||saldo2(t)<=0)) return false;
+      if(filtroExtra==='vencidos'){ const d=dateDiff2(t.fent); if(t.estado==='Pagado'||t.estado==='Cancelado'||d===null||d>=0) return false; }
+      return true;
+    });
+    if(typeof sortRows==='function') rows=sortRows(rows);
+    const badge=get2('filtro-activo-badge'), badgeLabel=get2('filtro-activo-label');
+    if(badge&&badgeLabel){ const hay=fe||ft||fp||q||tag||filtroExtra; badge.style.display=hay?'inline-flex':'none'; if(hay) badgeLabel.textContent='🔍 '+[filtroExtra,fe,ft,fp,q,tag].filter(Boolean).join(' · '); }
+    const cont=get2('contador-resultados'); if(cont) cont.textContent=(rows.length<(DB.trabajos||[]).length)?rows.length+' de '+DB.trabajos.length+' trabajos':'';
+    const tbody=get2('tabla-body'), mobile=get2('mobile-cards');
+    if(!rows.length){ if(tbody) tbody.innerHTML='<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--text3)">Sin resultados</td></tr>'; if(mobile) mobile.innerHTML='<div class="empty">Sin resultados</div>'; return; }
+
+    if(tbody) tbody.innerHTML=rows.map((t,i)=>{
+      const saldo=saldo2(t), total=precio2(t), cob=cobrado2(t), pct=total>0?Math.min(100,Math.round(cob/total*100)):0, s=sem2(t);
+      const riesgo=(typeof hsRiskBadge==='function')?hsRiskBadge(t):''; const prox=(t.proximaAccion||{}).accion||''; const bloq=t.bloqueado&&t.bloqueado.activo;
+      const extraIcons = `<div class="actions" style="margin-top:4px;flex-wrap:wrap">`
+        +`<button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'cuotas')" title="Cuotas">💳</button>`
+        +`<button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'proxima')" title="Próxima acción">✅</button>`
+        +`<button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'bloqueo')" title="Bloqueo">⛔</button>`
+        +`<button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'alcance')" title="Alcance">📐</button>`
+        +`<button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'adicionales')" title="Adicionales">➕</button>`
+        +`<button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'correcciones')" title="Correcciones">📝</button>`
+      +`</div>`;
+      return `<tr class="${t.estado==='Cancelado'?'estado-cancelado':''}">
+        <td style="color:var(--text3)">${i+1}</td>
+        <td><strong>${esc2(t.nombre)}</strong>${t.alias?`<br><span style="color:var(--accent3);font-size:10px">${esc2(t.alias)}</span>`:''}${t.cel?`<br><span style="color:var(--text3);font-size:10px">${esc2(t.cel)}</span>`:''}${tags2(t)}${extraIcons}</td>
+        <td style="color:var(--text2)">${esc2(t.tipo||'')}</td><td style="color:var(--text3)">${esc2(t.uni||'—')}</td><td>${fmt2(t.fent)}</td>
+        <td style="font-weight:600">${money2(total)}</td><td style="color:var(--green);font-weight:600">${money2(cob)}</td><td class="${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:700">${money2(saldo)}</td>
+        <td><div class="pct-bar"><div class="pct-fill" style="width:${pct}%"></div></div><span style="font-size:10px;color:var(--text3)">${pct}%</span></td>
+        <td>${typeof pillEstado==='function'?pillEstado(t.estado):esc2(t.estado||'')}${bloq?'<br><span class="hs-chip hs-warn">⛔ Bloqueado</span>':''}${riesgo}</td>
+        <td><span class="semaforo ${s.cls}"></span><span style="font-size:10px;color:var(--text3)">${esc2(s.label||'')}</span>${prox?`<br><span style="font-size:10px;color:var(--accent3)">✅ ${esc2(prox)}</span>`:''}</td>
+        <td><div class="actions"><button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" title="Cliente">👤</button><button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button><button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button><button class="btn btn-ghost btn-sm" onclick="hsEnviarAcuerdo(${t.id})" title="Acuerdo WhatsApp" style="color:#25d366">🤝</button><button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button></div></td>
+      </tr>`;
+    }).join('');
+
+    if(mobile) mobile.innerHTML=rows.map((t)=>{
+      const saldo=saldo2(t), total=precio2(t), cob=cobrado2(t), pct=total>0?Math.min(100,Math.round(cob/total*100)):0, s=sem2(t);
+      const expanded = (typeof expandedCards!=='undefined' && expandedCards.has(t.id));
+      const bloq=t.bloqueado&&t.bloqueado.activo; const espera=t.esperandoRespuesta&&t.esperandoRespuesta.activo; const prox=t.proximaAccion||{}; const prom=t.promesaPago||{};
+      const corr=t.correcciones||{}; const cls=['mcard','hs-rich-card',expanded?'':'collapsed',t.estado==='Cancelado'?'estado-cancelado':'',bloq?'hs-bloqueado':'',espera?'hs-espera':''].join(' ');
+      const cuotaCount = Array.isArray(t.cuotas)?t.cuotas.length:0;
+      const addCount = Array.isArray(t.adicionales)?t.adicionales.length:0;
+      const hasScope = !!((t.alcance||{}).incluye || (t.alcance||{}).noIncluye);
+      const badgeRow = `<div class="hs-collapsed-badges">`
+        + `${bloq?`<span class="hs-chip hs-warn">⛔ Bloqueado</span>`:''}`
+        + `${espera?`<span class="hs-chip" style="color:#60a5fa">💬 Espera</span>`:''}`
+        + `${prox.accion?`<span class="hs-chip">✅ ${esc2(trunc(prox.accion,16))}</span>`:''}`
+        + `${prom.fecha?`<span class="hs-chip hs-warn">💵 ${fmt2(prom.fecha)}</span>`:''}`
+        + `${corr.estado?`<span class="hs-chip">📝 ${esc2(trunc(corr.estado,14))}</span>`:''}`
+      + `</div>`;
+      return `<div class="${cls}" id="mcard-hs-v2-${t.id}">
+        <div class="mcard-header" style="cursor:pointer;user-select:none" onclick="hsToggleCard(${t.id})">
+          <div style="flex:1;min-width:0">
+            <div class="mcard-nombre"><span>${esc2(t.nombre)}</span></div>
+            ${t.alias?`<div class="mcard-cel" style="color:var(--accent3)">🏷️ ${esc2(t.alias)}</div>`:''}
+            <div class="mcard-cel">${t.cel?'📱 '+esc2(t.cel)+' · ':''}${t.uni?'🏫 '+esc2(t.uni):''}</div>
+            ${tags2(t)?`<div class="hs-meta-icons">${tags2(t)}</div>`:''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+            ${typeof pillEstado==='function'?pillEstado(t.estado):esc2(t.estado||'')}
+            <span class="hs-mini-pill"><strong>${money2(saldo)}</strong> pend.</span>
+            <button class="mcard-collapse-btn" onclick="event.stopPropagation();hsToggleCard(${t.id})" style="font-size:16px">▾</button>
+          </div>
+        </div>
+
+        <div class="hs-compact-line">
+          <div class="hs-mini-main">
+            <span class="hs-mini-pill">📋 ${esc2(trunc(t.tipo||'—',18))}</span>
+            <span class="hs-mini-pill">📅 ${fmt2(t.fent)}</span>
+          </div>
+          <span class="hs-mini-pill"><span class="hs-status-dot ${s.cls}"></span>${esc2(s.label||'')}</span>
+        </div>
+
+        ${badgeRow}
+
+        <div class="hs-compact-progress">
+          <div class="hs-compact-progress-top"><span class="l">Cobrado / Total</span><span class="v">${money2(cob)} / ${money2(total)}</span></div>
+          <div class="mcard-progress"><div class="mcard-progress-fill" style="width:${pct}%"></div></div>
+        </div>
+
+        <div class="hs-shortcuts-row">
+          ${actionBtn('👤','Cliente',`verCliente(${t.id})`)}
+          ${actionBtn('💰','Cobrar',`cobrarTrabajo(${t.id})`)}
+          ${actionBtn('✏️','Editar',`editarTrabajo(${t.id})`)}
+          ${actionBtn('💳','Cuotas / abonos',`hsOpenTrabajoShortcut(${t.id},'cuotas')`, cuotaCount?'':'alerta')}
+          ${actionBtn('✅','Tareas / próxima acción',`hsOpenTrabajoShortcut(${t.id},'proxima')`, prox.accion?'':'')}
+          ${actionBtn('⛔','Bloqueo / espera',`hsOpenTrabajoShortcut(${t.id},'bloqueo')`, bloq||espera?'alerta':'')}
+          ${actionBtn('📐','Alcance',`hsOpenTrabajoShortcut(${t.id},'alcance')`, hasScope?'':'')}
+          ${actionBtn('➕','Adicionales',`hsOpenTrabajoShortcut(${t.id},'adicionales')`, addCount?'alerta':'')}
+          ${actionBtn('📝','Correcciones',`hsOpenTrabajoShortcut(${t.id},'correcciones')`, corr.estado||corr.incluidas?'':'')}
+          ${t.cel?actionBtn('📲','WhatsApp',`enviarWaRapidoTrabajo(${t.id})`):''}
+          ${actionBtn('🤝','Acuerdo',`hsEnviarAcuerdo(${t.id})`)}
+        </div>
+
+        <div class="hs-expand-only">
+          <div class="hs-expanded-grid">
+            ${expandedBox('💳','Cuotas y pagos', cuotasText(t), false)}
+            ${expandedBox('✅','Próxima acción', proximaText(t), false)}
+            ${expandedBox('⛔','Bloqueo / espera / promesa', blockText(t), false)}
+            ${expandedBox('📝','Correcciones', corrText(t), false)}
+            ${expandedBox('📐','Alcance', alcanceText(t), true)}
+            ${expandedBox('➕','Adicionales', hasAdds(t)?addsText(t):'', true)}
+          </div>
+          <div class="mcard-footer">
+            <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" title="Cliente">👤</button>
+            <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button>
+            <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button>
+            <button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'cuotas')" title="Cuotas">💳</button>
+            <button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'proxima')" title="Próxima acción">✅</button>
+            <button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'bloqueo')" title="Bloqueo">⛔</button>
+            <button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'alcance')" title="Alcance">📐</button>
+            <button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'adicionales')" title="Adicionales">➕</button>
+            <button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'correcciones')" title="Correcciones">📝</button>
+            <button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" title="Historial">📋</button>
+            <button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" title="Bitácora">📓</button>
+            ${t.cel?`<button class="btn btn-ghost btn-sm" onclick="enviarWaRapidoTrabajo(${t.id})" style="color:#25d366" title="WhatsApp">📲</button>`:''}
+            <button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  };
+
+  function rerenderSoon(){ try{ if(typeof renderTabla==='function') renderTabla(); if(typeof renderDashboard==='function') renderDashboard(); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(rerenderSoon, 200); });
+  else setTimeout(rerenderSoon, 200);
+})();
+</script>
+<style id="hs-patch-v3-style">
+  /* ===== Patch V3: iconos 2 filas x 8 + colapso estable + proyecciones plegables ===== */
+  .hs-shortcuts-grid{
+    display:grid;
+    grid-template-columns:repeat(8,minmax(0,1fr));
+    gap:6px;
+    margin-top:8px;
+  }
+  .hs-shortcut-btn2{
+    width:100%; height:36px; border-radius:10px; border:1px solid var(--border2);
+    background:var(--bg3); color:var(--text2); display:flex; align-items:center; justify-content:center;
+    font-size:15px; cursor:pointer; font-family:inherit; line-height:1; min-width:0;
+  }
+  .hs-shortcut-btn2:hover{border-color:var(--accent); color:var(--accent3); background:#242435}
+  .hs-shortcut-btn2.warn{border-color:#7c2d12; color:var(--orange)}
+  .hs-shortcut-btn2.good{border-color:#166534; color:var(--green)}
+  .hs-rich-card .hs-shortcuts-grid{padding-bottom:2px}
+  .mcard.hs-rich-card .mcard-collapse-btn{font-size:18px!important; min-width:28px!important; min-height:28px!important; width:28px!important; height:28px!important; padding:0!important}
+  .mcard.hs-rich-card.collapsed .hs-expand-only{display:none!important}
+  .mcard.hs-rich-card:not(.collapsed) .hs-expand-only{display:block!important}
+  .mcard.hs-rich-card.collapsed .mcard-footer{display:none!important}
+  .mcard.hs-rich-card:not(.collapsed) .mcard-footer{display:flex!important}
+  .mcard.hs-rich-card .mcard-footer{flex-wrap:wrap!important}
+  .mcard.hs-rich-card .mcard-header{align-items:flex-start!important}
+  .mcard.hs-rich-card .mcard-cel{line-height:1.3}
+  .hs-proy-toggle-btn{
+    background:var(--bg3); border:1px solid var(--border2); color:var(--text2);
+    border-radius:8px; width:30px; height:30px; font-size:15px; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .hs-proy-toggle-btn:hover{border-color:var(--accent); color:var(--accent3)}
+  .hs-proy-collapsed > .hs-proy-body{display:none!important}
+  .hs-month-card .hs-month-head{cursor:pointer}
+  .hs-month-card.collapsed .hs-month-body{display:none!important}
+  .hs-month-arrow{transition:transform .2s ease}
+  .hs-month-card.collapsed .hs-month-arrow{transform:rotate(-90deg)}
+  @media(max-width:768px){
+    .hs-shortcuts-grid{grid-template-columns:repeat(8,minmax(0,1fr));gap:5px}
+    .hs-shortcut-btn2{height:34px;font-size:14px;border-radius:9px}
+    #v-proyeccion .table-toolbar{gap:6px!important}
+  }
+</style>
+<script id="hs-patch-v3-script">
+(function(){
+  function G(id){ return document.getElementById(id); }
+  function esc3(s){ if(typeof esc==='function') return esc(s); return String(s==null?'':s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function money3(v){ return typeof money==='function' ? money(v||0) : 'S/'+Number(v||0).toFixed(0); }
+  function fmt3(v){ return (typeof fmt==='function' && v) ? fmt(v) : (v||'—'); }
+  function saldo3(t){ return typeof saldoTotal==='function' ? saldoTotal(t) : Math.max(0,(t.precio||0)-(t.cobrado||0)); }
+  function precio3(t){ return typeof precioTotal==='function' ? precioTotal(t) : Number(t.precio||0); }
+  function cobrado3(t){ return typeof cobradoTotal==='function' ? cobradoTotal(t) : Number(t.cobrado||0); }
+  function sem3(t){ return typeof semaforo==='function' ? semaforo(t) : {cls:'s-blue',label:'Normal'}; }
+  function trunc3(s,n){ s=String(s||''); return s.length>n ? s.slice(0,n-1)+'…' : s; }
+  function tagHtml(t){ return typeof renderTagsPills==='function' ? renderTagsPills(t.tags) : ''; }
+  function chipState(icon,text,cls){ return `<span class="hs-chip ${cls||''}">${icon} ${esc3(text)}</span>`; }
+
+  window.hsExpandedCards = window.hsExpandedCards || new Set();
+  window.hsCollapseAll = function(){ window.hsExpandedCards.clear(); if(typeof renderTabla==='function') renderTabla(); };
+  window.hsExpandAll = function(){ (DB.trabajos||[]).forEach(t=>window.hsExpandedCards.add(t.id)); if(typeof renderTabla==='function') renderTabla(); };
+  window.hsToggleCard = function(id){ if(window.hsExpandedCards.has(id)) window.hsExpandedCards.delete(id); else window.hsExpandedCards.add(id); if(typeof renderTabla==='function') renderTabla(); };
+
+  window.hsOpenChecklistTrabajo = function(id){
+    const t=(DB.trabajos||[]).find(x=>x.id===id); if(!t) return;
+    const btn=document.getElementById('mnav-productividad') || document.querySelector('.nav-btn[onclick*="productividad"]');
+    try{ goView('productividad', btn, true); }catch(e){ try{ goView('productividad', btn); }catch(e2){} }
+    setTimeout(function(){ const inp=G('ck-search'); if(inp){ inp.value=t.nombre||''; if(typeof renderChecklist==='function') renderChecklist(); inp.focus(); } const cont=G('checklist-container'); if(cont) cont.scrollIntoView({behavior:'smooth', block:'start'}); }, 180);
+  };
+
+  window.hsOpenTrabajoShortcut = function(id, section){
+    const focusMap = {
+      proxima:'hs-prox-accion', tareas:'hs-prox-accion', checklist:'hs-prox-accion', bloqueo:'hs-bloqueado', promesa:'hs-promesa-fecha', alcance:'hs-alcance-incluye', adicionales:'hs-adicionales', correcciones:'hs-corr-estado', perfil:'hs-alias'
+    };
+    if(section==='cuotas'){ if(typeof cobrarTrabajo==='function') cobrarTrabajo(id); return; }
+    if(section==='checklist'){ hsOpenChecklistTrabajo(id); return; }
+    if(typeof editarTrabajo==='function') editarTrabajo(id);
+    setTimeout(function(){ const target=G(focusMap[section]||'hs-prox-accion'); if(target){ try{ target.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){} try{ if(target.type==='checkbox') target.click(); else target.focus(); }catch(e){} } }, 220);
+  };
+
+  window.hsOpenProjectionToggle = window.hsOpenProjectionToggle || {cuotas:false, meses:{}};
+  window.hsToggleProyCuotas = function(){ window.hsOpenProjectionToggle.cuotas = !window.hsOpenProjectionToggle.cuotas; if(typeof renderProyeccion==='function') renderProyeccion(); };
+  window.hsToggleProyMes = function(key){ window.hsOpenProjectionToggle.meses[key] = !window.hsOpenProjectionToggle.meses[key]; if(typeof renderProyeccionMensual==='function') renderProyeccionMensual(); };
+
+  function btn2(icon,title,fn,cls){ return `<button class="hs-shortcut-btn2 ${cls||''}" onclick="event.stopPropagation();${fn}" title="${esc3(title)}">${icon}</button>`; }
+  function cuotasSummary(t){
+    const c=Array.isArray(t.cuotas)?t.cuotas:[];
+    if(!c.length) return 'Sin cuotas';
+    const pend=c.filter(x=> String(x.estado||'').toLowerCase()!=='pagada' && String(x.estado||'').toLowerCase()!=='pagado' && Math.max(0,(Number(x.m)||Number(x.monto)||0)-((typeof cuotaAbonado==='function')?cuotaAbonado(x):(Number(x.cobrado)||0)))>0).length;
+    const prox=c.filter(x=>x.f).sort((a,b)=>String(a.f).localeCompare(String(b.f)))[0];
+    return `${c.length} cuota${c.length!==1?'s':''} · ${pend} pendiente${pend!==1?'s':''}${prox?` · ${fmt3(prox.f)}`:''}`;
+  }
+  function proximaSummary(t){ const p=t.proximaAccion||{}; if(!(p.accion||p.fecha||p.responsable||p.nota)) return 'Sin próxima acción'; return `${p.accion||''}${p.fecha?` · ${fmt3(p.fecha)}`:''}${p.responsable?` · ${p.responsable}`:''}${p.nota?` · ${p.nota}`:''}`; }
+  function blockSummary(t){ const b=t.bloqueado||{}, e=t.esperandoRespuesta||{}, p=t.promesaPago||{}; const arr=[]; if(b.activo) arr.push(`Bloqueado: ${b.motivo||'sin motivo'}`); if(e.activo) arr.push(`Espera: ${e.motivo||'sin detalle'}${e.desde?` · ${fmt3(e.desde)}`:''}`); if(p.fecha && p.estado!=='cumplio') arr.push(`Promesa: ${fmt3(p.fecha)}${p.monto?` · ${money3(p.monto)}`:''}`); return arr.join(' · ') || 'Sin bloqueo'; }
+  function alcanceSummary(t){ const a=t.alcance||{}; const arr=[]; if(a.incluye) arr.push(`Incluye: ${a.incluye}`); if(a.noIncluye) arr.push(`No incluye: ${a.noIncluye}`); return arr.join(' · ') || 'Sin alcance detallado'; }
+  function addSummary(t){ const a=Array.isArray(t.adicionales)?t.adicionales:[]; if(!a.length) return 'Sin adicionales'; return a.slice(0,3).map(x=>`${x.concepto||x.c||'Adicional'}${x.monto?` ${money3(x.monto)}`:''}`).join(' · '); }
+  function corrSummary(t){ const c=t.correcciones||{}; if(!(c.estado||c.incluidas||c.usadas||c.vencimiento)) return 'Sin correcciones'; return `${c.estado||'Seguimiento'} · ${Number(c.usadas)||0}/${Number(c.incluidas)||0}${c.vencimiento?` · ${fmt3(c.vencimiento)}`:''}`; }
+
+  window.renderTabla = function(){
+    if(typeof ensureDB==='function') ensureDB();
+    if(typeof injectRegistroToolbar==='function') injectRegistroToolbar();
+    if(typeof ensureStatusOptions==='function') ensureStatusOptions();
+    const q=(G('search-input')&&G('search-input').value)||'';
+    const fe=(G('filter-estado')&&G('filter-estado').value)||'';
+    const ft=(G('filter-tipo')&&G('filter-tipo').value)||'';
+    const fp=(G('filter-prio')&&G('filter-prio').value)||'';
+    const filtroExtra=window._dashFiltroExtra||null;
+    const tag = (typeof activeTagFilter!=='undefined') ? activeTagFilter : '';
+    const tipos=[...new Set((DB.trabajos||[]).map(t=>t.tipo).filter(Boolean))].sort();
+    const sel=G('filter-tipo');
+    if(sel){ const cur=sel.value; sel.innerHTML='<option value="">Todos los tipos</option>'+tipos.map(t=>`<option ${t===cur?'selected':''}>${esc3(t)}</option>`).join(''); }
+    let rows=(DB.trabajos||[]).filter(t=>{
+      if(typeof hsMigrateTrabajo==='function') hsMigrateTrabajo(t);
+      if(q&&typeof smartMatch==='function'&&!smartMatch(t,q)) return false;
+      if(fe&&t.estado!==fe) return false;
+      if(ft&&t.tipo!==ft) return false;
+      if(fp&&(t.prioridad||'')!==fp) return false;
+      if(tag&&!(t.tags||[]).includes(tag)) return false;
+      if(filtroExtra==='saldo' && (t.estado==='Cancelado'||t.estado==='Pagado'||saldo3(t)<=0)) return false;
+      if(filtroExtra==='vencidos'){ const d=typeof dateDiff==='function' ? dateDiff(t.fent) : null; if(t.estado==='Pagado'||t.estado==='Cancelado'||d===null||d>=0) return false; }
+      return true;
+    });
+    if(typeof sortRows==='function') rows=sortRows(rows);
+    const badge=G('filtro-activo-badge'), badgeLabel=G('filtro-activo-label');
+    if(badge&&badgeLabel){ const hay=fe||ft||fp||q||tag||filtroExtra; badge.style.display=hay?'inline-flex':'none'; if(hay) badgeLabel.textContent='🔍 '+[filtroExtra,fe,ft,fp,q,tag].filter(Boolean).join(' · '); }
+    const cont=G('contador-resultados'); if(cont) cont.textContent=(rows.length<(DB.trabajos||[]).length)?rows.length+' de '+DB.trabajos.length+' trabajos':'';
+    const tbody=G('tabla-body'), mobile=G('mobile-cards');
+    if(!rows.length){ if(tbody) tbody.innerHTML='<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--text3)">Sin resultados</td></tr>'; if(mobile) mobile.innerHTML='<div class="empty">Sin resultados</div>'; return; }
+
+    if(tbody) tbody.innerHTML=rows.map((t,i)=>{
+      const saldo=saldo3(t), total=precio3(t), cob=cobrado3(t), pct=total>0?Math.min(100,Math.round(cob/total*100)):0, s=sem3(t); const bloq=t.bloqueado&&t.bloqueado.activo;
+      return `<tr class="${t.estado==='Cancelado'?'estado-cancelado':''}"><td style="color:var(--text3)">${i+1}</td><td><strong>${esc3(t.nombre)}</strong>${t.alias?`<br><span style="color:var(--accent3);font-size:10px">${esc3(t.alias)}</span>`:''}${t.cel?`<br><span style="color:var(--text3);font-size:10px">${esc3(t.cel)}</span>`:''}${tagHtml(t)}</td><td style="color:var(--text2)">${esc3(t.tipo||'')}</td><td style="color:var(--text3)">${esc3(t.uni||'—')}</td><td>${fmt3(t.fent)}</td><td style="font-weight:600">${money3(total)}</td><td style="color:var(--green);font-weight:600">${money3(cob)}</td><td class="${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:700">${money3(saldo)}</td><td><div class="pct-bar"><div class="pct-fill" style="width:${pct}%"></div></div><span style="font-size:10px;color:var(--text3)">${pct}%</span></td><td>${typeof pillEstado==='function'?pillEstado(t.estado):esc3(t.estado||'')}${bloq?'<br><span class="hs-chip hs-warn">⛔ Bloqueado</span>':''}</td><td><span class="semaforo ${s.cls}"></span><span style="font-size:10px;color:var(--text3)">${esc3(s.label||'')}</span></td><td><div class="actions" style="flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" title="Cliente">👤</button><button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button><button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button><button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'cuotas')" title="Cuotas">💳</button><button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'proxima')" title="Próxima">✅</button><button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'bloqueo')" title="Bloqueo">⛔</button><button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'alcance')" title="Alcance">📐</button><button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'adicionales')" title="Adicionales">➕</button><button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'correcciones')" title="Correcciones">📝</button><button class="btn btn-ghost btn-sm" onclick="hsOpenChecklistTrabajo(${t.id})" title="Checklist">📌</button><button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'promesa')" title="Promesa">💵</button><button class="btn btn-ghost btn-sm" onclick="hsOpenTrabajoShortcut(${t.id},'perfil')" title="Perfil">🏷️</button><button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" title="Historial">📋</button><button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" title="Bitácora">📓</button><button class="btn btn-ghost btn-sm" onclick="${t.cel?'enviarWaRapidoTrabajo('+t.id+')':'verCliente('+t.id+')'}" title="WhatsApp">📲</button><button class="btn btn-ghost btn-sm" onclick="hsEnviarAcuerdo(${t.id})" title="Acuerdo">🤝</button><button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button></div></td></tr>`;
+    }).join('');
+
+    if(mobile) mobile.innerHTML = rows.map(t=>{
+      const saldo=saldo3(t), total=precio3(t), cob=cobrado3(t), pct=total>0?Math.min(100,Math.round(cob/total*100)):0, s=sem3(t);
+      const expanded = window.hsExpandedCards.has(t.id);
+      const bloq=t.bloqueado&&t.bloqueado.activo, espera=t.esperandoRespuesta&&t.esperandoRespuesta.activo, prom=t.promesaPago||{}, corr=t.correcciones||{}, prox=t.proximaAccion||{};
+      const cls=['mcard','hs-rich-card', expanded?'':'collapsed', t.estado==='Cancelado'?'estado-cancelado':''].join(' ');
+      const badgeRow = `<div class="hs-collapsed-badges">${bloq?chipState('⛔','Bloqueado','hs-warn'):''}${espera?chipState('💬','Espera',''):''}${prox.accion?chipState('✅',trunc3(prox.accion,14),''):''}${prom.fecha?chipState('💵',fmt3(prom.fecha),'hs-warn'):''}${corr.estado?chipState('📝',trunc3(corr.estado,12),''):''}</div>`;
+      const qCount = Array.isArray(t.cuotas)?t.cuotas.length:0, addCount=Array.isArray(t.adicionales)?t.adicionales.length:0;
+      return `<div class="${cls}" id="mcard-v3-${t.id}">
+        <div class="mcard-header">
+          <div style="flex:1;min-width:0;cursor:pointer" onclick="hsToggleCard(${t.id})">
+            <div class="mcard-nombre"><span>${esc3(t.nombre)}</span></div>
+            ${t.alias?`<div class="mcard-cel" style="color:var(--accent3)">🏷️ ${esc3(t.alias)}</div>`:''}
+            <div class="mcard-cel">${t.cel?'📱 '+esc3(t.cel)+' · ':''}${t.uni?'🏫 '+esc3(t.uni):''}</div>
+            ${tagHtml(t)?`<div class="hs-meta-icons">${tagHtml(t)}</div>`:''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+            ${typeof pillEstado==='function'?pillEstado(t.estado):esc3(t.estado||'')}
+            <span class="hs-mini-pill"><strong>${money3(saldo)}</strong> pend.</span>
+            <button class="mcard-collapse-btn" onclick="event.stopPropagation();hsToggleCard(${t.id})" title="${expanded?'Contraer':'Expandir'}">▾</button>
+          </div>
+        </div>
+        <div class="hs-compact-line">
+          <div class="hs-mini-main">
+            <span class="hs-mini-pill">📋 ${esc3(trunc3(t.tipo||'—',18))}</span>
+            <span class="hs-mini-pill">📅 ${fmt3(t.fent)}</span>
+          </div>
+          <span class="hs-mini-pill"><span class="hs-status-dot ${s.cls}"></span>${esc3(s.label||'')}</span>
+        </div>
+        ${badgeRow}
+        <div class="hs-compact-progress">
+          <div class="hs-compact-progress-top"><span class="l">Cobrado / Total</span><span class="v">${money3(cob)} / ${money3(total)}</span></div>
+          <div class="mcard-progress"><div class="mcard-progress-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div class="hs-shortcuts-grid">
+          ${btn2('👤','Cliente',`verCliente(${t.id})`)}
+          ${btn2('💰','Cobrar',`cobrarTrabajo(${t.id})`)}
+          ${btn2('✏️','Editar',`editarTrabajo(${t.id})`)}
+          ${btn2('💳','Cuotas',`hsOpenTrabajoShortcut(${t.id},'cuotas')`, qCount?'':'warn')}
+          ${btn2('✅','Próxima acción',`hsOpenTrabajoShortcut(${t.id},'proxima')`, prox.accion?'good':'')}
+          ${btn2('📌','Checklist',`hsOpenChecklistTrabajo(${t.id})`)}
+          ${btn2('⛔','Bloqueo',`hsOpenTrabajoShortcut(${t.id},'bloqueo')`, bloq||espera?'warn':'')}
+          ${btn2('💵','Promesa',`hsOpenTrabajoShortcut(${t.id},'promesa')`, prom.fecha && prom.estado!=='cumplio'?'warn':'')}
+          ${btn2('📐','Alcance',`hsOpenTrabajoShortcut(${t.id},'alcance')`)}
+          ${btn2('➕','Adicionales',`hsOpenTrabajoShortcut(${t.id},'adicionales')`, addCount?'warn':'')}
+          ${btn2('📝','Correcciones',`hsOpenTrabajoShortcut(${t.id},'correcciones')`, corr.estado||corr.incluidas?'good':'')}
+          ${btn2('🏷️','Perfil/alias',`hsOpenTrabajoShortcut(${t.id},'perfil')`)}
+          ${btn2('📋','Historial',`verHistorial(${t.id})`)}
+          ${btn2('📓','Bitácora',`abrirBitacora(${t.id})`)}
+          ${btn2('📲','WhatsApp',`${t.cel?'enviarWaRapidoTrabajo('+t.id+')':'verCliente('+t.id+')'}`)}
+          ${btn2('🤝','Acuerdo',`hsEnviarAcuerdo(${t.id})`)}
+        </div>
+        <div class="hs-expand-only">
+          <div class="hs-expanded-grid">
+            <div class="hs-expanded-box"><div class="hs-expanded-title">💳 Cuotas y pagos</div><div class="hs-expanded-txt">${esc3(cuotasSummary(t))}</div></div>
+            <div class="hs-expanded-box"><div class="hs-expanded-title">✅ Próxima acción</div><div class="hs-expanded-txt">${esc3(proximaSummary(t))}</div></div>
+            <div class="hs-expanded-box"><div class="hs-expanded-title">⛔ Bloqueo / promesa</div><div class="hs-expanded-txt">${esc3(blockSummary(t))}</div></div>
+            <div class="hs-expanded-box"><div class="hs-expanded-title">📝 Correcciones</div><div class="hs-expanded-txt">${esc3(corrSummary(t))}</div></div>
+            <div class="hs-expanded-box full"><div class="hs-expanded-title">📐 Alcance</div><div class="hs-expanded-txt">${esc3(alcanceSummary(t))}</div></div>
+            <div class="hs-expanded-box full"><div class="hs-expanded-title">➕ Adicionales</div><div class="hs-expanded-txt">${esc3(addSummary(t))}</div></div>
+          </div>
+          <div class="mcard-footer">
+            <button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})">👤</button>
+            <button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})">💰</button>
+            <button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})">✏️</button>
+            <button class="btn btn-ghost btn-sm" onclick="eliminarTrabajo(${t.id})">✕</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  };
+
+  const oldRP3 = window.renderProyeccion;
+  window.renderProyeccion = function(){
+    if(typeof oldRP3==='function') oldRP3.apply(this, arguments);
+    const tabla = G('cuotas-tabla'); if(!tabla) return;
+    const wrap = tabla.closest('.table-wrap'); if(!wrap) return;
+    const toolbar = wrap.querySelector('.table-toolbar');
+    if(toolbar && !toolbar.dataset.hsArrow){
+      toolbar.dataset.hsArrow='1';
+      const right = toolbar.querySelector('div') || toolbar;
+      right.insertAdjacentHTML('beforeend', `<button class="hs-proy-toggle-btn" id="hs-proy-toggle-cuotas" onclick="hsToggleProyCuotas()" title="Contraer/expandir">▾</button>`);
+    }
+    const collapsed = !!window.hsOpenProjectionToggle.cuotas;
+    tabla.style.display = collapsed ? 'none' : '';
+    const btn = G('hs-proy-toggle-cuotas'); if(btn) btn.textContent = collapsed ? '▸' : '▾';
+  };
+
+  const oldRPM3 = window.renderProyeccionMensual;
+  window.renderProyeccionMensual = function(){
+    if(typeof oldRPM3==='function') oldRPM3.apply(this, arguments);
+    const cont = G('proy-meses-content'); if(!cont) return;
+    Array.from(cont.children).forEach((card, idx)=>{
+      card.classList.add('hs-month-card');
+      const head = card.children[0]; const body = card.children[1];
+      if(!head || !body) return;
+      head.classList.add('hs-month-head'); body.classList.add('hs-month-body');
+      const key = head.textContent.trim().slice(0,40)+'-'+idx;
+      card.dataset.hsKey = key;
+      if(!head.querySelector('.hs-month-arrow')){
+        const arrow = document.createElement('button');
+        arrow.className='hs-proy-toggle-btn hs-month-arrow'; arrow.type='button'; arrow.textContent='▾';
+        arrow.onclick=function(ev){ ev.stopPropagation(); hsToggleProyMes(key); };
+        head.appendChild(arrow);
+        head.addEventListener('click', function(){ hsToggleProyMes(key); });
+      }
+      const coll = !!window.hsOpenProjectionToggle.meses[key];
+      card.classList.toggle('collapsed', coll);
+      const btn = head.querySelector('.hs-month-arrow'); if(btn) btn.textContent='▾';
+    });
+  };
+
+  function rerenderV3(){ try{ if(typeof renderTabla==='function') renderTabla(); if(typeof renderProyeccion==='function') renderProyeccion(); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', ()=>setTimeout(rerenderV3, 220));
+  else setTimeout(rerenderV3, 220);
 })();
 </script>
 </body>
