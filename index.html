@@ -41543,5 +41543,67 @@ body{font-size:11.2px!important;letter-spacing:-.015em!important}
 </script>
 <!-- ===================== FIN HS V16 + V17 REPARADO ===================== -->
 
+
+<!-- ===================== HS V19 REVISIÓN FINAL / GUARDIA ANTI-PDF ACCIDENTAL ===================== -->
+<script>
+(function(){
+  'use strict';
+  if(window.__hsV19RevisionFinal) return;
+  window.__hsV19RevisionFinal=true;
+  function limpiarBarraPDFAccidental(){
+    try{
+      var nodes=[].slice.call(document.querySelectorAll('body > .toolbar, body > .pdf-toolbar, body > .print-toolbar, body > div'));
+      nodes.forEach(function(el){
+        var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
+        var esBarraPDF=/Imprimir\s*\/\s*Guardar\s*PDF/i.test(txt) && /Cerrar/i.test(txt) && !el.closest('.modal,.modal-overlay,.factura-wrap');
+        if(esBarraPDF){
+          el.setAttribute('data-hs-v19-removed-pdfbar','true');
+          el.style.display='none';
+        }
+      });
+      document.documentElement.classList.remove('print-mode','pdf-mode','report-mode');
+      document.body && document.body.classList.remove('print-mode','pdf-mode','report-mode');
+    }catch(e){ try{ console.warn('HS V19 limpieza PDF accidental:', e); }catch(_){} }
+  }
+  function limpiarEstadoListoResidual(){
+    try{
+      if(!window.DB || !Array.isArray(DB.trabajos)) return;
+      var changed=false;
+      DB.trabajos.forEach(function(t){
+        if(t && String(t.estado||'').trim().toLowerCase()==='listo'){
+          t.estado='Terminado'; changed=true;
+        }
+      });
+      if(changed){
+        if(typeof saveDB==='function') saveDB();
+        if(typeof renderDB==='function') renderDB();
+      }
+    }catch(e){}
+  }
+  function revisionFinal(){
+    limpiarBarraPDFAccidental();
+    limpiarEstadoListoResidual();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', revisionFinal);
+  else revisionFinal();
+  setTimeout(revisionFinal, 250);
+  setTimeout(revisionFinal, 1000);
+  window.hs19RevisionFinal=function(){
+    revisionFinal();
+    return {
+      ok:true,
+      version:'V19 revisión final estable',
+      assistantV17:!!window.hs17Review,
+      assistantInfo: window.hs17Review ? window.hs17Review() : null,
+      pdfBarVisible:[].slice.call(document.querySelectorAll('body *')).some(function(el){
+        var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
+        return /Imprimir\s*\/\s*Guardar\s*PDF/i.test(txt) && el.offsetParent!==null;
+      })
+    };
+  };
+})();
+</script>
+<!-- ===================== FIN HS V19 REVISIÓN FINAL ===================== -->
+
 </body>
 </html>
