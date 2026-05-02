@@ -10355,5 +10355,1896 @@ body{font-size:11.2px!important;letter-spacing:-.015em!important}
 })();
 </script>
 
+<!-- ===== HS SUPER PATCH: cerebro offline ampliado V4 ===== -->
+<style id="hs-super-offline-brain-v4-css">
+  .hsb-card{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin:6px 0;font-size:10.8px;line-height:1.45}
+  .hsb-card h4{font-size:10px;text-transform:uppercase;letter-spacing:.45px;color:var(--accent3);margin:0 0 5px;font-weight:800}
+  .hsb-row{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid rgba(255,255,255,.055);padding:4px 0;align-items:flex-start}
+  .hsb-row:last-child{border-bottom:none}
+  .hsb-row b{color:var(--text);font-weight:800}
+  .hsb-row small{display:block;color:var(--text3);font-size:9px;margin-top:1px}
+  .hsb-money{font-weight:800;color:var(--accent3);white-space:nowrap;text-align:right}
+  .hsb-danger{color:var(--red)!important}.hsb-warn{color:var(--yellow)!important}.hsb-ok{color:var(--green)!important}.hsb-blue{color:#60a5fa!important}
+  .hsb-chipline{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+  .hsb-chipline span{font-size:8.6px;border-radius:999px;padding:2px 6px;background:var(--bg4);border:1px solid var(--border2);color:var(--text2);font-weight:700}
+  .hsb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:5px;margin:6px 0}
+  .hsb-kpi{background:rgba(124,111,255,.09);border:1px solid rgba(124,111,255,.24);border-radius:8px;padding:7px;text-align:center}
+  .hsb-kpi b{display:block;font-size:13px;color:var(--accent3);line-height:1.1}.hsb-kpi span{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.35px;font-weight:700}
+  .hsb-tip{background:rgba(124,111,255,.075);border-left:3px solid var(--accent);border-radius:7px;padding:7px 8px;margin-top:6px;color:var(--text2);font-size:10px;line-height:1.45}
+  .hsb-action{background:rgba(34,197,94,.075);border-left:3px solid var(--green);border-radius:7px;padding:7px 8px;margin-top:6px;color:var(--text2);font-size:10px;line-height:1.45}
+  .hsb-wa{white-space:pre-wrap;background:#052e16;border:1px solid #166534;border-radius:8px;padding:8px 10px;color:#d1fae5;font-size:11px;line-height:1.55}
+  .hsb-score{font-size:8.5px;color:var(--text3);margin-left:4px}
+  .hsb-muted{color:var(--text3)}
+  .hsb-help-title{font-size:12px;font-weight:900;color:var(--accent3);margin-bottom:6px}
+  .hs-ai-offline-panel .hsb-boost{margin-top:6px;display:flex;gap:4px;flex-wrap:wrap}
+  .hs-ai-offline-panel .hsb-boost button{font-size:8.5px!important;padding:3px 6px!important}
+  @media(max-width:768px){.hsb-card{font-size:10.2px;padding:7px 8px}.hsb-row{gap:5px}.hsb-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hsb-kpi b{font-size:12px}}
+</style>
+<script id="hs-super-offline-brain-v4">
+(function(){
+  'use strict';
+
+  // =========================================================
+  // HS SUPER OFFLINE BRAIN V4
+  // Capa adicional encima del asistente existente.
+  // No borra DB, no toca formularios base, no cambia render principal.
+  // Intercepta el envío del chat, entiende más frases y delega las
+  // modificaciones al motor original cuando corresponde.
+  // =========================================================
+
+  var HSB_VERSION = '4.0.0-offline-peru';
+  var HSB_ORIGINAL_AI_ENVIAR = window.aiEnviar;
+  var HSB_LAST_CONTEXT = null;
+  var HSB_MAX_ROWS = 14;
+
+  var HSB_INTENTS = {
+    HELP: 'help',
+    GREETING: 'greeting',
+    THANKS: 'thanks',
+    SUMMARY: 'summary',
+    TODAY: 'today',
+    TOMORROW: 'tomorrow',
+    WEEK: 'week',
+    MONTH: 'month',
+    OVERDUE: 'overdue',
+    UPCOMING: 'upcoming',
+    DEBTS: 'debts',
+    PAID: 'paid',
+    ACTIVE: 'active',
+    CLIENT: 'client',
+    SEARCH: 'search',
+    PRIORITY: 'priority',
+    PLAN: 'plan',
+    WHATSAPP: 'whatsapp',
+    STATUS: 'status',
+    QUOTAS: 'quotas',
+    CREATE: 'create',
+    PAYMENT: 'payment',
+    STATUS_CHANGE: 'status_change',
+    DELETE: 'delete',
+    REMINDER: 'reminder',
+    NOTE: 'note',
+    TASK: 'task',
+    QUOTA_ADD: 'quota_add',
+    QUOTA_PAY: 'quota_pay',
+    OPEN_VIEW: 'open_view',
+    EXPORT: 'export',
+    UNKNOWN: 'unknown'
+  };
+
+  // =========================================================
+  // Diccionario de lenguaje natural: se dejó amplio y separado
+  // para que el asistente reconozca variantes orales, errores,
+  // frases peruanas y comandos incompletos sin alterar el motor.
+  // =========================================================
+  var HSB_LEXICON = {
+    help: [
+      'ayuda',
+      'ayudame',
+      'ayúdame',
+      'comandos',
+      'instrucciones',
+      'manual',
+      'que puedes hacer',
+      'qué puedes hacer',
+      'como te uso',
+      'cómo te uso',
+      'como funciona',
+      'cómo funciona',
+      'capacidades',
+      'ejemplos',
+      'guia',
+      'guía',
+      'explícame',
+      'explicame'
+    ],
+    greeting: [
+      'hola',
+      'ola',
+      'buen dia',
+      'buen día',
+      'buenos dias',
+      'buenos días',
+      'buenas',
+      'buenas tardes',
+      'buenas noches',
+      'hey',
+      'mano',
+      'causa',
+      'amigo',
+      'bro'
+    ],
+    thanks: [
+      'gracias',
+      'gracia',
+      'thanks',
+      'listo',
+      'ok',
+      'okay',
+      'okey',
+      'perfecto',
+      'excelente',
+      'genial',
+      'ya',
+      'bien ahi',
+      'bien ahí'
+    ],
+    create: [
+      'agrega',
+      'agregar',
+      'agrégame',
+      'agregame',
+      'crea',
+      'crear',
+      'créame',
+      'creame',
+      'nuevo',
+      'nueva',
+      'registra',
+      'registrar',
+      'anota',
+      'anotar',
+      'apunta',
+      'apuntar',
+      'agendame',
+      'agéndame',
+      'agenda',
+      'ponme',
+      'meteme',
+      'méteme',
+      'mete',
+      'añade',
+      'añadir',
+      'añádeme',
+      'sumame',
+      'súmame',
+      'ingresa',
+      'cargame',
+      'cárgame',
+      'abre trabajo',
+      'crear trabajo',
+      'crear tarea',
+      'nueva tarea',
+      'nuevo trabajo',
+      'hay que hacer',
+      'tengo que hacer',
+      'me encargaron',
+      'me pidieron'
+    ],
+    payment: [
+      'cobre',
+      'cobré',
+      'cobrar',
+      'cobro',
+      'cobró',
+      'cobro de',
+      'registrar cobro',
+      'registra cobro',
+      'me pagaron',
+      'me pago',
+      'me pagó',
+      'pagaron',
+      'pago de',
+      'pagó',
+      'abono',
+      'abonó',
+      'abona',
+      'adelanto',
+      'adelantó',
+      'anticipo',
+      'seña',
+      'yapeo',
+      'yapeó',
+      'yapearon',
+      'deposito',
+      'depositó',
+      'transferencia',
+      'me dio',
+      'me dejó',
+      'me entregó',
+      'recibi',
+      'recibí'
+    ],
+    statusChange: [
+      'marca',
+      'marcar',
+      'marcalo',
+      'márcalo',
+      'cambia',
+      'cambiar',
+      'cambialo',
+      'cámbialo',
+      'actualiza',
+      'actualizar',
+      'ponlo',
+      'ponle',
+      'poner estado',
+      'estado a',
+      'pasalo',
+      'pásalo',
+      'dejalo como',
+      'déjalo como',
+      'queda como',
+      'ya esta',
+      'ya está',
+      'terminado',
+      'entregado',
+      'pagado',
+      'cancelado',
+      'prepagado',
+      'pendiente',
+      'en proceso',
+      'bloqueado'
+    ],
+    delete: [
+      'elimina',
+      'eliminar',
+      'borra',
+      'borrar',
+      'bórrame',
+      'borrame',
+      'quita',
+      'quitar',
+      'suprime',
+      'saca',
+      'sacalo',
+      'sácalo',
+      'manda a papelera',
+      'papelera'
+    ],
+    money: [
+      'saldo',
+      'saldos',
+      'deuda',
+      'deudas',
+      'deben',
+      'me deben',
+      'pendiente de cobrar',
+      'por cobrar',
+      'falta cobrar',
+      'plata',
+      'dinero',
+      'lucas',
+      'soles',
+      'cobros pendientes',
+      'quien debe',
+      'quién debe',
+      'morosos',
+      'deudores'
+    ],
+    summary: [
+      'resumen',
+      'reporte',
+      'diagnostico',
+      'diagnóstico',
+      'general',
+      'panorama',
+      'balance',
+      'situacion',
+      'situación',
+      'estado general',
+      'totales',
+      'facturado',
+      'cobrado',
+      'ganado',
+      'ingresos',
+      'avance',
+      'panel',
+      'dashboard'
+    ],
+    today: [
+      'hoy',
+      'para hoy',
+      'vence hoy',
+      'cobro hoy',
+      'dia de hoy',
+      'día de hoy',
+      'ahorita',
+      'urgente de hoy',
+      'agenda de hoy'
+    ],
+    tomorrow: [
+      'mañana',
+      'manana',
+      'para mañana',
+      'para manana',
+      'vence mañana',
+      'vence manana',
+      'cobro mañana',
+      'cobro manana'
+    ],
+    week: [
+      'semana',
+      'esta semana',
+      '7 dias',
+      'siete dias',
+      'proximos dias',
+      'próximos días',
+      'proximos 7',
+      'próximos 7',
+      'de aqui al domingo',
+      'de aquí al domingo'
+    ],
+    month: [
+      'mes',
+      'este mes',
+      'mensual',
+      '30 dias',
+      'treinta dias',
+      'proximos 30',
+      'próximos 30',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre',
+      'enero',
+      'febrero',
+      'marzo',
+      'abril'
+    ],
+    overdue: [
+      'vencido',
+      'vencidos',
+      'vencida',
+      'vencidas',
+      'atrasado',
+      'atrasados',
+      'retrasado',
+      'retrasados',
+      'moroso',
+      'morosos',
+      'rojo',
+      'urgente',
+      'pasado',
+      'se pasó',
+      'se paso',
+      'fuera de fecha'
+    ],
+    quotas: [
+      'cuota',
+      'cuotas',
+      'mini cuota',
+      'minicuota',
+      'armada',
+      'armadas',
+      'letra',
+      'letras',
+      'pago parcial',
+      'pagos parciales',
+      'partes',
+      'fraccionado',
+      'fraccionar',
+      'plan de pago',
+      'cronograma de pago'
+    ],
+    whatsapp: [
+      'whatsapp',
+      'wasap',
+      'wsp',
+      'mensaje',
+      'mensajito',
+      'redacta',
+      'escribe',
+      'cobrarle',
+      'recordarle',
+      'seguimiento',
+      'mandale',
+      'mándale',
+      'enviar mensaje',
+      'texto para cobrar',
+      'texto para entrega'
+    ],
+    priority: [
+      'prioridad',
+      'prioridades',
+      'primero',
+      'que hago primero',
+      'qué hago primero',
+      'por donde empiezo',
+      'por dónde empiezo',
+      'orden',
+      'ordename',
+      'ordéname',
+      'plan del dia',
+      'plan del día',
+      'ruta',
+      'enfoque',
+      'urgencias'
+    ],
+    client: [
+      'cliente',
+      'clientes',
+      'trabajos de',
+      'tareas de',
+      'historial de',
+      'saldo de',
+      'cuanto me debe',
+      'cuánto me debe',
+      'datos de',
+      'ver a',
+      'buscar a',
+      'busca a',
+      'muestrame a',
+      'muéstrame a'
+    ],
+    note: [
+      'nota',
+      'notas',
+      'bitacora',
+      'bitácora',
+      'apunte',
+      'comentario',
+      'observacion',
+      'observación',
+      'aclaracion',
+      'aclaración'
+    ],
+    task: [
+      'checklist',
+      'pendiente interno',
+      'tarea interna',
+      'subtarea',
+      'entregable',
+      'agrega entregable',
+      'paso',
+      'cosas por hacer',
+      'lista de tareas'
+    ],
+    reminder: [
+      'recordatorio',
+      'recordar',
+      'recuérdame',
+      'recuerdame',
+      'aviso',
+      'avisame',
+      'avísame',
+      'alarma',
+      'notificacion',
+      'notificación',
+      'alerta'
+    ],
+    openView: [
+      'abre',
+      'abrir',
+      'ir a',
+      'anda a',
+      've a',
+      'muestra vista',
+      'cambia a vista',
+      'registro',
+      'alertas',
+      'proyeccion',
+      'proyección',
+      'productividad',
+      'archivos',
+      'asistente',
+      'gastos',
+      'whatsapp'
+    ],
+    export: [
+      'backup',
+      'exporta',
+      'exportar',
+      'descarga datos',
+      'guardar copia',
+      'copia de seguridad',
+      'importar',
+      'restaurar'
+    ]
+  };
+
+  var HSB_STATUS_CANON = [
+    { value: 'Pagado', terms: ['pagado','pagada','completamente pagado','cancelado de pago','ya pago','ya pagó','todo pagado','cerrado pagado'] },
+    { value: 'Terminado', terms: ['terminado','terminada','finalizado','finalizada','culminado','culminada','acabado','acabada','listo para entregar','ya termine','ya terminé'] },
+    { value: 'Entregado', terms: ['entregado','entregada','ya entregue','ya entregué','enviado','enviada','mandado','mandada','presentado','presentada'] },
+    { value: 'Prepagado', terms: ['prepagado','prepagada','adelanto','adelantado','con adelanto','abonado','seña','anticipo'] },
+    { value: 'Pendiente', terms: ['pendiente','en espera','espera','faltan datos','bloqueado por cliente','no envio','no envió','stand by'] },
+    { value: 'En proceso', terms: ['en proceso','proceso','trabajando','avanzando','activo','vigente','en curso'] },
+    { value: 'Cancelado', terms: ['cancelado','cancelada','anulado','anulada','lo dejo','lo dejó','se cancelo','se canceló','no va','ya no va'] },
+    { value: 'Bloqueado', terms: ['bloqueado','bloqueada','atorado','atorada','paralizado','paralizada'] }
+  ];
+
+  var HSB_TYPE_CANON = [
+    { value: 'Tesis de Maestría', terms: ['tesis de maestria','tesis maestria','maestria','maestría','proyecto de maestria','tesis ucv','tesis uss'] },
+    { value: 'Tesis Completa', terms: ['tesis completa','tesis','tesis de titulo','tesis de título','tesis bachiller','tesis licenciatura'] },
+    { value: 'Bachiller / Titulación', terms: ['bachiller','titulacion','titulación','suficiencia','trabajo de suficiencia','informe de suficiencia'] },
+    { value: 'Artículo Científico', terms: ['articulo cientifico','artículo científico','paper','articulo de investigacion','artículo de investigación','revista','scopus'] },
+    { value: 'Artículo Académico', terms: ['articulo academico','artículo académico','articulo','artículo','revision sistematica','revisión sistemática'] },
+    { value: 'Ensayo Jurídico', terms: ['ensayo juridico','ensayo jurídico','ensayo','derecho internacional privado','lex mercatoria'] },
+    { value: 'Foro de Debate y Argumentación', terms: ['foro','foro debate','foro de debate','foro argumentacion','foro argumentación'] },
+    { value: 'Cuestionario', terms: ['cuestionario','preguntas','control de lectura','test','practica','práctica'] },
+    { value: 'Examen', terms: ['examen','parcial','final','evaluacion','evaluación'] },
+    { value: 'Reducción de Plagio', terms: ['reduccion de plagio','reducción de plagio','plagio','turnitin','similitud','bajar plagio'] },
+    { value: 'Trabajo Académico', terms: ['trabajo academico','trabajo académico','monografia','monografía','informe','tarea','actividad','avance'] },
+    { value: 'Trabajo Juridico PJ', terms: ['poder judicial','pj','escrito','demanda','contestacion','contestación','recurso','apelacion','apelación','caso juridico','caso jurídico'] },
+    { value: 'Transcripción de Audiencias', terms: ['transcripcion','transcripción','audiencia','audiencias','transcribir','audio'] },
+    { value: 'Soporte Técnico / Inst.', terms: ['instalacion','instalación','soporte','programa','software','apk','webview','html'] }
+  ];
+
+  var HSB_UNI_CANON = [
+    { value: 'UCV', terms: ['ucv','vallejo','cesar vallejo','césar vallejo','universidad cesar vallejo','universidad césar vallejo'] },
+    { value: 'USS', terms: ['uss','señor de sipan','señor de sipán','universidad señor de sipan','universidad señor de sipán'] },
+    { value: 'USAT', terms: ['usat','santo toribio','universidad catolica santo toribio','universidad católica santo toribio'] },
+    { value: 'UPN', terms: ['upn','privada del norte','universidad privada del norte'] },
+    { value: 'UNPRG', terms: ['unprg','pedro ruiz gallo','universidad nacional pedro ruiz gallo'] },
+    { value: 'UDCH', terms: ['udch','chiclayo','universidad de chiclayo'] },
+    { value: 'UPAO', terms: ['upao','antenor orrego','universidad privada antenor orrego'] }
+  ];
+
+  var HSB_VIEW_MAP = [
+    { view: 'dashboard', terms: ['dashboard','inicio','panel','resumen','principal'] },
+    { view: 'registro', terms: ['registro','registros','trabajos','tareas','clientes'] },
+    { view: 'urgentes', terms: ['urgentes','hoy','avisos del dia','avisos del día'] },
+    { view: 'alertas', terms: ['alertas','vencidos','semaforo','semáforo'] },
+    { view: 'ingresos', terms: ['ingresos','otros ingresos'] },
+    { view: 'proyeccion', terms: ['proyeccion','proyección','cuotas','cobros futuros'] },
+    { view: 'productividad', terms: ['productividad','checklist','tareas internas'] },
+    { view: 'whatsapp', terms: ['whatsapp','wasap','mensajes'] },
+    { view: 'asistente', terms: ['asistente','ia','chat'] },
+    { view: 'archivos', terms: ['archivos','drive','documentos'] },
+    { view: 'gastos', terms: ['gastos','egresos','herramientas'] }
+  ];
+
+  var HSB_MONTHS = {
+    enero: 1,
+    febrero: 2,
+    marzo: 3,
+    abril: 4,
+    mayo: 5,
+    junio: 6,
+    julio: 7,
+    agosto: 8,
+    septiembre: 9,
+    setiembre: 9,
+    octubre: 10,
+    noviembre: 11,
+    diciembre: 12
+  };
+
+  var HSB_DAYS = {
+    domingo: 0,
+    lunes: 1,
+    martes: 2,
+    miercoles: 3,
+    miércoles: 3,
+    jueves: 4,
+    viernes: 5,
+    sabado: 6,
+    sábado: 6
+  };
+
+  var HSB_NUM_WORDS = {
+    cero: 0,
+    un: 1,
+    uno: 1,
+    una: 1,
+    dos: 2,
+    tres: 3,
+    cuatro: 4,
+    cinco: 5,
+    seis: 6,
+    siete: 7,
+    ocho: 8,
+    nueve: 9,
+    diez: 10,
+    once: 11,
+    doce: 12,
+    trece: 13,
+    catorce: 14,
+    quince: 15,
+    dieciseis: 16,
+    dieciséis: 16,
+    diecisiete: 17,
+    dieciocho: 18,
+    diecinueve: 19,
+    veinte: 20,
+    veintiuno: 21,
+    veintiuna: 21,
+    veintidos: 22,
+    veintidós: 22,
+    veintitres: 23,
+    veintitrés: 23,
+    veinticuatro: 24,
+    veinticinco: 25,
+    veintiseis: 26,
+    veintiséis: 26,
+    veintisiete: 27,
+    veintiocho: 28,
+    veintinueve: 29,
+    treinta: 30,
+    cuarenta: 40,
+    cincuenta: 50,
+    sesenta: 60,
+    setenta: 70,
+    ochenta: 80,
+    noventa: 90,
+    cien: 100,
+    ciento: 100,
+    doscientos: 200,
+    doscientas: 200,
+    trescientos: 300,
+    trescientas: 300,
+    cuatrocientos: 400,
+    cuatrocientas: 400,
+    quinientos: 500,
+    quinientas: 500,
+    seiscientos: 600,
+    seiscientas: 600,
+    setecientos: 700,
+    setecientas: 700,
+    ochocientos: 800,
+    ochocientas: 800,
+    novecientos: 900,
+    novecientas: 900,
+    mil: 1000,
+    luca: 1,
+    lucas: 1
+  };
+
+  // =========================================================
+  // Utilidades seguras
+  // =========================================================
+  function hHasApp(){
+    try { return typeof DB !== 'undefined' && DB && Array.isArray(DB.trabajos); }
+    catch(e){ return false; }
+  }
+
+  function hDB(){
+    if(!hHasApp()) return { trabajos: [], ingresos: [], gastos_herramientas: [], gastos_puntuales: [] };
+    if(!Array.isArray(DB.trabajos)) DB.trabajos = [];
+    if(!Array.isArray(DB.ingresos)) DB.ingresos = [];
+    if(!DB.nextId) DB.nextId = (DB.trabajos.reduce(function(a,t){ return Math.max(a, Number(t.id)||0); },0) + 1) || 1;
+    return DB;
+  }
+
+  function h$(id){ return document.getElementById(id); }
+  function hQ(sel){ return document.querySelector(sel); }
+
+  function hEsc(value){
+    return String(value == null ? '' : value)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
+  }
+
+  function hNorm(value){
+    return String(value == null ? '' : value)
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'')
+      .replace(/[“”‘’]/g,' ')
+      .replace(/s\s*\/\s*/g,' s/ ')
+      .replace(/[^a-z0-9ñáéíóúü\s\/\.\-]/gi,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+  }
+
+  function hNormHard(value){
+    return hNorm(value)
+      .replace(/ñ/g,'n')
+      .replace(/\bsolesitos\b/g,'soles')
+      .replace(/\bsolcitos\b/g,'soles')
+      .replace(/\blukitas\b/g,'lucas')
+      .replace(/\blukas\b/g,'lucas')
+      .replace(/\bplata\b/g,'dinero')
+      .trim();
+  }
+
+  function hTokens(value){
+    var stop = {
+      de:1, del:1, la:1, el:1, los:1, las:1, un:1, una:1, unos:1, unas:1,
+      para:1, por:1, con:1, sin:1, que:1, qué:1, me:1, mi:1, mis:1, su:1, sus:1,
+      al:1, a:1, en:1, y:1, o:1, u:1, es:1, esta:1, está:1, este:1, esto:1,
+      trabajo:1, tarea:1, cliente:1, registra:1, agrega:1, crea:1, cobra:1, cobro:1,
+      soles:1, sol:1, s:1, dia:1, día:1, fecha:1, pago:1, cuota:1, cuotas:1
+    };
+    return hNormHard(value).split(/\s+/).filter(function(x){ return x.length > 1 && !stop[x]; });
+  }
+
+  function hContainsAny(text, arr){
+    var t = hNormHard(text);
+    return (arr||[]).some(function(x){ return t.indexOf(hNormHard(x)) !== -1; });
+  }
+
+  function hStartsAny(text, arr){
+    var t = hNormHard(text);
+    return (arr||[]).some(function(x){ return t.indexOf(hNormHard(x)) === 0; });
+  }
+
+  function hMoney(n){
+    if(typeof fmtSRaw === 'function') return fmtSRaw(Number(n)||0);
+    return 'S/ ' + (Number(n)||0).toLocaleString('es-PE');
+  }
+
+  function hMoney2(n){
+    var v = Number(n)||0;
+    if(Math.abs(v - Math.round(v)) < 0.005) return hMoney(Math.round(v));
+    return 'S/ ' + v.toFixed(2);
+  }
+
+  function hTodayDate(){
+    var d = new Date();
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
+  function hTodayStr(){
+    if(typeof todayStr === 'function') return todayStr();
+    return hTodayDate().toISOString().slice(0,10);
+  }
+
+  function hParseISO(iso){
+    if(!iso) return null;
+    var d = new Date(String(iso).slice(0,10) + 'T00:00:00');
+    if(isNaN(d.getTime())) return null;
+    return d;
+  }
+
+  function hDiffDays(iso){
+    if(!iso) return null;
+    if(typeof diffDias === 'function') return diffDias(iso);
+    var d = hParseISO(iso);
+    if(!d) return null;
+    return Math.round((d - hTodayDate()) / 86400000);
+  }
+
+  function hFmtDate(iso){
+    if(!iso) return 'sin fecha';
+    if(typeof fmt === 'function') return fmt(iso);
+    var d = hParseISO(iso);
+    if(!d) return 'sin fecha';
+    return d.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+
+  function hDayLabel(days){
+    if(days === null || days === undefined || isNaN(days)) return 'sin fecha';
+    if(days < 0) return 'venció hace ' + Math.abs(days) + ' día' + (Math.abs(days)===1?'':'s');
+    if(days === 0) return 'hoy';
+    if(days === 1) return 'mañana';
+    return 'en ' + days + ' días';
+  }
+
+  function hLevel(days){
+    if(days === null || days === undefined || isNaN(days)) return 'hsb-blue';
+    if(days < 0) return 'hsb-danger';
+    if(days <= 2) return 'hsb-warn';
+    if(days <= 7) return 'hsb-blue';
+    return '';
+  }
+
+  function hSafeSaveRender(message){
+    try { if(typeof save === 'function') save(); } catch(e){}
+    try { if(typeof renderAll === 'function') renderAll(); } catch(e){}
+    try { if(typeof hsRefreshNotificationsSoon === 'function') hsRefreshNotificationsSoon(); } catch(e){}
+    try { if(message && typeof showToast === 'function') showToast(message); } catch(e){}
+  }
+
+  function hSection(title, body){
+    return '<div class="hsb-card"><h4>' + hEsc(title) + '</h4>' + body + '</div>';
+  }
+
+  function hKpis(items){
+    return '<div class="hsb-grid">' + items.map(function(it){
+      return '<div class="hsb-kpi"><b>' + hEsc(it.value) + '</b><span>' + hEsc(it.label) + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  function hChipLine(items){
+    if(!items || !items.length) return '';
+    return '<div class="hsb-chipline">' + items.map(function(x){ return '<span>' + hEsc(x) + '</span>'; }).join('') + '</div>';
+  }
+
+  function hList(rows, empty){
+    if(!rows || !rows.length) return '<div class="hsb-tip">' + hEsc(empty || 'Sin datos por ahora.') + '</div>';
+    return rows.join('');
+  }
+
+  function hStatusHtml(status){
+    if(typeof pillEstado === 'function') return pillEstado(status || '');
+    return '<span class="pill">' + hEsc(status || 'Sin estado') + '</span>';
+  }
+
+  function hJobPrice(t){ return Number(t && t.precio) || 0; }
+  function hJobPaid(t){ return Number(t && t.cobrado) || 0; }
+  function hJobBalance(t){ return Math.max(0, hJobPrice(t) - hJobPaid(t)); }
+  function hIsCanceled(t){ return hNormHard(t && t.estado).indexOf('cancelado') !== -1; }
+  function hIsPaid(t){ return hNormHard(t && t.estado).indexOf('pagado') !== -1 || hJobBalance(t) <= 0 && hJobPrice(t) > 0; }
+  function hIsClosed(t){
+    var e = hNormHard(t && t.estado);
+    return e.indexOf('pagado') !== -1 || e.indexOf('cancelado') !== -1;
+  }
+  function hIsActive(t){ return t && !hIsClosed(t); }
+
+  function hJobRow(t, opts){
+    opts = opts || {};
+    var bal = hJobBalance(t);
+    var dEnt = hDiffDays(t.fent);
+    var dPay = hDiffDays(t.fpago);
+    var cls = opts.cls || hLevel(dEnt);
+    var amount = opts.amount != null ? opts.amount : (bal > 0 ? bal : hJobPrice(t));
+    var meta = [];
+    if(t.tipo) meta.push(t.tipo);
+    if(t.uni) meta.push(t.uni);
+    if(t.fent) meta.push('entrega ' + hFmtDate(t.fent) + ' · ' + hDayLabel(dEnt));
+    if(bal > 0 && t.fpago) meta.push('pago ' + hFmtDate(t.fpago) + ' · ' + hDayLabel(dPay));
+    return '<div class="hsb-row">' +
+      '<div><b>' + hEsc(t.nombre || 'Sin nombre') + '</b>' +
+      '<small>' + hEsc(meta.join(' · ') || 'sin detalle') + '</small>' +
+      '<small>' + hStatusHtml(t.estado || '') + (opts.extra ? ' ' + opts.extra : '') + '</small></div>' +
+      '<div class="hsb-money ' + (bal>0?'hsb-danger':'hsb-ok') + '">' + hMoney2(amount) + '</div>' +
+      '</div>';
+  }
+
+  function hQuotaRow(q){
+    var d = hDiffDays(q.fecha);
+    var paid = Number(q.cobrado)||0;
+    var pendiente = Math.max(0,(Number(q.monto)||0)-paid);
+    return '<div class="hsb-row">' +
+      '<div><b>' + hEsc(q.trabajo.nombre || 'Sin nombre') + '</b>' +
+      '<small>Cuota ' + q.num + ' · ' + hFmtDate(q.fecha) + ' · ' + hDayLabel(d) + '</small>' +
+      '<small>Estado: ' + hEsc(q.estado || 'pendiente') + (paid>0?' · abonó '+hMoney2(paid):'') + '</small></div>' +
+      '<div class="hsb-money ' + (pendiente>0?'hsb-danger':'hsb-ok') + '">' + hMoney2(pendiente>0?pendiente:q.monto) + '</div>' +
+      '</div>';
+  }
+
+  function hNumberWordsToDigits(text){
+    var src = ' ' + String(text || '') + ' ';
+    var ordered = Object.keys(HSB_NUM_WORDS).sort(function(a,b){ return b.length - a.length; });
+    ordered.forEach(function(w){
+      var re = new RegExp('\\b' + w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\b','gi');
+      src = src.replace(re, ' ' + HSB_NUM_WORDS[w] + ' ');
+    });
+    src = src.replace(/(\d+)\s+y\s+(\d+)/g, function(_, a, b){ return String((Number(a)||0) + (Number(b)||0)); });
+    src = src.replace(/(\d+)\s+mil\s+(\d+)/g, function(_, a, b){ return String((Number(a)||0) * 1000 + (Number(b)||0)); });
+    src = src.replace(/(\d+)\s+mil/g, function(_, a){ return String((Number(a)||0) * 1000); });
+    return src.replace(/\s+/g,' ').trim();
+  }
+
+  function hExtractAmounts(text){
+    var t = hNumberWordsToDigits(hNormHard(text));
+    var out = [];
+    var re = /(?:s\s*\/\s*)?(\d{1,6}(?:[\.,]\d{1,2})?)\s*(?:soles?|lucas?|monto|precio|pago|abono)?/g;
+    var m;
+    while((m = re.exec(t))){
+      var n = Number(String(m[1]).replace(',','.'));
+      if(n > 0 && n < 1000000) out.push(n);
+    }
+    return out.filter(function(v, i, a){ return a.indexOf(v) === i || true; });
+  }
+
+  function hExtractAmount(text){
+    var t = hNumberWordsToDigits(hNormHard(text));
+    var patterns = [
+      /s\s*\/\s*(\d{1,6}(?:[\.,]\d{1,2})?)/,
+      /(?:cobre|cobré|cobro|cobró|pagaron|pago|pagó|abono|abonó|adelanto|adelantó|anticipo|seña|yapeo|yapeó|deposito|depositó|monto|precio|vale|cuesta|por)\s+(?:de\s+)?(\d{1,6}(?:[\.,]\d{1,2})?)/,
+      /(\d{1,6}(?:[\.,]\d{1,2})?)\s*(?:soles?|lucas?)/,
+      /(\d{2,6}(?:[\.,]\d{1,2})?)/
+    ];
+    for(var i=0;i<patterns.length;i++){
+      var m = t.match(patterns[i]);
+      if(m){
+        var n = Number(String(m[1]).replace(',','.'));
+        if(n > 0) return n;
+      }
+    }
+    return null;
+  }
+
+  function hExtractQuotaNumber(text){
+    var t = hNumberWordsToDigits(hNormHard(text));
+    var m = t.match(/(?:cuota|c|letra|armada)\s*(\d{1,2})/);
+    if(m) return Number(m[1]);
+    m = t.match(/(\d{1,2})\s*(?:cuota|letra|armada)/);
+    if(m) return Number(m[1]);
+    return null;
+  }
+
+  function hExtractDates(text){
+    var src = hNumberWordsToDigits(String(text || '').toLowerCase());
+    var t = hNormHard(src);
+    var out = [];
+    var today = hTodayDate();
+
+    function pushDate(d){
+      if(!d || isNaN(d.getTime())) return;
+      out.push(d.toISOString().slice(0,10));
+    }
+
+    var reISO = /(20\d{2})[-\/](\d{1,2})[-\/](\d{1,2})/g;
+    var m;
+    while((m = reISO.exec(t))){ pushDate(new Date(Number(m[1]), Number(m[2])-1, Number(m[3]))); }
+
+    var reDMY = /\b(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](20\d{2}|\d{2}))?\b/g;
+    while((m = reDMY.exec(t))){
+      var yy = m[3] ? Number(m[3]) : today.getFullYear();
+      if(yy < 100) yy += 2000;
+      var dd = Number(m[1]), mm = Number(m[2]);
+      var d0 = new Date(yy, mm-1, dd);
+      if(!m[3] && d0 < today) d0.setFullYear(d0.getFullYear()+1);
+      pushDate(d0);
+    }
+
+    var reMes = /\b(\d{1,2})\s+(?:de\s+)?(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)(?:\s+(?:de\s+)?(20\d{2}))?/g;
+    while((m = reMes.exec(t))){
+      var day = Number(m[1]), month = HSB_MONTHS[m[2]], year = m[3] ? Number(m[3]) : today.getFullYear();
+      var d1 = new Date(year, month-1, day);
+      if(!m[3] && d1 < today) d1.setFullYear(d1.getFullYear()+1);
+      pushDate(d1);
+    }
+
+    Object.keys(HSB_DAYS).forEach(function(name){
+      var re = new RegExp('(?:proximo|pr[oó]ximo|este|para el|para)\\s+' + name + '\\b');
+      if(re.test(t)){
+        var target = HSB_DAYS[name];
+        var d2 = new Date(today);
+        var diff = (target - d2.getDay() + 7) % 7;
+        if(diff === 0 && /proximo|pr[oó]ximo/.test(t)) diff = 7;
+        d2.setDate(d2.getDate() + diff);
+        pushDate(d2);
+      }
+    });
+
+    if(/\bhoy\b/.test(t)) pushDate(today);
+    if(/\bmanana\b|\bmañana\b/.test(String(text).toLowerCase())){ var dm = new Date(today); dm.setDate(dm.getDate()+1); pushDate(dm); }
+    if(/\bpasado manana\b|\bpasado mañana\b/.test(String(text).toLowerCase())){ var dp = new Date(today); dp.setDate(dp.getDate()+2); pushDate(dp); }
+
+    var rel = t.match(/\ben\s+(\d{1,3})\s+(dias|dia|semanas|semana|meses|mes)\b/);
+    if(rel){
+      var d3 = new Date(today);
+      var q = Number(rel[1]);
+      if(rel[2].indexOf('semana') !== -1) d3.setDate(d3.getDate() + q*7);
+      else if(rel[2].indexOf('mes') !== -1) d3.setMonth(d3.getMonth() + q);
+      else d3.setDate(d3.getDate() + q);
+      pushDate(d3);
+    }
+
+    var seen = {};
+    return out.filter(function(x){ if(seen[x]) return false; seen[x]=true; return true; });
+  }
+
+  function hExtractDate(text){ return hExtractDates(text)[0] || ''; }
+
+  function hExtractPeriod(text){
+    var t = hNormHard(text);
+    var today = hTodayDate();
+    var start = new Date(today), end = new Date(today);
+    if(hContainsAny(t, HSB_LEXICON.today)) return {label:'hoy', start:hTodayStr(), end:hTodayStr(), days:0};
+    if(hContainsAny(t, HSB_LEXICON.tomorrow)){
+      start.setDate(start.getDate()+1); end = new Date(start);
+      return {label:'mañana', start:start.toISOString().slice(0,10), end:end.toISOString().slice(0,10), days:1};
+    }
+    var custom = t.match(/(?:proximos|pr[oó]ximos|en|dentro de)\s+(\d{1,3})\s+dias/);
+    if(custom){ end.setDate(end.getDate()+Number(custom[1])); return {label:'próximos '+custom[1]+' días', start:hTodayStr(), end:end.toISOString().slice(0,10), days:Number(custom[1])}; }
+    if(hContainsAny(t, HSB_LEXICON.week)){ end.setDate(end.getDate()+7); return {label:'próximos 7 días', start:hTodayStr(), end:end.toISOString().slice(0,10), days:7}; }
+    if(hContainsAny(t, HSB_LEXICON.month)){ end.setDate(end.getDate()+30); return {label:'próximos 30 días', start:hTodayStr(), end:end.toISOString().slice(0,10), days:30}; }
+    return {label:'general', start:'', end:'', days:null};
+  }
+
+  function hExtractType(text){
+    var t = hNormHard(text);
+    for(var i=0;i<HSB_TYPE_CANON.length;i++){
+      if(HSB_TYPE_CANON[i].terms.some(function(term){ return t.indexOf(hNormHard(term)) !== -1; })) return HSB_TYPE_CANON[i].value;
+    }
+    return '';
+  }
+
+  function hExtractUniversity(text){
+    var t = hNormHard(text);
+    for(var i=0;i<HSB_UNI_CANON.length;i++){
+      if(HSB_UNI_CANON[i].terms.some(function(term){ return t.indexOf(hNormHard(term)) !== -1; })) return HSB_UNI_CANON[i].value;
+    }
+    return '';
+  }
+
+  function hExtractStatus(text){
+    var t = hNormHard(text);
+    for(var i=0;i<HSB_STATUS_CANON.length;i++){
+      if(HSB_STATUS_CANON[i].terms.some(function(term){ return t.indexOf(hNormHard(term)) !== -1; })) return HSB_STATUS_CANON[i].value;
+    }
+    return '';
+  }
+
+  function hExtractView(text){
+    var t = hNormHard(text);
+    for(var i=0;i<HSB_VIEW_MAP.length;i++){
+      if(HSB_VIEW_MAP[i].terms.some(function(term){ return t.indexOf(hNormHard(term)) !== -1; })) return HSB_VIEW_MAP[i].view;
+    }
+    return '';
+  }
+
+  function hCleanClientCandidate(raw){
+    var s = String(raw || '').trim();
+    s = s.replace(/^(el|la|los|las|sr\.?|sra\.?|señor|señora|señorita|don|doña|dr\.?|dra\.?|lic\.?|ing\.?|juez|jueza|fiscal|abogado|abogada)\s+/i,'');
+    s = s.replace(/\s+(por|de|con|en|para|entrega|vence|cobra|cobro|pago|pag[oó]|cuota|soles|s\/|precio|monto|tipo|universidad|ucv|uss|usat|upn|hoy|mañana).*$/i,'');
+    s = s.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñüÜ\s\(\)\.]/g,' ').replace(/\s+/g,' ').trim();
+    var bad = ['trabajo','tarea','tesis','articulo','artículo','ensayo','foro','examen','cuestionario','cuota','pago','cobro','saldo'];
+    if(!s || s.length < 2) return '';
+    if(bad.indexOf(hNormHard(s)) !== -1) return '';
+    return s.split(/\s+/).slice(0,4).map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join(' ');
+  }
+
+  function hExtractClientName(text){
+    var original = String(text || '');
+    var directPatterns = [
+      /(?:cliente|para|a nombre de|nombre de|trabajo de|tarea de|historial de|saldo de|deuda de|cobrarle a|cobrar a|cobro a|cobré a|cobre a|pag[oó]\s+de|abono de|abon[oó]\s+de|de)\s+([A-Za-zÁÉÍÓÚáéíóúÑñüÜ\s\(\)\.]{2,60})/i,
+      /(?:a|de)\s+(?:el|la)?\s*(?:dr\.?|dra\.?|lic\.?|ing\.?|señor|señora|juez|jueza|fiscal)?\s*([A-Za-zÁÉÍÓÚáéíóúÑñüÜ\s\(\)\.]{2,60})/i
+    ];
+    for(var i=0;i<directPatterns.length;i++){
+      var m = original.match(directPatterns[i]);
+      if(m){
+        var cleaned = hCleanClientCandidate(m[1]);
+        if(cleaned) return cleaned;
+      }
+    }
+    var jobs = hDB().trabajos || [];
+    var hard = hNormHard(original);
+    var best = null;
+    jobs.forEach(function(t){
+      var n = hNormHard(t.nombre || '');
+      if(n && hard.indexOf(n) !== -1){ if(!best || n.length > hNormHard(best).length) best = t.nombre; }
+    });
+    if(best) return best;
+    var m2 = original.match(/^\s*([A-Za-zÁÉÍÓÚáéíóúÑñüÜ]{2,}(?:\s+[A-Za-zÁÉÍÓÚáéíóúÑñüÜ]{2,}){0,2})\s+(?:\d|s\/|tesis|articulo|artículo|ensayo|foro|trabajo|tarea|cuestionario|examen)/i);
+    if(m2) return hCleanClientCandidate(m2[1]);
+    return '';
+  }
+
+  function hScoreJob(t, text){
+    var q = hTokens(text);
+    var hay = hTokens([t.nombre,t.tipo,t.uni,t.estado,t.notas].join(' '));
+    var haySet = {};
+    hay.forEach(function(x){ haySet[x]=1; });
+    var score = 0;
+    q.forEach(function(tok){
+      if(haySet[tok]) score += 4;
+      else hay.forEach(function(h){ if(h.indexOf(tok)===0 || tok.indexOf(h)===0) score += 1; });
+    });
+    if(hNormHard(text).indexOf(hNormHard(t.nombre || '')) !== -1) score += 20;
+    if(hJobBalance(t)>0 && /saldo|debe|cobro|pago|cuota/.test(hNormHard(text))) score += 2;
+    if(hIsActive(t) && /activo|proceso|pendiente|vencido|hoy/.test(hNormHard(text))) score += 1;
+    return score;
+  }
+
+  function hFindWorks(text, limit){
+    var db = hDB();
+    var client = hExtractClientName(text);
+    var jobs = db.trabajos || [];
+    var out = [];
+    if(client){
+      var cn = hNormHard(client);
+      out = jobs.filter(function(t){
+        var tn = hNormHard(t.nombre || '');
+        return tn === cn || tn.indexOf(cn) !== -1 || cn.indexOf(tn) !== -1 || hScoreJob(t, client) >= 3;
+      });
+    }
+    if(!out.length){
+      out = jobs.map(function(t){ return {t:t, score:hScoreJob(t,text)}; })
+        .filter(function(x){ return x.score > 0; })
+        .sort(function(a,b){ return b.score - a.score; })
+        .map(function(x){ return x.t; });
+    }
+    if(limit) out = out.slice(0,limit);
+    return out;
+  }
+
+  function hCollectQuotas(job){
+    var out = [];
+    if(!job) return out;
+    if(Array.isArray(job.cuotas) && job.cuotas.length){
+      job.cuotas.forEach(function(c, i){
+        var paid = Array.isArray(c.abonos) ? c.abonos.reduce(function(a,ab){ return a + (Number(ab.monto)||0); },0) : (Number(c.cobrado)||0);
+        out.push({
+          trabajo: job,
+          num: i+1,
+          fecha: c.f || '',
+          monto: Number(c.m)||0,
+          cobrado: paid,
+          estado: c.estado || 'pendiente',
+          raw: c
+        });
+      });
+    } else {
+      for(var i=1;i<=12;i++){
+        var f = job['c'+i+'f'];
+        var m = Number(job['c'+i+'m'])||0;
+        if(f || m){
+          out.push({trabajo:job,num:i,fecha:f||'',monto:m,cobrado:0,estado:'pendiente',raw:null});
+        }
+      }
+    }
+    if(!out.length && job.fpago && hJobBalance(job)>0){
+      out.push({trabajo:job,num:1,fecha:job.fpago,monto:hJobBalance(job),cobrado:0,estado:'pendiente',raw:null});
+    }
+    return out;
+  }
+
+  function hAllQuotas(){
+    var out = [];
+    hDB().trabajos.forEach(function(t){ if(!hIsCanceled(t)) out = out.concat(hCollectQuotas(t)); });
+    return out;
+  }
+
+  function hBaseStats(){
+    var db = hDB();
+    var jobs = db.trabajos || [];
+    var incomes = db.ingresos || [];
+    var active = jobs.filter(hIsActive);
+    var totalFact = jobs.filter(function(t){return !hIsCanceled(t);}).reduce(function(a,t){ return a + hJobPrice(t); },0);
+    var totalPaid = jobs.reduce(function(a,t){ return a + hJobPaid(t); },0) + incomes.reduce(function(a,i){ return a + (Number(i.cobrado)||0); },0);
+    var totalDebt = jobs.filter(function(t){return !hIsCanceled(t);}).reduce(function(a,t){ return a + hJobBalance(t); },0) + incomes.reduce(function(a,i){ return a + Math.max(0,(Number(i.monto)||0)-(Number(i.cobrado)||0)); },0);
+    var today = active.filter(function(t){ return hDiffDays(t.fent) === 0 || (hJobBalance(t)>0 && hDiffDays(t.fpago) === 0); });
+    var tomorrow = active.filter(function(t){ return hDiffDays(t.fent) === 1 || (hJobBalance(t)>0 && hDiffDays(t.fpago) === 1); });
+    var week = active.filter(function(t){ var d=hDiffDays(t.fent); var p=hDiffDays(t.fpago); return (d!==null && d>=0 && d<=7) || (hJobBalance(t)>0 && p!==null && p>=0 && p<=7); });
+    var overdue = active.filter(function(t){ var d=hDiffDays(t.fent); var p=hDiffDays(t.fpago); return (d!==null && d<0) || (hJobBalance(t)>0 && p!==null && p<0); });
+    var debtors = jobs.filter(function(t){ return !hIsCanceled(t) && hJobBalance(t)>0; }).sort(function(a,b){ return hJobBalance(b)-hJobBalance(a); });
+    return {db:db,jobs:jobs,incomes:incomes,active:active,totalFact:totalFact,totalPaid:totalPaid,totalDebt:totalDebt,today:today,tomorrow:tomorrow,week:week,overdue:overdue,debtors:debtors};
+  }
+
+  function hIntentScores(text){
+    var t = hNormHard(text);
+    var scores = {};
+    Object.keys(HSB_INTENTS).forEach(function(k){ scores[HSB_INTENTS[k]] = 0; });
+
+    function add(intent, points){ scores[intent] = (scores[intent]||0) + points; }
+    function any(list){ return hContainsAny(t, list); }
+
+    if(!t) add(HSB_INTENTS.HELP, 10);
+    if(any(HSB_LEXICON.help)) add(HSB_INTENTS.HELP, 12);
+    if(hStartsAny(t, HSB_LEXICON.greeting)) add(HSB_INTENTS.GREETING, 8);
+    if(hStartsAny(t, HSB_LEXICON.thanks)) add(HSB_INTENTS.THANKS, 8);
+    if(any(HSB_LEXICON.create)) add(HSB_INTENTS.CREATE, 14);
+    if(any(HSB_LEXICON.payment)) add(HSB_INTENTS.PAYMENT, 14);
+    if(any(HSB_LEXICON.statusChange)) add(HSB_INTENTS.STATUS_CHANGE, 9);
+    if(any(HSB_LEXICON.delete)) add(HSB_INTENTS.DELETE, 13);
+    if(any(HSB_LEXICON.money)) add(HSB_INTENTS.DEBTS, 8);
+    if(any(HSB_LEXICON.summary)) add(HSB_INTENTS.SUMMARY, 8);
+    if(any(HSB_LEXICON.today)) add(HSB_INTENTS.TODAY, 10);
+    if(any(HSB_LEXICON.tomorrow)) add(HSB_INTENTS.TOMORROW, 10);
+    if(any(HSB_LEXICON.week)) add(HSB_INTENTS.WEEK, 8);
+    if(any(HSB_LEXICON.month)) add(HSB_INTENTS.MONTH, 6);
+    if(any(HSB_LEXICON.overdue)) add(HSB_INTENTS.OVERDUE, 10);
+    if(any(HSB_LEXICON.quotas)) add(HSB_INTENTS.QUOTAS, 8);
+    if(any(HSB_LEXICON.whatsapp)) add(HSB_INTENTS.WHATSAPP, 13);
+    if(any(HSB_LEXICON.priority)) add(HSB_INTENTS.PRIORITY, 12);
+    if(any(HSB_LEXICON.client)) add(HSB_INTENTS.CLIENT, 7);
+    if(any(HSB_LEXICON.note)) add(HSB_INTENTS.NOTE, 9);
+    if(any(HSB_LEXICON.task)) add(HSB_INTENTS.TASK, 9);
+    if(any(HSB_LEXICON.reminder)) add(HSB_INTENTS.REMINDER, 8);
+    if(any(HSB_LEXICON.openView) && /\b(abre|abrir|ir a|anda a|ve a|vista)\b/.test(t)) add(HSB_INTENTS.OPEN_VIEW, 15);
+    if(any(HSB_LEXICON.export)) add(HSB_INTENTS.EXPORT, 8);
+
+    if(/\b(cuanto|cuánto|que|qué|quien|quién|cuales|cuáles|dime|dame|muestra|muéstrame|lista|listar|ver)\b/.test(text.toLowerCase())){
+      add(HSB_INTENTS.SEARCH, 3);
+      if(any(HSB_LEXICON.money)) add(HSB_INTENTS.DEBTS, 4);
+      if(any(HSB_LEXICON.summary)) add(HSB_INTENTS.SUMMARY, 3);
+      if(any(HSB_LEXICON.client)) add(HSB_INTENTS.CLIENT, 4);
+    }
+    if(/\b(pagados?|cobrados?|cancelados?|terminados?|entregados?|prepagados?|pendientes?|en proceso)\b/.test(t)) add(HSB_INTENTS.STATUS, 6);
+    if(/\b(cuota|cuotas|mini cuota|minicuota).*(agrega|crear|nueva|añade|suma)|\b(agrega|crear|nueva|añade|suma).*(cuota|cuotas|mini cuota|minicuota)/.test(t)) add(HSB_INTENTS.QUOTA_ADD, 16);
+    if(/\b(cuota|cuotas|mini cuota|minicuota).*(pague|pagó|pagaron|abonó|abono|cobré|cobre|cobro|marca)|\b(pague|pagó|pagaron|abonó|abono|cobré|cobre|cobro|marca).*(cuota|cuotas|mini cuota|minicuota)/.test(t)) add(HSB_INTENTS.QUOTA_PAY, 16);
+
+    if(hExtractAmount(text) && hExtractClientName(text) && !/\b(cuanto|cuánto|debe|saldo|reporte|resumen)\b/.test(t)){
+      add(HSB_INTENTS.CREATE, 4);
+      if(any(HSB_LEXICON.payment)) add(HSB_INTENTS.PAYMENT, 8);
+    }
+
+    return scores;
+  }
+
+  function hClassify(text){
+    var scores = hIntentScores(text);
+    var ranked = Object.keys(scores).map(function(k){ return {intent:k,score:scores[k]}; }).sort(function(a,b){ return b.score-a.score; });
+    var best = ranked[0] || {intent:HSB_INTENTS.UNKNOWN, score:0};
+    if(best.score <= 0) best.intent = HSB_INTENTS.UNKNOWN;
+    return {intent:best.intent, score:best.score, ranked:ranked};
+  }
+
+  // =========================================================
+  // Respuestas de consulta
+  // =========================================================
+  function hAnswerHelp(){
+    var chips = [
+      'crear trabajos',
+      'registrar abonos',
+      'cambiar estados',
+      'mini cuotas',
+      'cuotas parciales',
+      'recordatorios',
+      'checklist',
+      'bitácora',
+      'prioridad diaria',
+      'mensajes WhatsApp',
+      'clientes morosos',
+      'búsqueda flexible'
+    ];
+    return '<div class="hsb-help-title">🧠 Asistente Offline ampliado V4</div>' +
+      '<div class="hsb-tip">Entiendo frases más naturales, incompletas o habladas. No uso internet ni API. Cuando hay una acción que cambia datos, primero intento usar el motor interno original; si no alcanza, aplico una corrección segura sobre tus registros.</div>' +
+      hChipLine(chips) +
+      hSection('Ejemplos que ahora entiende mejor',
+        '<div class="hsb-row"><div><b>Crear</b><small>“Karol ensayo DIP 65 soles, dos cuotas, entrega 10 mayo”</small></div></div>' +
+        '<div class="hsb-row"><div><b>Cobro parcial</b><small>“Juan me yapeó 120 de la cuota 2 hoy”</small></div></div>' +
+        '<div class="hsb-row"><div><b>Mini cuota</b><small>“Agrégale a Cindy una mini cuota de 50 para el 7 de mayo”</small></div></div>' +
+        '<div class="hsb-row"><div><b>Estado</b><small>“Marca lo de Kenny como entregado”</small></div></div>' +
+        '<div class="hsb-row"><div><b>Plan</b><small>“Qué hago primero hoy” / “ordéname las urgencias”</small></div></div>' +
+        '<div class="hsb-row"><div><b>WhatsApp</b><small>“Haz mensaje a Nicole para cobrarle el saldo”</small></div></div>' +
+        '<div class="hsb-row"><div><b>Bitácora</b><small>“Agrega nota a Oswaldo: falta revisar foro”</small></div></div>' +
+        '<div class="hsb-row"><div><b>Checklist</b><small>“Agrega entregable a Roger: corregir matriz”</small></div></div>'
+      ) +
+      hSection('Consultas rápidas',
+        '<div class="hsb-row"><div><b>Dinero</b><small>“cuánto me deben”, “mayores deudores”, “saldo de Jessica”</small></div></div>' +
+        '<div class="hsb-row"><div><b>Fechas</b><small>“qué vence hoy”, “próximos 7 días”, “cuotas de este mes”</small></div></div>' +
+        '<div class="hsb-row"><div><b>Estados</b><small>“trabajos prepagados”, “en proceso”, “entregados sin cobrar”</small></div></div>' +
+        '<div class="hsb-row"><div><b>Cliente</b><small>“historial de Kenny”, “qué tiene pendiente Nicol”</small></div></div>'
+      );
+  }
+
+  function hAnswerGreeting(){
+    return 'Hola. Ya estoy funcionando en modo offline ampliado. Puedes dictarme algo como: <strong>“qué vence hoy”</strong>, <strong>“Juan me pagó 100”</strong> o <strong>“agrégale una mini cuota a Karol”</strong>.';
+  }
+
+  function hAnswerThanks(){
+    return 'Listo, seguimos. El asistente offline queda usando el motor ampliado.';
+  }
+
+  function hAnswerSummary(){
+    var s = hBaseStats();
+    var byState = {};
+    var byType = {};
+    s.jobs.forEach(function(t){
+      byState[t.estado || 'Sin estado'] = (byState[t.estado || 'Sin estado']||0)+1;
+      byType[t.tipo || 'Sin tipo'] = (byType[t.tipo || 'Sin tipo']||0)+1;
+    });
+    var topState = Object.keys(byState).sort(function(a,b){return byState[b]-byState[a];}).slice(0,8).map(function(k){return k+': '+byState[k];});
+    var topType = Object.keys(byType).sort(function(a,b){return byType[b]-byType[a];}).slice(0,8).map(function(k){return k+': '+byType[k];});
+    return hSection('Resumen general',
+      hKpis([
+        {value:String(s.jobs.length),label:'trabajos'},
+        {value:String(s.active.length),label:'activos'},
+        {value:hMoney2(s.totalFact),label:'facturado'},
+        {value:hMoney2(s.totalPaid),label:'cobrado'},
+        {value:hMoney2(s.totalDebt),label:'por cobrar'},
+        {value:String(s.overdue.length),label:'urgencias'}
+      ]) +
+      '<div class="hsb-tip">Estados más frecuentes:</div>' + hChipLine(topState) +
+      '<div class="hsb-tip">Tipos más frecuentes:</div>' + hChipLine(topType)
+    ) + hAnswerPriority(true);
+  }
+
+  function hFilterByPeriod(kind){
+    var s = hBaseStats();
+    if(kind === 'today') return s.today;
+    if(kind === 'tomorrow') return s.tomorrow;
+    if(kind === 'week') return s.week;
+    if(kind === 'overdue') return s.overdue;
+    return s.week;
+  }
+
+  function hAnswerPeriod(kind, label){
+    var arr = hFilterByPeriod(kind);
+    var rows = arr.slice(0,HSB_MAX_ROWS).map(function(t){
+      var d1 = hDiffDays(t.fent);
+      var d2 = hDiffDays(t.fpago);
+      var extra = '';
+      if(d1 === 0) extra += '<span class="hsb-warn">Entrega hoy</span>';
+      else if(d1 === 1) extra += '<span class="hsb-warn">Entrega mañana</span>';
+      else if(d1 !== null && d1 < 0) extra += '<span class="hsb-danger">Entrega vencida</span>';
+      if(hJobBalance(t)>0 && d2 !== null && d2 <= 1) extra += ' <span class="hsb-danger">Cobro '+hDayLabel(d2)+'</span>';
+      return hJobRow(t,{extra:extra});
+    });
+    var title = label || (kind === 'today' ? 'Pendientes de hoy' : kind === 'tomorrow' ? 'Pendientes de mañana' : kind === 'overdue' ? 'Vencidos' : 'Próximos días');
+    return hSection(title, hList(rows, 'No encontré trabajos para este filtro.'));
+  }
+
+  function hAnswerDebts(text){
+    var s = hBaseStats();
+    var matches = hFindWorks(text, 12);
+    var clientAsked = hExtractClientName(text);
+    if(clientAsked && matches.length){
+      var total = matches.reduce(function(a,t){ return a + hJobPrice(t); },0);
+      var paid = matches.reduce(function(a,t){ return a + hJobPaid(t); },0);
+      var bal = matches.reduce(function(a,t){ return a + hJobBalance(t); },0);
+      return hSection('Saldo de ' + (matches[0].nombre || clientAsked),
+        hKpis([
+          {value:String(matches.length),label:'trabajos'},
+          {value:hMoney2(total),label:'precio'},
+          {value:hMoney2(paid),label:'cobrado'},
+          {value:hMoney2(bal),label:'saldo'}
+        ]) + hList(matches.map(function(t){ return hJobRow(t); }), 'Sin trabajos vinculados.')
+      );
+    }
+    var rows = s.debtors.slice(0,HSB_MAX_ROWS).map(function(t){ return hJobRow(t,{cls:hJobBalance(t)>0?'hsb-danger':''}); });
+    return hSection('Cobros pendientes',
+      hKpis([
+        {value:hMoney2(s.totalDebt),label:'por cobrar'},
+        {value:String(s.debtors.length),label:'trabajos con saldo'},
+        {value:String(s.debtors.filter(function(t){return hDiffDays(t.fpago)<0;}).length),label:'cobros vencidos'}
+      ]) + hList(rows, 'No hay saldos pendientes.')
+    );
+  }
+
+  function hAnswerQuotas(text){
+    var qs = hAllQuotas();
+    var period = hExtractPeriod(text);
+    if(period.days !== null){
+      qs = qs.filter(function(q){ var d=hDiffDays(q.fecha); return d!==null && d>=0 && d<=period.days; });
+    }
+    if(/vencid|atras|retras|moros/.test(hNormHard(text))){
+      qs = hAllQuotas().filter(function(q){ var d=hDiffDays(q.fecha); return d!==null && d<0 && (Number(q.monto)||0)>(Number(q.cobrado)||0); });
+    }
+    if(/parcial|incomplet|abon/.test(hNormHard(text))){
+      qs = hAllQuotas().filter(function(q){ return (Number(q.cobrado)||0)>0 && (Number(q.monto)||0)>(Number(q.cobrado)||0); });
+    }
+    qs.sort(function(a,b){
+      var ad = hDiffDays(a.fecha); if(ad===null) ad=9999;
+      var bd = hDiffDays(b.fecha); if(bd===null) bd=9999;
+      return ad-bd;
+    });
+    var pendingTotal = qs.reduce(function(a,q){ return a + Math.max(0,(Number(q.monto)||0)-(Number(q.cobrado)||0)); },0);
+    return hSection('Cuotas' + (period.days!==null?' — '+period.label:''),
+      hKpis([
+        {value:String(qs.length),label:'cuotas filtradas'},
+        {value:hMoney2(pendingTotal),label:'pendiente'},
+        {value:String(qs.filter(function(q){return hDiffDays(q.fecha)<0;}).length),label:'vencidas'}
+      ]) + hList(qs.slice(0,HSB_MAX_ROWS).map(hQuotaRow), 'No hay cuotas para ese criterio.')
+    );
+  }
+
+  function hAnswerClient(text){
+    var matches = hFindWorks(text, 20);
+    if(!matches.length) return hSection('Cliente', '<div class="hsb-tip">No encontré un cliente claro en tus registros. Prueba: “historial de Kenny” o “saldo de Jessica”.</div>');
+    var name = matches[0].nombre || 'Cliente';
+    var same = hDB().trabajos.filter(function(t){ return hNormHard(t.nombre||'') === hNormHard(name); });
+    var arr = same.length ? same : matches;
+    var total = arr.reduce(function(a,t){return a+hJobPrice(t);},0);
+    var paid = arr.reduce(function(a,t){return a+hJobPaid(t);},0);
+    var bal = arr.reduce(function(a,t){return a+hJobBalance(t);},0);
+    var phone = (arr.find(function(t){ return t.cel; }) || {}).cel || 'sin celular';
+    return hSection('Cliente detectado: ' + name,
+      hKpis([
+        {value:String(arr.length),label:'trabajos'},
+        {value:hMoney2(total),label:'precio'},
+        {value:hMoney2(paid),label:'cobrado'},
+        {value:hMoney2(bal),label:'saldo'},
+        {value:String(phone),label:'celular'}
+      ]) + hList(arr.slice(0,HSB_MAX_ROWS).map(function(t){ return hJobRow(t); }), 'Sin trabajos vinculados.')
+    );
+  }
+
+  function hAnswerStatus(text){
+    var t = hNormHard(text);
+    var s = hBaseStats();
+    var desired = hExtractStatus(text);
+    var arr = s.jobs;
+    if(desired){ arr = arr.filter(function(x){ return hNormHard(x.estado||'') === hNormHard(desired); }); }
+    else if(/entregado.*cobrar|entregados.*saldo|entregados.*deben/.test(t)) arr = arr.filter(function(x){ return hNormHard(x.estado||'').indexOf('entregado')!==-1 && hJobBalance(x)>0; });
+    else if(/prepag/.test(t)) arr = arr.filter(function(x){ return hNormHard(x.estado||'').indexOf('prepagado')!==-1; });
+    else if(/proceso|activos?/.test(t)) arr = s.active;
+    var title = desired ? 'Trabajos en estado: ' + desired : 'Trabajos filtrados por estado';
+    return hSection(title, hKpis([{value:String(arr.length),label:'coincidencias'}]) + hList(arr.slice(0,HSB_MAX_ROWS).map(function(x){return hJobRow(x);}), 'No hay coincidencias.'));
+  }
+
+  function hAnswerPriority(compact){
+    var s = hBaseStats();
+    var ranked = s.active.map(function(t){
+      var de = hDiffDays(t.fent), dp = hDiffDays(t.fpago), bal = hJobBalance(t), score = 0, why=[];
+      if(de !== null && de < 0){ score += 120; why.push('entrega vencida'); }
+      else if(de === 0){ score += 95; why.push('entrega hoy'); }
+      else if(de === 1){ score += 75; why.push('entrega mañana'); }
+      else if(de !== null && de <= 3){ score += 55; why.push('entrega cercana'); }
+      else if(de !== null && de <= 7){ score += 25; why.push('esta semana'); }
+      if(bal > 0 && dp !== null && dp < 0){ score += 55; why.push('cobro vencido'); }
+      else if(bal > 0 && dp === 0){ score += 35; why.push('cobro hoy'); }
+      if((t.tags||[]).join(' ').indexOf('urgente') !== -1){ score += 25; why.push('urgente'); }
+      if((t.prioridad||'').toLowerCase() === 'alta'){ score += 25; why.push('prioridad alta'); }
+      score += Math.min(25, bal/100);
+      return {t:t,score:score,why:why};
+    }).filter(function(x){return x.score>0;}).sort(function(a,b){return b.score-a.score;}).slice(0,8);
+    var rows = ranked.map(function(x, i){
+      return '<div class="hsb-row"><div><b>'+(i+1)+'. '+hEsc(x.t.nombre||'Sin nombre')+'</b><small>'+hEsc(x.t.tipo||'Trabajo')+' · '+hEsc(x.why.join(', ')||'por fecha/saldo')+'</small><small>Entrega: '+hFmtDate(x.t.fent)+' · Pago: '+hFmtDate(x.t.fpago)+'</small></div><div class="hsb-money '+(x.score>=90?'hsb-danger':x.score>=50?'hsb-warn':'hsb-blue')+'">'+hMoney2(hJobBalance(x.t))+'<small class="hsb-score">'+Math.round(x.score)+'</small></div></div>';
+    });
+    var html = hSection('Prioridad sugerida', hList(rows, 'No hay urgencias fuertes. Puedes avanzar por orden de fecha de entrega.'));
+    if(compact) return html;
+    return html + hSection('Criterio usado', '<div class="hsb-tip">Prioricé: entrega vencida u hoy, cobro vencido, etiquetas de urgencia, prioridad alta y saldo pendiente.</div>');
+  }
+
+  function hAnswerPlan(){
+    return hAnswerPeriod('today','Primero mira lo de hoy') + hAnswerPriority(false);
+  }
+
+  function hAnswerWhatsApp(text){
+    var matches = hFindWorks(text, 5);
+    var target = matches[0] || hBaseStats().debtors[0];
+    if(!target) return hSection('WhatsApp', '<div class="hsb-tip">No encontré cliente con saldo o trabajo pendiente para redactar el mensaje.</div>');
+    var t = hNormHard(text);
+    var bal = hJobBalance(target);
+    var msg = 'Hola ' + (target.nombre || '') + ', buen día.';
+    if(/cobrar|cobro|saldo|deuda|debe|pago|cuota/.test(t) || bal > 0){
+      msg += '\n\nTe escribo para recordarte el saldo pendiente de ' + hMoney2(bal) + ' correspondiente a ' + (target.tipo || 'el trabajo') + '.';
+      if(target.fpago) msg += ' La fecha de pago figura para ' + hFmtDate(target.fpago) + ' (' + hDayLabel(hDiffDays(target.fpago)) + ').';
+      msg += '\n\nMe confirmas, por favor, cuándo podrías regularizarlo.';
+    } else if(/entrega|avance|revision|revisión/.test(t)){
+      msg += '\n\nTe escribo por ' + (target.tipo || 'el trabajo') + '.';
+      if(target.fent) msg += ' La entrega está programada para ' + hFmtDate(target.fent) + ' (' + hDayLabel(hDiffDays(target.fent)) + ').';
+      msg += '\n\nEstoy avanzando; cualquier detalle adicional me lo puedes enviar por este medio.';
+    } else {
+      msg += '\n\nTe escribo para hacer seguimiento de ' + (target.tipo || 'el trabajo') + '. Quedo atento a cualquier indicación adicional.';
+    }
+    return hSection('Mensaje listo para WhatsApp', '<div class="hsb-wa">' + hEsc(msg) + '</div><div class="hsb-tip">Cliente detectado: <strong>' + hEsc(target.nombre||'') + '</strong> · saldo: <strong>' + hMoney2(bal) + '</strong></div>');
+  }
+
+  function hAnswerSearch(text){
+    var type = hExtractType(text);
+    var uni = hExtractUniversity(text);
+    var status = hExtractStatus(text);
+    var arr = hDB().trabajos.slice();
+    if(type) arr = arr.filter(function(t){ return hNormHard(t.tipo||'') === hNormHard(type); });
+    if(uni) arr = arr.filter(function(t){ return hNormHard(t.uni||'') === hNormHard(uni); });
+    if(status) arr = arr.filter(function(t){ return hNormHard(t.estado||'') === hNormHard(status); });
+    if(!type && !uni && !status) arr = hFindWorks(text, 20);
+    return hSection('Búsqueda en registros',
+      hKpis([{value:String(arr.length),label:'coincidencias'}]) +
+      hList(arr.slice(0,HSB_MAX_ROWS).map(function(t){ return hJobRow(t); }), 'No encontré coincidencias claras.')
+    );
+  }
+
+  function hAnswerExport(text){
+    var t = hNormHard(text);
+    if(/backup|export|descarga|copia/.test(t) && typeof manualSync === 'function'){
+      try { manualSync(); return hSection('Backup', '<div class="hsb-action">✅ Estoy ejecutando la exportación local del backup. Se descargará como JSON desde el navegador.</div>'); }
+      catch(e){ return hSection('Backup', '<div class="hsb-tip">No pude ejecutar el backup automáticamente: '+hEsc(e.message||e)+'</div>'); }
+    }
+    return hSection('Backup', '<div class="hsb-tip">Para importar/restaurar usa el botón Importar del sistema. Para exportar puedes decir: “exporta backup”.</div>');
+  }
+
+  // =========================================================
+  // Mutaciones seguras
+  // =========================================================
+  function hLocalProcessor(text){
+    if(typeof procesarComandoLocal !== 'function') return null;
+    try { return procesarComandoLocal(text); }
+    catch(e){ return {tipo:'error', msg:'Error del motor interno: '+hEsc(e.message||e)}; }
+  }
+
+  function hResultLooksBad(res){
+    if(!res) return true;
+    var msg = hNormHard(res.msg || '');
+    if(res.tipo === 'error') return true;
+    return /no pude|no encontre|no encontr[eé]|indica|faltan|no vi|error/.test(msg);
+  }
+
+  function hLocalResultHtml(res){
+    if(!res) return '';
+    if(res.tipo === 'html' || res.tipo === 'error') return res.msg || '';
+    return hEsc(res.msg || 'Listo.').replace(/\n/g,'<br>');
+  }
+
+  function hNormalizeMutationText(text){
+    var s = String(text || '');
+    s = s.replace(/\blukitas?\b/gi,'soles');
+    s = s.replace(/\blucas?\b/gi,'soles');
+    s = s.replace(/\bme yape[oó]\b/gi,'me pagó');
+    s = s.replace(/\byape[oó]\b/gi,'pagó');
+    s = s.replace(/\byapearon\b/gi,'pagaron');
+    s = s.replace(/\bme deposito\b/gi,'me pagó');
+    s = s.replace(/\bme deposit[oó]\b/gi,'me pagó');
+    s = s.replace(/\bmini cuotas?\b/gi,'cuotas');
+    s = s.replace(/\bminicuotas?\b/gi,'cuotas');
+    s = s.replace(/\bponle\b/gi,'cambia');
+    s = s.replace(/\bdejalo\b/gi,'cambia');
+    s = s.replace(/\bdéjalo\b/gi,'cambia');
+    return s;
+  }
+
+  function hPickWorkForMutation(text){
+    var matches = hFindWorks(text, 10);
+    if(matches.length) return matches[0];
+    return null;
+  }
+
+  function hDirectChangeStatus(text){
+    var job = hPickWorkForMutation(text);
+    var status = hExtractStatus(text);
+    if(!job || !status) return null;
+    var before = job.estado || '';
+    job.estado = status;
+    if(status === 'Pagado') job.cobrado = hJobPrice(job);
+    job.hsUpdatedAt = new Date().toISOString();
+    hSafeSaveRender('Estado actualizado');
+    return hSection('Estado actualizado', '<div class="hsb-action">✅ <strong>'+hEsc(job.nombre||'')+'</strong>: '+hEsc(before || 'sin estado')+' → <strong>'+hEsc(status)+'</strong>.</div>');
+  }
+
+  function hEnsureJobQuotas(job){
+    if(!Array.isArray(job.cuotas)) job.cuotas = [];
+    if(!job.modoPago || job.modoPago === 'contado') job.modoPago = 'cuotas';
+    for(var i=1;i<=12;i++){
+      if(job['c'+i+'f'] || job['c'+i+'m']){
+        if(!job.cuotas[i-1]) job.cuotas[i-1] = {f:job['c'+i+'f']||'', m:Number(job['c'+i+'m'])||0, estado:'pendiente', abonos:[]};
+      }
+    }
+    return job.cuotas;
+  }
+
+  function hRecalcJobPaidFromQuotas(job){
+    if(!Array.isArray(job.cuotas) || !job.cuotas.length) return;
+    var total = job.cuotas.reduce(function(a,c){
+      var paid = Array.isArray(c.abonos) ? c.abonos.reduce(function(x,ab){ return x + (Number(ab.monto)||0); },0) : (Number(c.cobrado)||0);
+      c.cobrado = paid;
+      if(Number(c.m)>0 && paid >= Number(c.m)) c.estado = c.estado === 'retraso' ? 'retraso' : 'pagada';
+      else if(paid > 0) c.estado = 'incompleta';
+      else c.estado = c.estado || 'pendiente';
+      return a + paid;
+    },0);
+    job.cobrado = Math.min(total, hJobPrice(job));
+    if(hJobPrice(job)>0 && job.cobrado >= hJobPrice(job)) job.estado = 'Pagado';
+    job.cuotas.forEach(function(c,i){ job['c'+(i+1)+'f']=c.f||''; job['c'+(i+1)+'m']=Number(c.m)||0; });
+  }
+
+  function hDirectAddQuota(text){
+    var job = hPickWorkForMutation(text);
+    var amount = hExtractAmount(text);
+    var date = hExtractDate(text);
+    if(!job || !amount) return null;
+    var quotas = hEnsureJobQuotas(job);
+    var q = {f:date || '', m:amount, estado:'pendiente', cobrado:0, abonos:[], nota:'Agregada por asistente offline'};
+    quotas.push(q);
+    job['c'+quotas.length+'f'] = q.f;
+    job['c'+quotas.length+'m'] = q.m;
+    job.hsUpdatedAt = new Date().toISOString();
+    hSafeSaveRender('Cuota agregada');
+    return hSection('Mini cuota agregada', '<div class="hsb-action">✅ Agregué a <strong>'+hEsc(job.nombre||'')+'</strong> una cuota de <strong>'+hMoney2(amount)+'</strong>'+ (date?' para '+hFmtDate(date):' sin fecha') +'.</div>');
+  }
+
+  function hDirectPayQuota(text){
+    var job = hPickWorkForMutation(text);
+    var amount = hExtractAmount(text);
+    if(!job || !amount) return null;
+    var qn = hExtractQuotaNumber(text);
+    var date = hExtractDate(text) || hTodayStr();
+    var quotas = hEnsureJobQuotas(job);
+    if(!quotas.length) return hDirectRegisterPayment(text);
+    var q = null;
+    if(qn && quotas[qn-1]) q = quotas[qn-1];
+    if(!q){
+      var pending = quotas.map(function(c,i){ return {c:c,i:i,balance:Math.max(0,(Number(c.m)||0)-((Array.isArray(c.abonos)?c.abonos.reduce(function(a,ab){return a+(Number(ab.monto)||0);},0):(Number(c.cobrado)||0))))}; })
+        .filter(function(x){ return x.balance > 0; })
+        .sort(function(a,b){ return String(a.c.f||'9999').localeCompare(String(b.c.f||'9999')); });
+      q = pending.length ? pending[0].c : quotas[0];
+      qn = pending.length ? pending[0].i+1 : 1;
+    }
+    if(!Array.isArray(q.abonos)) q.abonos = [];
+    q.abonos.push({monto:amount, fecha:date, tipo:(q.f && date < q.f ? 'adelanto':'a_tiempo'), nota:'Registrado por asistente offline'});
+    hRecalcJobPaidFromQuotas(job);
+    job.hsUpdatedAt = new Date().toISOString();
+    hSafeSaveRender('Abono de cuota registrado');
+    var pendingAfter = Math.max(0,(Number(q.m)||0)-(Number(q.cobrado)||0));
+    return hSection('Abono de cuota registrado', '<div class="hsb-action">✅ Registré <strong>'+hMoney2(amount)+'</strong> para <strong>'+hEsc(job.nombre||'')+'</strong>, cuota '+qn+'. Pendiente de esa cuota: <strong>'+hMoney2(pendingAfter)+'</strong>.</div>');
+  }
+
+  function hDirectRegisterPayment(text){
+    var job = hPickWorkForMutation(text);
+    var amount = hExtractAmount(text);
+    if(!job || !amount) return null;
+    var before = hJobBalance(job);
+    if(!Array.isArray(job.pagos)) job.pagos = [];
+    job.pagos.push({monto:amount, fecha:hExtractDate(text)||hTodayStr(), medioPago:/yape/.test(hNormHard(text))?'Yape':'', nota:'Registrado por asistente offline'});
+    job.cobrado = Math.min(hJobPrice(job), hJobPaid(job) + amount);
+    if(hJobPrice(job)>0 && hJobPaid(job)>=hJobPrice(job)) job.estado = 'Pagado';
+    else if(job.estado === 'Pendiente' && amount > 0) job.estado = 'Prepagado';
+    job.hsUpdatedAt = new Date().toISOString();
+    hSafeSaveRender('Cobro registrado');
+    return hSection('Cobro registrado', '<div class="hsb-action">✅ <strong>'+hEsc(job.nombre||'')+'</strong>: registré <strong>'+hMoney2(amount)+'</strong>. Saldo antes: '+hMoney2(before)+' · saldo ahora: <strong>'+hMoney2(hJobBalance(job))+'</strong>.</div>');
+  }
+
+  function hDirectReminder(text){
+    var job = hPickWorkForMutation(text);
+    if(!job) return null;
+    var date = hExtractDate(text);
+    if(!date && job.fent){
+      var daysBefore = 1;
+      var m = hNormHard(text).match(/(\d{1,2})\s+dias?\s+antes/);
+      if(m) daysBefore = Number(m[1]);
+      var d = hParseISO(job.fent);
+      if(d){ d.setDate(d.getDate()-daysBefore); date = d.toISOString().slice(0,10); }
+    }
+    if(!date) date = hTodayStr();
+    job.reminderDate = date;
+    job.reminderText = hExtractNoteText(text) || 'Revisar trabajo / seguimiento';
+    job.hsUpdatedAt = new Date().toISOString();
+    hSafeSaveRender('Recordatorio guardado');
+    return hSection('Recordatorio guardado', '<div class="hsb-action">🔔 <strong>'+hEsc(job.nombre||'')+'</strong>: '+hFmtDate(date)+' — '+hEsc(job.reminderText)+'</div>');
+  }
+
+  function hExtractNoteText(text){
+    var s = String(text||'');
+    var m = s.match(/(?:nota|bit[aá]cora|observaci[oó]n|comentario|entregable|checklist|tarea interna|recordatorio|aviso)\s*(?:a|para|de)?\s*[^:]*:\s*(.+)$/i);
+    if(m) return m[1].trim();
+    m = s.match(/(?:que|q)\s+(.{5,120})$/i);
+    if(m) return m[1].trim();
+    return '';
+  }
+
+  function hDirectNote(text){
+    var job = hPickWorkForMutation(text);
+    if(!job) return null;
+    var note = hExtractNoteText(text) || String(text).replace(/^(agrega|anota|pon|registra)\s+/i,'').trim();
+    if(!note || note.length < 3) return null;
+    try{
+      var all = JSON.parse(localStorage.getItem('tracker_bitacoras') || '{}');
+      if(!Array.isArray(all[job.id])) all[job.id] = [];
+      var now = new Date();
+      all[job.id].push({fecha:now.toLocaleDateString('es-PE'), hora:now.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}), text:note});
+      localStorage.setItem('tracker_bitacoras', JSON.stringify(all));
+    }catch(e){
+      job.notas = (job.notas ? job.notas + '\n' : '') + note;
+    }
+    hSafeSaveRender('Nota agregada');
+    return hSection('Nota agregada', '<div class="hsb-action">📝 Guardé una nota para <strong>'+hEsc(job.nombre||'')+'</strong>: '+hEsc(note)+'</div>');
+  }
+
+  function hDirectTask(text){
+    var job = hPickWorkForMutation(text);
+    if(!job) return null;
+    var task = hExtractNoteText(text);
+    if(!task){
+      var m = String(text).match(/(?:agrega|anota|pon|crear|crea).*?(?:entregable|checklist|subtarea|tarea interna|paso)\s+(?:a|para|de)?\s*.*?\s+(.{5,120})$/i);
+      if(m) task = m[1].trim();
+    }
+    if(!task) return null;
+    try{
+      var arr = typeof getTareasInline === 'function' ? getTareasInline(job.id) : JSON.parse(localStorage.getItem('tracker_tareas_'+job.id)||'[]');
+      arr.push({texto:task, text:task, done:false, fecha:hExtractDate(text)||''});
+      if(typeof saveTareasInline === 'function') saveTareasInline(job.id, arr);
+      else localStorage.setItem('tracker_tareas_'+job.id, JSON.stringify(arr));
+      hSafeSaveRender('Entregable agregado');
+      return hSection('Entregable agregado', '<div class="hsb-action">✅ Agregué al checklist de <strong>'+hEsc(job.nombre||'')+'</strong>: '+hEsc(task)+'</div>');
+    }catch(e){ return null; }
+  }
+
+  function hDirectDelete(text){
+    var job = hPickWorkForMutation(text);
+    if(!job) return null;
+    if(/\b(no|solo|consulta|cuanto|cuánto|mostrar|muestra)\b/.test(hNormHard(text))) return null;
+    if(typeof eliminarTrabajo === 'function'){
+      try { eliminarTrabajo(job.id); return hSection('Eliminar', '<div class="hsb-action">Envié la orden de eliminación para <strong>'+hEsc(job.nombre||'')+'</strong>. Si el sistema pide confirmación, acepta desde la ventana.</div>'); }
+      catch(e){}
+    }
+    return null;
+  }
+
+  function hDirectCreate(text){
+    var name = hExtractClientName(text);
+    var amount = hExtractAmount(text) || 0;
+    var type = hExtractType(text) || 'Trabajo Académico';
+    var uni = hExtractUniversity(text) || '';
+    var dates = hExtractDates(text);
+    if(!name || (!amount && !type)) return null;
+    var numCuotas = hExtractQuotaNumber(text);
+    var quotas = [];
+    if(/cuota|cuotas|partes|pagos|armadas|letras/.test(hNormHard(text))){
+      var n = numCuotas || Math.max(2, dates.length || 2);
+      var each = amount ? Math.round((amount/n)*100)/100 : 0;
+      for(var i=0;i<n;i++) quotas.push({f:dates[i]||'', m:each, estado:'pendiente', cobrado:0, abonos:[]});
+    }
+    var obj = {
+      id: hDB().nextId++,
+      nombre: name,
+      cel: '',
+      dni: '',
+      tipo: type,
+      uni: uni,
+      fenc: hTodayStr(),
+      fent: dates.length ? dates[dates.length-1] : '',
+      fpago: dates.length ? dates[dates.length-1] : '',
+      precio: amount,
+      cobrado: 0,
+      estado: 'En proceso',
+      notas: '',
+      modoPago: quotas.length ? 'cuotas' : 'contado',
+      cuotas: quotas,
+      tags: []
+    };
+    quotas.forEach(function(c,i){ obj['c'+(i+1)+'f']=c.f||''; obj['c'+(i+1)+'m']=c.m||0; });
+    hDB().trabajos.push(obj);
+    hSafeSaveRender('Trabajo creado');
+    return hSection('Trabajo creado por motor ampliado',
+      '<div class="hsb-action">✅ Creé el trabajo para <strong>'+hEsc(name)+'</strong>.</div>' +
+      hKpis([{value:hMoney2(amount),label:'precio'},{value:type,label:'tipo'},{value:obj.fent?hFmtDate(obj.fent):'sin fecha',label:'entrega'}]) +
+      (quotas.length?'<div class="hsb-tip">Cuotas creadas: '+quotas.length+'. Revisa fechas y montos si deseas ajustar.</div>':'')
+    );
+  }
+
+  function hHandleMutation(text, forcedIntent){
+    var normalized = hNormalizeMutationText(text);
+    var localFirst = null;
+    if([HSB_INTENTS.CREATE, HSB_INTENTS.PAYMENT, HSB_INTENTS.STATUS_CHANGE, HSB_INTENTS.DELETE].indexOf(forcedIntent) !== -1){
+      localFirst = hLocalProcessor(normalized);
+      if(localFirst && !hResultLooksBad(localFirst)) return hLocalResultHtml(localFirst);
+    }
+    var direct = null;
+    if(forcedIntent === HSB_INTENTS.QUOTA_ADD) direct = hDirectAddQuota(normalized);
+    if(forcedIntent === HSB_INTENTS.QUOTA_PAY) direct = hDirectPayQuota(normalized);
+    if(forcedIntent === HSB_INTENTS.PAYMENT) direct = hDirectPayQuota(normalized) || hDirectRegisterPayment(normalized);
+    if(forcedIntent === HSB_INTENTS.STATUS_CHANGE) direct = hDirectChangeStatus(normalized);
+    if(forcedIntent === HSB_INTENTS.REMINDER) direct = hDirectReminder(normalized);
+    if(forcedIntent === HSB_INTENTS.NOTE) direct = hDirectNote(normalized);
+    if(forcedIntent === HSB_INTENTS.TASK) direct = hDirectTask(normalized);
+    if(forcedIntent === HSB_INTENTS.DELETE) direct = hDirectDelete(normalized);
+    if(forcedIntent === HSB_INTENTS.CREATE) direct = hDirectCreate(normalized);
+    if(direct) return direct;
+    if(localFirst) return hLocalResultHtml(localFirst);
+    var local = hLocalProcessor(normalized);
+    if(local) return hLocalResultHtml(local);
+    return hSection('No entendí del todo', '<div class="hsb-tip">Puedo intentarlo si mencionas cliente + acción + monto/fecha. Ejemplo: “Juan me pagó 100”, “marca a Kenny como entregado”, “agrega cuota de 50 a Cindy para el 7 de mayo”.</div>');
+  }
+
+  function hOpenView(text){
+    var view = hExtractView(text);
+    if(view && typeof goView === 'function'){
+      try { goView(view); return hSection('Vista abierta', '<div class="hsb-action">✅ Abrí la vista: <strong>'+hEsc(view)+'</strong>.</div>'); }
+      catch(e){ return hSection('Vista', '<div class="hsb-tip">No pude abrir esa vista automáticamente.</div>'); }
+    }
+    return hSection('Vista', '<div class="hsb-tip">Dime una vista concreta: registro, alertas, proyección, productividad, WhatsApp, archivos o gastos.</div>');
+  }
+
+  // =========================================================
+  // Motor principal de respuesta
+  // =========================================================
+  function hSuperOfflineAnswer(text){
+    if(!hHasApp()) return '<div class="hsb-tip">El programa todavía no terminó de cargar. Vuelve a intentar en unos segundos.</div>';
+    var raw = String(text || '').trim();
+    var cls = hClassify(raw);
+    var intent = cls.intent;
+    HSB_LAST_CONTEXT = {text:raw, intent:intent, score:cls.score, ranked:cls.ranked, at:new Date().toISOString()};
+
+    if(intent === HSB_INTENTS.HELP) return hAnswerHelp();
+    if(intent === HSB_INTENTS.GREETING) return hAnswerGreeting();
+    if(intent === HSB_INTENTS.THANKS) return hAnswerThanks();
+    if(intent === HSB_INTENTS.OPEN_VIEW) return hOpenView(raw);
+    if(intent === HSB_INTENTS.EXPORT) return hAnswerExport(raw);
+
+    if(intent === HSB_INTENTS.CREATE) return hHandleMutation(raw, HSB_INTENTS.CREATE);
+    if(intent === HSB_INTENTS.PAYMENT) return hHandleMutation(raw, HSB_INTENTS.PAYMENT);
+    if(intent === HSB_INTENTS.STATUS_CHANGE && /\b(cambia|marca|pon|estado|pasalo|pásalo|dejalo|déjalo|cancel|pagad|terminad|entregad|prepagad|proceso|pendiente)\b/.test(hNormHard(raw))) return hHandleMutation(raw, HSB_INTENTS.STATUS_CHANGE);
+    if(intent === HSB_INTENTS.DELETE) return hHandleMutation(raw, HSB_INTENTS.DELETE);
+    if(intent === HSB_INTENTS.QUOTA_ADD) return hHandleMutation(raw, HSB_INTENTS.QUOTA_ADD);
+    if(intent === HSB_INTENTS.QUOTA_PAY) return hHandleMutation(raw, HSB_INTENTS.QUOTA_PAY);
+    if(intent === HSB_INTENTS.REMINDER && /\b(agrega|pon|crea|programa|recu[eé]rdame|av[ií]same|recordatorio|alarma)\b/.test(raw.toLowerCase())) return hHandleMutation(raw, HSB_INTENTS.REMINDER);
+    if(intent === HSB_INTENTS.NOTE && /\b(agrega|anota|pon|registra|guarda)\b/.test(hNormHard(raw))) return hHandleMutation(raw, HSB_INTENTS.NOTE);
+    if(intent === HSB_INTENTS.TASK && /\b(agrega|anota|pon|crea|registrar|registra)\b/.test(hNormHard(raw))) return hHandleMutation(raw, HSB_INTENTS.TASK);
+
+    if(intent === HSB_INTENTS.WHATSAPP) return hAnswerWhatsApp(raw);
+    if(intent === HSB_INTENTS.TODAY) return hAnswerPeriod('today','Pendientes de hoy');
+    if(intent === HSB_INTENTS.TOMORROW) return hAnswerPeriod('tomorrow','Pendientes de mañana');
+    if(intent === HSB_INTENTS.WEEK || intent === HSB_INTENTS.UPCOMING) return hAnswerPeriod('week','Próximos 7 días');
+    if(intent === HSB_INTENTS.MONTH) return hAnswerQuotas(raw) + hSection('Vista mensual', '<div class="hsb-tip">Para detalle completo de meses abre la vista Proyección. También puedes decir: “abre proyección”.</div>');
+    if(intent === HSB_INTENTS.OVERDUE) return hAnswerPeriod('overdue','Vencidos y atrasados');
+    if(intent === HSB_INTENTS.QUOTAS) return hAnswerQuotas(raw);
+    if(intent === HSB_INTENTS.DEBTS) return hAnswerDebts(raw);
+    if(intent === HSB_INTENTS.CLIENT) return hAnswerClient(raw);
+    if(intent === HSB_INTENTS.STATUS) return hAnswerStatus(raw);
+    if(intent === HSB_INTENTS.PRIORITY) return hAnswerPriority(false);
+    if(intent === HSB_INTENTS.PLAN) return hAnswerPlan();
+    if(intent === HSB_INTENTS.SUMMARY) return hAnswerSummary();
+    if(intent === HSB_INTENTS.SEARCH) return hAnswerSearch(raw);
+
+    var client = hFindWorks(raw, 8);
+    if(client.length) return hAnswerClient(raw);
+    var local = hLocalProcessor(raw);
+    if(local && !hResultLooksBad(local)) return hLocalResultHtml(local);
+    return hSection('No entendí del todo',
+      '<div class="hsb-tip">No ejecuté cambios porque no vi una intención segura. Prueba con una frase más directa: <strong>cliente + acción + monto/fecha</strong>.</div>' +
+      hChipLine(['resumen','qué vence hoy','cuánto me deben','cuotas vencidas','mensaje WhatsApp','agregar cuota','registrar abono','cambiar estado'])
+    );
+  }
+
+  window.hsSuperOfflineAnswer = hSuperOfflineAnswer;
+  window.hsSuperOfflineContext = function(){ return HSB_LAST_CONTEXT; };
+
+  // =========================================================
+  // UI: reemplazo seguro del envío del asistente
+  // =========================================================
+  function hSend(){
+    var ta = h$('ai-textarea');
+    var text = (ta && ta.value || '').trim();
+    if(!text) return;
+    if(ta){ ta.value=''; ta.style.height='auto'; }
+    try { if(typeof aiAddMsg === 'function') aiAddMsg('user', text); } catch(e){}
+    var sendBtn = h$('ai-send-btn');
+    if(sendBtn) sendBtn.disabled = true;
+    try { if(typeof aiSetStatus === 'function') aiSetStatus('🧠 Offline V4 interpretando...'); } catch(e){}
+    setTimeout(function(){
+      var html = '';
+      try { html = hSuperOfflineAnswer(text); }
+      catch(e){
+        html = '<div class="hsb-card"><h4>Error controlado</h4><div class="hsb-tip">El asistente ampliado tuvo un error: '+hEsc(e.message||e)+'. Intento usar el motor anterior.</div></div>';
+        try {
+          if(typeof HSB_ORIGINAL_AI_ENVIAR === 'function' && ta){ ta.value = text; HSB_ORIGINAL_AI_ENVIAR(); return; }
+        } catch(ex){}
+      }
+      try {
+        var bubble = (typeof aiAddMsg === 'function') ? aiAddMsg('bot','',true) : null;
+        if(bubble) bubble.innerHTML = html;
+      } catch(e){}
+      try { if(typeof aiSetStatus === 'function') aiSetStatus(''); } catch(e){}
+      if(sendBtn) sendBtn.disabled = false;
+      var cont = h$('ai-messages');
+      if(cont) cont.scrollTop = cont.scrollHeight;
+    }, 60);
+  }
+
+  window.aiEnviar = hSend;
+
+  function hPatchInputHandlers(){
+    var send = h$('ai-send-btn');
+    if(send) send.onclick = hSend;
+    var ta = h$('ai-textarea');
+    if(ta){
+      ta.onkeydown = function(e){
+        if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); hSend(); }
+      };
+    }
+  }
+
+  function hBoostPanel(){
+    var body = hQ('#hs-ai-offline-panel .hs-ai-offline-body');
+    if(!body || h$('hsb-boost-panel')) return;
+    var wrap = document.createElement('div');
+    wrap.id = 'hsb-boost-panel';
+    wrap.className = 'hsb-boost';
+    var chips = [
+      ['🧾 Deudores','quién me debe más dinero'],
+      ['🟡 Parciales','cuotas con pago parcial'],
+      ['🧩 Mini cuota','agrégale una mini cuota de 50 a Juan para mañana'],
+      ['📝 Nota','agrega nota a Juan: falta revisar'],
+      ['✅ Checklist','agrega entregable a Juan: revisar referencias'],
+      ['🔔 Recordatorio','pon recordatorio a Juan un día antes'],
+      ['📲 Cobrar','haz mensaje de whatsapp para cobrar'],
+      ['🧭 Plan','qué hago primero hoy']
+    ];
+    wrap.innerHTML = chips.map(function(c){ return '<button class="btn btn-ghost btn-sm" type="button" onclick="hsOfflineAsk(\''+hEsc(c[1]).replace(/&#39;/g,'\\&#39;')+'\')">'+hEsc(c[0])+'</button>'; }).join('');
+    body.appendChild(wrap);
+  }
+
+  function hInit(){
+    hPatchInputHandlers();
+    hBoostPanel();
+    setTimeout(hPatchInputHandlers, 300);
+    setTimeout(hBoostPanel, 500);
+    try { if(typeof showToast === 'function') showToast('🧠 Asistente offline ampliado V4 cargado', 1800); } catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hInit);
+  else hInit();
+
+})();
+</script>
+
+
 </body>
 </html>
