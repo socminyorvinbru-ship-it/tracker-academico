@@ -8458,5 +8458,549 @@ function abrirDrive(){
   if(el) el.textContent = last || 'Nunca';
 }
 </script>
+<script>
+/* =========================================================
+   CAPA HUMAN-SENSE: control diario real del negocio
+   - No rehace la app: extiende la estructura existente.
+   - Todo lo nuevo queda editable y se guarda en el mismo DB.
+   ========================================================= */
+(function(){
+  const HS_VERSION = '2026-05-02-control-diario-v1';
+  const HS_DEFAULTS = {
+    sortMode:'urgencia',
+    diasPronto:7,
+    tipoCambioUSD:3.75,
+    mediosPago:['Yape','Plin','Transferencia','Efectivo','Depósito','Otro'],
+    proximasAcciones:['Me toca avanzar','Falta que el cliente envíe datos','Falta revisar','Falta enviar','Falta cobrar','Esperando respuesta','Esperando asesor/docente','En pausa','Falta validar pago','Falta levantar observaciones','Falta entregar final'],
+    responsables:['Yo','Cliente','Asesor/docente','Tercero'],
+    motivosBloqueo:['Falta pago','Falta información','Falta base de datos','Falta documento','Cliente no responde','Esperando asesor','Falta corrección del cliente','Falta autorización'],
+    estados:['Cotizado','Aceptado','No iniciado - falta adelanto','No iniciado - falta información','En proceso','Bloqueado','Esperando cliente','Esperando asesor','Pendiente','Entregado','En corrección','Corrección enviada','Cerrado definitivamente','Prepagado','Terminado','Pagado','Cancelado'],
+    reglasAnticipo:[{min:500,pct:30,nivel:'medio'},{min:1500,pct:40,nivel:'alto'}],
+    formulaDisponible:{incluirHerramientas:true,incluirGastosPuntuales:true,soloPagados:false}
+  };
+  const expandedCards = new Set();
+  let hsLastAction = null;
+
+  function hsSettings(){
+    try{
+      const saved = JSON.parse(localStorage.getItem('tracker_hs_settings')||'{}');
+      return Object.assign({}, HS_DEFAULTS, saved, {
+        formulaDisponible:Object.assign({}, HS_DEFAULTS.formulaDisponible, saved.formulaDisponible||{})
+      });
+    }catch(e){ return JSON.parse(JSON.stringify(HS_DEFAULTS)); }
+  }
+  function hsSaveSettings(s){ localStorage.setItem('tracker_hs_settings', JSON.stringify(s)); }
+  function esc(v){ return String(v==null?'':v).replace(/[&<>'"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch])); }
+  function norm(v){ return String(v==null?'':v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim(); }
+  function money(n){ return typeof fmtSRaw==='function'?fmtSRaw(Number(n)||0):('S/ '+(Number(n)||0).toFixed(2)); }
+  function get(id){ return document.getElementById(id); }
+  function val(id){ const el=get(id); return el?el.value:''; }
+  function setVal(id,v){ const el=get(id); if(el) el.value = v==null?'':v; }
+  function chk(id){ const el=get(id); return !!(el&&el.checked); }
+  function setChk(id,v){ const el=get(id); if(el) el.checked=!!v; }
+  function today(){ return typeof todayStr==='function'?todayStr():new Date().toISOString().slice(0,10); }
+  function toast(m){ if(typeof showToast==='function') showToast(m); else console.log(m); }
+  function monthKey(d){ return (d||today()).slice(0,7); }
+  function dateDiff(d){ return typeof diffDias==='function'?diffDias(d):(d?Math.round((new Date(d+'T00:00:00')-new Date(today()+'T00:00:00'))/86400000):null); }
+
+  function ensureDB(){
+    if(typeof DB==='undefined') return;
+    if(!DB.trabajos) DB.trabajos=[];
+    if(!DB.ingresos) DB.ingresos=[];
+    if(!DB.gastos_herramientas) DB.gastos_herramientas=[];
+    if(!DB.gastos_puntuales) DB.gastos_puntuales=[];
+    if(!DB.papelera) DB.papelera={trabajos:[],pagos:[],gastos:[]};
+    if(!DB.hs_meta) DB.hs_meta={version:HS_VERSION, migratedAt:new Date().toISOString()};
+    DB.trabajos.forEach(hsMigrateTrabajo);
+  }
+
+  function hsMigrateTrabajo(t){
+    if(!t) return t;
+    if(!t.cuotas && (t.c1f||t.c1m||t.c2f||t.c2m||t.c3f||t.c3m||t.c4f||t.c4m)){
+      t.cuotas=[];
+      for(let i=1;i<=4;i++){
+        const f=t['c'+i+'f']||''; const m=Number(t['c'+i+'m']||0);
+        if(f||m) t.cuotas.push({f,m,estado:'pendiente',cobrado:0,abonos:[]});
+      }
+      if(t.cuotas.length) t.modoPago='cuotas';
+    }
+    if(!Array.isArray(t.cuotas)) t.cuotas=[];
+    t.cuotas.forEach(c=>{ if(!Array.isArray(c.abonos)) c.abonos=[]; c.abonos.forEach(a=>{ if(!a.medioPago) a.medioPago=inferMedioPago(a.nota); if(a.adelanto==null) a.adelanto=(a.tipo==='adelanto'); }); });
+    if(!Array.isArray(t.pagos)) t.pagos=[];
+    if(!Array.isArray(t.adicionales)) t.adicionales=[];
+    if(!t.descuento) t.descuento={monto:0,motivo:''};
+    if(t.precioOriginal==null) t.precioOriginal=t.precio||0;
+    if(!t.proximaAccion) t.proximaAccion={accion:'',fecha:'',responsable:'',nota:''};
+    if(!t.bloqueado) t.bloqueado={activo:false,motivo:'',responsable:'Cliente',desde:'',proximo:''};
+    if(!t.promesaPago) t.promesaPago={fecha:'',monto:0,nota:'',estado:'pendiente'};
+    if(!t.esperandoRespuesta) t.esperandoRespuesta={activo:false,desde:'',motivo:'',ultimoMensaje:'',proximoSeguimiento:''};
+    if(!t.correcciones) t.correcciones={incluidas:0,usadas:0,vencimiento:'',estado:'',nota:''};
+    if(!t.alcance) t.alcance={incluye:'',noIncluye:''};
+    if(!t.clientePerfil) t.clientePerfil={vip:false,buenPagador:false,pagaTarde:false,moroso:false,regatea:false,muchosCambios:false,problematico:false,noIniciarSinAdelanto:false,tratoCuidadoso:false,notasPrivadas:''};
+    if(!t.wa) t.wa={ultimoCobro:'',ultimoEntrega:'',ultimoSeguimiento:'',noInsistirHasta:''};
+    if(t.alias==null) t.alias='';
+    if(t.referidoPor==null) t.referidoPor='';
+    return t;
+  }
+
+  function inferMedioPago(nota){
+    const n=norm(nota||'');
+    if(n.includes('yape')) return 'Yape';
+    if(n.includes('plin')) return 'Plin';
+    if(n.includes('transf')) return 'Transferencia';
+    if(n.includes('efect')) return 'Efectivo';
+    if(n.includes('deposit')) return 'Depósito';
+    return '';
+  }
+
+  function hsLog(id,text){
+    if(!id||!text) return;
+    try{
+      const key='tracker_bitacoras';
+      const obj=JSON.parse(localStorage.getItem(key)||'{}');
+      if(!obj[id]) obj[id]=[];
+      obj[id].unshift({fecha:new Date().toLocaleString('es-PE'), texto:text});
+      localStorage.setItem(key, JSON.stringify(obj));
+    }catch(e){}
+  }
+
+  function cuotaAbonado(c){ return (c&&Array.isArray(c.abonos)?c.abonos:[]).reduce((a,b)=>a+(Number(b.monto)||0),0); }
+  function precioTotal(t){
+    const base=Number(t.precio)||0;
+    const ads=(t.adicionales||[]).filter(a=>a&&a.sumaSaldo!==false).reduce((s,a)=>s+(Number(a.monto)||0),0);
+    return Math.max(0, base+ads);
+  }
+  function cobradoTotal(t){ return Number(t.cobrado)||0; }
+  function saldoTotal(t){ return Math.max(0, precioTotal(t)-cobradoTotal(t)); }
+
+  function hsPaymentEvents(){
+    if(typeof DB==='undefined'||!DB.trabajos) return [];
+    const out=[];
+    DB.trabajos.forEach(t=>{
+      hsMigrateTrabajo(t);
+      (t.pagos||[]).forEach(p=>{
+        if(Number(p.monto)>0) out.push({trabajoId:t.id,cliente:t.nombre,tipo:t.tipo,fecha:p.fecha||today(),monto:Number(p.monto)||0,medio:p.medioPago||'',operacion:p.operacion||'',nota:p.nota||'',origen:'cobro directo'});
+      });
+      (t.cuotas||[]).forEach((c,ci)=>{
+        (c.abonos||[]).forEach(a=>{
+          if(Number(a.monto)>0) out.push({trabajoId:t.id,cliente:t.nombre,tipo:t.tipo,cuota:ci+1,fecha:a.fecha||today(),monto:Number(a.monto)||0,medio:a.medioPago||inferMedioPago(a.nota)||'',operacion:a.operacion||'',nota:a.nota||'',origen:'cuota'});
+        });
+      });
+    });
+    return out;
+  }
+
+  function injectStyles(){
+    if(get('hs-styles')) return;
+    document.head.insertAdjacentHTML('beforeend', `<style id="hs-styles">
+      .hs-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hs-full{grid-column:1/-1}.hs-section{grid-column:1/-1;border:1px solid var(--border);border-radius:10px;background:var(--bg3);padding:12px;margin-top:4px}.hs-section-title{font-size:11px;font-weight:800;color:var(--accent3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}.hs-mini{font-size:10px;color:var(--text3);line-height:1.45}.hs-chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--border2);background:var(--bg4);border-radius:14px;padding:3px 8px;font-size:10px;font-weight:700;color:var(--text2);white-space:nowrap}.hs-danger{color:var(--red)!important}.hs-ok{color:var(--green)!important}.hs-warn{color:var(--yellow)!important}.hs-card-kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px}.hs-card-kpi .v{font-size:18px;font-weight:800}.hs-card-kpi .l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}.mcard.collapsed .mcard-body,.mcard.collapsed .mcard-footer,.mcard.collapsed .hs-card-extra{display:none!important}.mcard.hs-bloqueado{border-color:#92400e}.mcard.hs-espera{border-color:#1e3a6e}.hs-privacy .hs-private,.hs-privacy .client-note,.hs-privacy [data-private="1"]{filter:blur(5px);user-select:none}.hs-toolbar-extra{display:flex;gap:6px;align-items:center;flex-wrap:wrap;width:100%}@media(max-width:768px){.hs-row{grid-template-columns:1fr}.hs-toolbar-extra .btn,.hs-toolbar-extra select{font-size:10px;padding:5px 7px}.hs-section{padding:10px}.hs-card-kpi .v{font-size:16px}}
+    </style>`);
+  }
+
+  function options(arr, selected){ return (arr||[]).map(x=>`<option value="${esc(x)}" ${x===selected?'selected':''}>${esc(x)}</option>`).join(''); }
+  function ensureStatusOptions(){
+    const s=hsSettings();
+    const selects=[get('f-estado'),get('filter-estado')].filter(Boolean);
+    selects.forEach(sel=>{
+      const current=sel.value;
+      const first=sel.id==='filter-estado'?'<option value="">Todos los estados</option>':'';
+      sel.innerHTML=first+s.estados.map(e=>`<option value="${esc(e)}">${esc(e)}</option>`).join('');
+      if(current) sel.value=current;
+    });
+  }
+
+  function injectRegistroToolbar(){
+    const tb=document.querySelector('#v-registro .table-toolbar');
+    if(!tb||get('hs-toolbar-extra')) return;
+    const s=hsSettings();
+    tb.insertAdjacentHTML('beforeend', `<div class="hs-toolbar-extra" id="hs-toolbar-extra">
+      <select class="filter-select" id="hs-sort" title="Ordenar registros" onchange="hsSetSort(this.value)">
+        <option value="urgencia">🚦 Urgencia + fecha + nombre</option>
+        <option value="az">A-Z cliente</option>
+        <option value="fecha">Fecha de entrega</option>
+        <option value="saldo">Mayor saldo</option>
+        <option value="precio">Mayor precio</option>
+        <option value="ultimo">Último agregado</option>
+        <option value="modificado">Última modificación</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" onclick="hsCollapseAll()">Contraer todo</button>
+      <button class="btn btn-ghost btn-sm" onclick="hsExpandAll()">Expandir todo</button>
+      <button class="btn btn-ghost btn-sm" onclick="hsOpenPapelera()">🗑️ Papelera</button>
+      <button class="btn btn-ghost btn-sm" onclick="hsUndoLast()">↶ Deshacer</button>
+      <button class="btn btn-ghost btn-sm" onclick="hsOpenSettings()">⚙️ Config</button>
+    </div>`);
+    const sort=get('hs-sort'); if(sort) sort.value=s.sortMode||'urgencia';
+  }
+
+  function injectCobroFields(){
+    const modal=get('modal-cobro');
+    if(!modal||get('cobro-medio')) return;
+    const body=modal.querySelector('.modal-body');
+    if(!body) return;
+    const s=hsSettings();
+    body.insertAdjacentHTML('beforeend', `<div class="form-grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <div class="form-group"><label>Fecha real del pago</label><input class="form-input" id="cobro-fecha" type="date"></div>
+      <div class="form-group"><label>Medio de pago</label><select class="form-select" id="cobro-medio">${options(s.mediosPago,'Yape')}</select></div>
+      <div class="form-group"><label>N° operación</label><input class="form-input" id="cobro-operacion" placeholder="Opcional"></div>
+      <div class="form-group"><label>Nota</label><input class="form-input" id="cobro-nota" placeholder="Ej. adelantó, transferencia..."></div>
+    </div>`);
+  }
+
+  function injectTrabajoExtras(){
+    const grid=document.querySelector('#modal-trabajo .form-grid');
+    if(!grid||get('hs-extra-section')) return;
+    const s=hsSettings();
+    grid.insertAdjacentHTML('beforeend', `<div class="hs-section" id="hs-extra-section">
+      <div class="hs-section-title">🧠 Control cotidiano editable</div>
+      <div class="hs-row">
+        <div class="form-group"><label>Alias / apodo</label><input class="form-input" id="hs-alias" placeholder="Fiscal, Roger, Dra. María..."></div>
+        <div class="form-group"><label>Referido por</label><input class="form-input" id="hs-referido" list="hs-referidos-list" placeholder="Kenny, Rosy, Facebook..."><datalist id="hs-referidos-list"><option value="Cliente antiguo"><option value="Facebook"><option value="WhatsApp"><option value="Recomendación"><option value="Universidad"><option value="Amigo/conocido"><option value="Otro"></datalist></div>
+        <div class="form-group"><label>Precio original S/.</label><input class="form-input" id="hs-precio-original" type="number" inputmode="decimal" placeholder="Antes de descuento"></div>
+        <div class="form-group"><label>Descuento S/.</label><input class="form-input" id="hs-descuento-monto" type="number" inputmode="decimal" placeholder="0"></div>
+        <div class="form-group hs-full"><label>Motivo del descuento</label><input class="form-input" id="hs-descuento-motivo" placeholder="Cliente recurrente, regateo, favor, etc."></div>
+      </div>
+    </div>
+    <div class="hs-section">
+      <div class="hs-section-title">✅ Próxima acción</div>
+      <div class="hs-row">
+        <div class="form-group"><label>Acción</label><input class="form-input" id="hs-prox-accion" list="hs-acciones-list"><datalist id="hs-acciones-list">${(s.proximasAcciones||[]).map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div>
+        <div class="form-group"><label>Fecha límite</label><input class="form-input" id="hs-prox-fecha" type="date"></div>
+        <div class="form-group"><label>Responsable</label><select class="form-select" id="hs-prox-resp">${options(s.responsables,'Yo')}</select></div>
+        <div class="form-group"><label>Nota</label><input class="form-input" id="hs-prox-nota" placeholder="Detalle breve"></div>
+      </div>
+    </div>
+    <div class="hs-section">
+      <div class="hs-section-title">⛔ Bloqueo / espera / promesa de pago</div>
+      <div class="hs-row">
+        <div class="form-group"><label style="display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="hs-bloqueado" style="accent-color:var(--orange)"> Trabajo bloqueado</label></div>
+        <div class="form-group"><label>Motivo bloqueo</label><input class="form-input" id="hs-bloqueo-motivo" list="hs-motivos-bloq"><datalist id="hs-motivos-bloq">${(s.motivosBloqueo||[]).map(x=>`<option value="${esc(x)}">`).join('')}</datalist></div>
+        <div class="form-group"><label>Responsable bloqueo</label><select class="form-select" id="hs-bloqueo-resp">${options(s.responsables,'Cliente')}</select></div>
+        <div class="form-group"><label>Bloqueado desde</label><input class="form-input" id="hs-bloqueo-desde" type="date"></div>
+        <div class="form-group"><label style="display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" id="hs-espera-activo" style="accent-color:var(--blue)"> Esperando respuesta</label></div>
+        <div class="form-group"><label>Desde</label><input class="form-input" id="hs-espera-desde" type="date"></div>
+        <div class="form-group"><label>Motivo espera</label><input class="form-input" id="hs-espera-motivo" placeholder="No responde, falta archivo..."></div>
+        <div class="form-group"><label>Próximo seguimiento</label><input class="form-input" id="hs-espera-prox" type="date"></div>
+        <div class="form-group"><label>Promesa de pago</label><input class="form-input" id="hs-promesa-fecha" type="date"></div>
+        <div class="form-group"><label>Monto prometido</label><input class="form-input" id="hs-promesa-monto" type="number" inputmode="decimal"></div>
+        <div class="form-group"><label>Estado promesa</label><select class="form-select" id="hs-promesa-estado"><option value="pendiente">Pendiente</option><option value="cumplio">Cumplió</option><option value="no_cumplio">No cumplió</option></select></div>
+        <div class="form-group"><label>Nota promesa</label><input class="form-input" id="hs-promesa-nota" placeholder="Dijo que paga en la noche..."></div>
+      </div>
+    </div>
+    <div class="hs-section">
+      <div class="hs-section-title">🧾 Alcance, adicionales y correcciones</div>
+      <div class="hs-row">
+        <div class="form-group"><label>Correcciones incluidas</label><input class="form-input" id="hs-corr-incluidas" type="number" inputmode="numeric"></div>
+        <div class="form-group"><label>Correcciones usadas</label><input class="form-input" id="hs-corr-usadas" type="number" inputmode="numeric"></div>
+        <div class="form-group"><label>Corrección vence</label><input class="form-input" id="hs-corr-venc" type="date"></div>
+        <div class="form-group"><label>Estado post-entrega</label><select class="form-select" id="hs-corr-estado"><option value="">—</option><option>Entregado</option><option>En corrección</option><option>Corrección enviada</option><option>Cerrado definitivamente</option></select></div>
+        <div class="form-group hs-full"><label>Incluye</label><textarea class="form-input" id="hs-alcance-incluye" rows="2" placeholder="Ej. 3 avances, 1 corrección, Turnitin incluido..."></textarea></div>
+        <div class="form-group hs-full"><label>No incluye</label><textarea class="form-input" id="hs-alcance-noincluye" rows="2" placeholder="Ej. cambio total de tema, trabajo de campo..."></textarea></div>
+        <div class="form-group hs-full"><label>Adicionales editables</label><textarea class="form-input" id="hs-adicionales" rows="3" placeholder="Una línea por adicional: concepto | monto | pagado/pendiente | nota"></textarea><div class="hs-mini">Ej.: Corrección extra | 120 | pendiente | cambio de asesor</div></div>
+      </div>
+    </div>
+    <div class="hs-section">
+      <div class="hs-section-title">👤 Perfil del cliente</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${[['hs-cp-vip','VIP'],['hs-cp-buen','Buen pagador'],['hs-cp-tarde','Paga tarde'],['hs-cp-moroso','Moroso'],['hs-cp-regatea','Regatea'],['hs-cp-cambios','Pide muchos cambios'],['hs-cp-problematico','Problemático'],['hs-cp-noadelanto','No iniciar sin adelanto'],['hs-cp-cuidadoso','Trato cuidadoso']].map(([id,l])=>`<label class="hs-chip" style="cursor:pointer"><input type="checkbox" id="${id}" style="accent-color:var(--accent)"> ${l}</label>`).join('')}
+      </div>
+      <div class="form-group" style="margin-top:10px"><label>Notas privadas del cliente</label><input class="form-input hs-private" id="hs-cp-notas" placeholder="Solo para mí: forma de pagar, trato, riesgos..."></div>
+    </div>`);
+  }
+
+  function parseAdicionales(text){
+    return String(text||'').split('\n').map(l=>l.trim()).filter(Boolean).map(line=>{
+      const parts=line.split('|').map(x=>x.trim());
+      const estado=norm(parts[2]||'pendiente');
+      return {concepto:parts[0]||'', monto:Number((parts[1]||'0').replace(',','.'))||0, pagado:estado.includes('pag'), nota:parts.slice(3).join(' | '), sumaSaldo:true, fecha:today()};
+    });
+  }
+  function adicionalesText(arr){ return (arr||[]).map(a=>[a.concepto||'',a.monto||0,a.pagado?'pagado':'pendiente',a.nota||''].join(' | ')).join('\n'); }
+
+  function fillTrabajoExtras(t){
+    t=hsMigrateTrabajo(t||{});
+    setVal('hs-alias',t.alias||''); setVal('hs-referido',t.referidoPor||'');
+    setVal('hs-precio-original',t.precioOriginal||t.precio||0); setVal('hs-descuento-monto',(t.descuento||{}).monto||0); setVal('hs-descuento-motivo',(t.descuento||{}).motivo||'');
+    setVal('hs-prox-accion',(t.proximaAccion||{}).accion||''); setVal('hs-prox-fecha',(t.proximaAccion||{}).fecha||''); setVal('hs-prox-resp',(t.proximaAccion||{}).responsable||'Yo'); setVal('hs-prox-nota',(t.proximaAccion||{}).nota||'');
+    setChk('hs-bloqueado',(t.bloqueado||{}).activo); setVal('hs-bloqueo-motivo',(t.bloqueado||{}).motivo||''); setVal('hs-bloqueo-resp',(t.bloqueado||{}).responsable||'Cliente'); setVal('hs-bloqueo-desde',(t.bloqueado||{}).desde||'');
+    setChk('hs-espera-activo',(t.esperandoRespuesta||{}).activo); setVal('hs-espera-desde',(t.esperandoRespuesta||{}).desde||''); setVal('hs-espera-motivo',(t.esperandoRespuesta||{}).motivo||''); setVal('hs-espera-prox',(t.esperandoRespuesta||{}).proximoSeguimiento||'');
+    setVal('hs-promesa-fecha',(t.promesaPago||{}).fecha||''); setVal('hs-promesa-monto',(t.promesaPago||{}).monto||0); setVal('hs-promesa-estado',(t.promesaPago||{}).estado||'pendiente'); setVal('hs-promesa-nota',(t.promesaPago||{}).nota||'');
+    setVal('hs-corr-incluidas',(t.correcciones||{}).incluidas||0); setVal('hs-corr-usadas',(t.correcciones||{}).usadas||0); setVal('hs-corr-venc',(t.correcciones||{}).vencimiento||''); setVal('hs-corr-estado',(t.correcciones||{}).estado||'');
+    setVal('hs-alcance-incluye',(t.alcance||{}).incluye||''); setVal('hs-alcance-noincluye',(t.alcance||{}).noIncluye||''); setVal('hs-adicionales',adicionalesText(t.adicionales));
+    const cp=t.clientePerfil||{};
+    setChk('hs-cp-vip',cp.vip); setChk('hs-cp-buen',cp.buenPagador); setChk('hs-cp-tarde',cp.pagaTarde); setChk('hs-cp-moroso',cp.moroso); setChk('hs-cp-regatea',cp.regatea); setChk('hs-cp-cambios',cp.muchosCambios); setChk('hs-cp-problematico',cp.problematico); setChk('hs-cp-noadelanto',cp.noIniciarSinAdelanto); setChk('hs-cp-cuidadoso',cp.tratoCuidadoso); setVal('hs-cp-notas',cp.notasPrivadas||'');
+  }
+
+  function collectTrabajoExtras(){
+    return {
+      alias:val('hs-alias'), referidoPor:val('hs-referido'), precioOriginal:Number(val('hs-precio-original'))||0,
+      descuento:{monto:Number(val('hs-descuento-monto'))||0,motivo:val('hs-descuento-motivo')},
+      adicionales:parseAdicionales(val('hs-adicionales')),
+      proximaAccion:{accion:val('hs-prox-accion'),fecha:val('hs-prox-fecha'),responsable:val('hs-prox-resp'),nota:val('hs-prox-nota')},
+      bloqueado:{activo:chk('hs-bloqueado'),motivo:val('hs-bloqueo-motivo'),responsable:val('hs-bloqueo-resp'),desde:val('hs-bloqueo-desde'),proximo:''},
+      promesaPago:{fecha:val('hs-promesa-fecha'),monto:Number(val('hs-promesa-monto'))||0,nota:val('hs-promesa-nota'),estado:val('hs-promesa-estado')||'pendiente'},
+      esperandoRespuesta:{activo:chk('hs-espera-activo'),desde:val('hs-espera-desde'),motivo:val('hs-espera-motivo'),ultimoMensaje:'',proximoSeguimiento:val('hs-espera-prox')},
+      correcciones:{incluidas:Number(val('hs-corr-incluidas'))||0,usadas:Number(val('hs-corr-usadas'))||0,vencimiento:val('hs-corr-venc'),estado:val('hs-corr-estado'),nota:''},
+      alcance:{incluye:val('hs-alcance-incluye'),noIncluye:val('hs-alcance-noincluye')},
+      clientePerfil:{vip:chk('hs-cp-vip'),buenPagador:chk('hs-cp-buen'),pagaTarde:chk('hs-cp-tarde'),moroso:chk('hs-cp-moroso'),regatea:chk('hs-cp-regatea'),muchosCambios:chk('hs-cp-cambios'),problematico:chk('hs-cp-problematico'),noIniciarSinAdelanto:chk('hs-cp-noadelanto'),tratoCuidadoso:chk('hs-cp-cuidadoso'),notasPrivadas:val('hs-cp-notas')}
+    };
+  }
+
+  function enhanceCuotaPaymentFields(){
+    const s=hsSettings();
+    if(typeof cuotasData==='undefined') return;
+    cuotasData.forEach((c,i)=>{
+      const nota=get('abono-nota-'+i);
+      if(!nota||get('abono-medio-'+i)) return;
+      nota.insertAdjacentHTML('afterend', `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0">
+        <div><label style="font-size:9px;color:var(--text3)">Medio</label><select id="abono-medio-${i}" class="form-select" style="font-size:12px;margin-top:2px">${options(s.mediosPago,'Yape')}</select></div>
+        <div><label style="font-size:9px;color:var(--text3)">N° operación</label><input id="abono-operacion-${i}" class="form-input" placeholder="Opcional" style="font-size:12px;margin-top:2px"></div>
+      </div>`);
+    });
+  }
+
+  function sortRows(rows){
+    const s=hsSettings(); const mode=(get('hs-sort')&&get('hs-sort').value)||s.sortMode||'urgencia';
+    const prio={alta:0,media:1,baja:2,'':3};
+    function urgency(t){
+      if(t.estado==='Cancelado'||t.estado==='Pagado') return 99;
+      if(t.bloqueado&&t.bloqueado.activo) return 4;
+      const d=dateDiff(t.fent);
+      if(d!==null&&d<0) return 0;
+      if(d===0) return 1;
+      if(d!==null&&d<=s.diasPronto) return 2;
+      if((t.promesaPago||{}).fecha===today()) return 1;
+      return 3;
+    }
+    rows.sort((a,b)=>{
+      if(mode==='az') return norm(a.nombre).localeCompare(norm(b.nombre));
+      if(mode==='fecha') return String(a.fent||'9999').localeCompare(String(b.fent||'9999')) || norm(a.nombre).localeCompare(norm(b.nombre));
+      if(mode==='saldo') return saldoTotal(b)-saldoTotal(a);
+      if(mode==='precio') return precioTotal(b)-precioTotal(a);
+      if(mode==='ultimo') return (b.id||0)-(a.id||0);
+      if(mode==='modificado') return String((b.hsUpdatedAt||b.id||'')).localeCompare(String(a.hsUpdatedAt||a.id||''));
+      return urgency(a)-urgency(b) || ((prio[a.prioridad||'']??3)-(prio[b.prioridad||'']??3)) || String(a.fent||'9999').localeCompare(String(b.fent||'9999')) || norm(a.nombre).localeCompare(norm(b.nombre));
+    });
+    return rows;
+  }
+
+  function smartMatch(t,q){
+    if(!q) return true;
+    hsMigrateTrabajo(t);
+    const parts=norm(q).split(' ').filter(Boolean);
+    const cuotaText=(t.cuotas||[]).flatMap(c=>(c.abonos||[]).map(a=>[a.medioPago,a.operacion,a.nota,a.fecha,a.monto].join(' '))).join(' ');
+    const haystack=norm([
+      t.nombre,t.alias,t.cel,t.dni,t.tipo,t.uni,t.estado,t.prioridad,(t.tags||[]).join(' '),t.notas,t.referidoPor,
+      (t.proximaAccion||{}).accion,(t.proximaAccion||{}).responsable,(t.proximaAccion||{}).nota,
+      (t.bloqueado||{}).motivo,(t.promesaPago||{}).fecha,(t.promesaPago||{}).nota,(t.alcance||{}).incluye,(t.alcance||{}).noIncluye,
+      cuotaText,(t.pagos||[]).map(p=>[p.medioPago,p.operacion,p.nota,p.fecha,p.monto].join(' ')).join(' '), precioTotal(t), saldoTotal(t)
+    ].join(' '));
+    const digits=String(t.cel||'').replace(/\D/g,''); const qdigits=String(q||'').replace(/\D/g,'');
+    return parts.every(p=>haystack.includes(p)) || (qdigits.length>=3 && digits.includes(qdigits));
+  }
+
+  window.hsSetSort=function(v){ const s=hsSettings(); s.sortMode=v; hsSaveSettings(s); if(typeof renderTabla==='function') renderTabla(); };
+  window.hsCollapseAll=function(){ expandedCards.clear(); document.querySelectorAll('.mcard').forEach(x=>x.classList.add('collapsed')); };
+  window.hsExpandAll=function(){ if(DB&&DB.trabajos) DB.trabajos.forEach(t=>expandedCards.add(t.id)); if(typeof renderTabla==='function') renderTabla(); };
+  window.hsToggleCard=function(id){ if(expandedCards.has(id)) expandedCards.delete(id); else expandedCards.add(id); if(typeof renderTabla==='function') renderTabla(); };
+
+  // Reemplazo de renderTabla: búsqueda inteligente + orden configurable + tarjetas contraídas.
+  window.renderTabla = function(){
+    ensureDB(); injectRegistroToolbar(); ensureStatusOptions();
+    const q=(get('search-input')&&get('search-input').value)||'';
+    const fe=(get('filter-estado')&&get('filter-estado').value)||'';
+    const ft=(get('filter-tipo')&&get('filter-tipo').value)||'';
+    const fp=(get('filter-prio')&&get('filter-prio').value)||'';
+    const filtroExtra=window._dashFiltroExtra||null;
+    const tag = (typeof activeTagFilter!=='undefined') ? activeTagFilter : '';
+    const tipos=[...new Set((DB.trabajos||[]).map(t=>t.tipo).filter(Boolean))].sort();
+    const sel=get('filter-tipo'); if(sel){ const cur=sel.value; sel.innerHTML='<option value="">Todos los tipos</option>'+tipos.map(t=>`<option ${t===cur?'selected':''}>${esc(t)}</option>`).join(''); }
+    let rows=(DB.trabajos||[]).filter(t=>{
+      hsMigrateTrabajo(t);
+      if(q&&!smartMatch(t,q)) return false;
+      if(fe&&t.estado!==fe) return false;
+      if(ft&&t.tipo!==ft) return false;
+      if(fp&&(t.prioridad||'')!==fp) return false;
+      if(tag&&!(t.tags||[]).includes(tag)) return false;
+      if(filtroExtra==='saldo' && (t.estado==='Cancelado'||t.estado==='Pagado'||saldoTotal(t)<=0)) return false;
+      if(filtroExtra==='vencidos'){ const d=dateDiff(t.fent); if(t.estado==='Pagado'||t.estado==='Cancelado'||d===null||d>=0) return false; }
+      return true;
+    });
+    rows=sortRows(rows);
+    const badge=get('filtro-activo-badge'), badgeLabel=get('filtro-activo-label');
+    if(badge&&badgeLabel){ const hay=fe||ft||fp||q||tag||filtroExtra; badge.style.display=hay?'inline-flex':'none'; if(hay) badgeLabel.textContent='🔍 '+[filtroExtra,fe,ft,fp,q,tag].filter(Boolean).join(' · '); }
+    const cont=get('contador-resultados'); if(cont) cont.textContent=(rows.length<(DB.trabajos||[]).length)?rows.length+' de '+DB.trabajos.length+' trabajos':'';
+    const tbody=get('tabla-body'), mobile=get('mobile-cards');
+    if(!rows.length){ if(tbody) tbody.innerHTML='<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--text3)">Sin resultados</td></tr>'; if(mobile) mobile.innerHTML='<div class="empty">Sin resultados</div>'; return; }
+    if(tbody) tbody.innerHTML=rows.map((t,i)=>{
+      const saldo=saldoTotal(t), total=precioTotal(t), cob=cobradoTotal(t), pct=total>0?Math.min(100,Math.round(cob/total*100)):0, s=typeof semaforo==='function'?semaforo(t):{cls:'s-blue',label:''};
+      const riesgo=hsRiskBadge(t); const prox=(t.proximaAccion||{}).accion||''; const bloq=t.bloqueado&&t.bloqueado.activo;
+      return `<tr class="${t.estado==='Cancelado'?'estado-cancelado':''}">
+        <td style="color:var(--text3)">${i+1}</td><td><strong>${esc(t.nombre)}</strong>${t.alias?`<br><span style="color:var(--accent3);font-size:10px">${esc(t.alias)}</span>`:''}${t.cel?`<br><span style="color:var(--text3);font-size:10px">${esc(t.cel)}</span>`:''}${typeof renderTagsPills==='function'?renderTagsPills(t.tags):''}</td>
+        <td style="color:var(--text2)">${esc(t.tipo||'')}</td><td style="color:var(--text3)">${esc(t.uni||'—')}</td><td>${typeof fmt==='function'?fmt(t.fent):esc(t.fent||'—')}</td>
+        <td style="font-weight:600">${money(total)}</td><td style="color:var(--green);font-weight:600">${money(cob)}</td><td class="${saldo>0?'saldo-pos':'saldo-zero'}" style="font-weight:700">${money(saldo)}</td>
+        <td><div class="pct-bar"><div class="pct-fill" style="width:${pct}%"></div></div><span style="font-size:10px;color:var(--text3)">${pct}%</span></td>
+        <td>${typeof pillEstado==='function'?pillEstado(t.estado):esc(t.estado||'')}${bloq?'<br><span class="hs-chip hs-warn">⛔ Bloqueado</span>':''}${riesgo}</td>
+        <td><span class="semaforo ${s.cls}"></span><span style="font-size:10px;color:var(--text3)">${esc(s.label||'')}</span>${prox?`<br><span style="font-size:10px;color:var(--accent3)">✅ ${esc(prox)}</span>`:''}</td>
+        <td><div class="actions"><button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" title="Cliente">👤</button><button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button><button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button><button class="btn btn-ghost btn-sm" onclick="hsEnviarAcuerdo(${t.id})" title="Acuerdo WhatsApp" style="color:#25d366">🤝</button><button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button></div></td>
+      </tr>`;
+    }).join('');
+    if(mobile) mobile.innerHTML=rows.map((t,i)=>{
+      const saldo=saldoTotal(t), total=precioTotal(t), cob=cobradoTotal(t), pct=total>0?Math.min(100,Math.round(cob/total*100)):0, s=typeof semaforo==='function'?semaforo(t):{cls:'s-blue',label:''};
+      const expanded=expandedCards.has(t.id); const bloq=t.bloqueado&&t.bloqueado.activo; const espera=t.esperandoRespuesta&&t.esperandoRespuesta.activo; const prox=t.proximaAccion||{}; const prom=t.promesaPago||{}; const corr=t.correcciones||{};
+      const cls=['mcard', expanded?'':'collapsed', t.estado==='Cancelado'?'estado-cancelado':'', bloq?'hs-bloqueado':'', espera?'hs-espera':''].join(' ');
+      return `<div class="${cls}" id="mcard-hs-${t.id}">
+        <div class="mcard-header" style="cursor:pointer;user-select:none" onclick="hsToggleCard(${t.id})">
+          <div style="flex:1;min-width:0"><div class="mcard-nombre"><span>${esc(t.nombre)}</span></div>${t.alias?`<div class="mcard-cel" style="color:var(--accent3)">🏷️ ${esc(t.alias)}</div>`:''}<div class="mcard-cel">${t.cel?'📱 '+esc(t.cel)+' · ':''}${t.uni?'🏫 '+esc(t.uni):''}</div>${typeof renderTagsPills==='function'?`<div style="margin-top:5px;display:flex;gap:3px;flex-wrap:wrap">${renderTagsPills(t.tags)}</div>`:''}</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">${typeof pillEstado==='function'?pillEstado(t.estado):esc(t.estado||'')}<span class="hs-chip">${money(saldo)} pend.</span><button class="mcard-collapse-btn" onclick="event.stopPropagation();hsToggleCard(${t.id})" style="font-size:16px">▾</button></div>
+        </div>
+        <div class="hs-card-extra" style="display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 9px">${bloq?`<span class="hs-chip hs-warn">⛔ ${esc(t.bloqueado.motivo||'Bloqueado')}</span>`:''}${espera?`<span class="hs-chip" style="color:#60a5fa">💬 Sin respuesta ${t.esperandoRespuesta.desde?Math.max(0,dateDiff(t.esperandoRespuesta.desde)*-1):''}d</span>`:''}${prox.accion?`<span class="hs-chip">✅ ${esc(prox.accion)}</span>`:''}${prom.fecha?`<span class="hs-chip hs-warn">💵 Promesa ${typeof fmt==='function'?fmt(prom.fecha):prom.fecha}</span>`:''}</div>
+        <div class="mcard-body">
+          <div class="mcard-field"><div class="mcard-field-label">📋 Tipo</div><div class="mcard-field-val">${esc(t.tipo||'—')}</div></div><div class="mcard-field"><div class="mcard-field-label">📅 Entrega</div><div class="mcard-field-val">${t.fent&&typeof fmt==='function'?fmt(t.fent):'—'}</div></div>
+          <div class="mcard-field"><div class="mcard-field-label">💰 Total</div><div class="mcard-field-val" style="color:var(--accent3)">${money(total)}</div></div><div class="mcard-field"><div class="mcard-field-label">✅ Cobrado</div><div class="mcard-field-val" style="color:var(--green)">${money(cob)}</div></div>
+          <div class="mcard-field" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between"><div class="mcard-field-label">Saldo / avance</div><div style="font-size:11px;font-weight:800;color:${saldo>0?'var(--red)':'var(--green)'}">${saldo>0?money(saldo):'¡Pagado!'}</div></div><div class="mcard-progress"><div class="mcard-progress-fill" style="width:${pct}%"></div></div><div class="hs-mini" style="text-align:right">${pct}% cobrado · ${esc(s.label||'')}</div></div>
+          ${(corr.estado||corr.incluidas||corr.usadas)?`<div class="mcard-field" style="grid-column:1/-1"><div class="mcard-field-label">Correcciones</div><div class="mcard-field-val">${esc(corr.estado||'—')} · ${Number(corr.usadas)||0}/${Number(corr.incluidas)||0} usadas ${corr.vencimiento?'· vence '+(typeof fmt==='function'?fmt(corr.vencimiento):corr.vencimiento):''}</div></div>`:''}
+        </div>
+        <div class="mcard-footer"><button class="btn btn-ghost btn-sm" onclick="verCliente(${t.id})" title="Cliente">👤</button><button class="btn btn-primary btn-sm" onclick="cobrarTrabajo(${t.id})" title="Cobrar">💰</button><button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${t.id})" title="Editar">✏️</button><button class="btn btn-ghost btn-sm" onclick="hsEnviarAcuerdo(${t.id})" style="color:#25d366" title="Acuerdo">🤝</button><button class="btn btn-ghost btn-sm" onclick="verHistorial(${t.id})" title="Historial">📋</button><button class="btn btn-ghost btn-sm" onclick="abrirBitacora(${t.id})" title="Bitácora">📓</button>${t.cel?`<button class="btn btn-ghost btn-sm" onclick="enviarWaRapidoTrabajo(${t.id})" style="color:#25d366" title="WhatsApp">📲</button>`:''}<button class="btn btn-danger btn-sm" onclick="eliminarTrabajo(${t.id})" title="Eliminar">✕</button></div>
+      </div>`;
+    }).join('');
+  };
+
+  function hsRiskBadge(t){
+    const s=hsSettings(); const total=precioTotal(t), cob=cobradoTotal(t), pct=total>0?(cob/total*100):100;
+    const hit=(s.reglasAnticipo||[]).filter(r=>total>=Number(r.min)&&pct<Number(r.pct)).sort((a,b)=>b.min-a.min)[0];
+    if(!hit && !(t.clientePerfil||{}).moroso) return '';
+    if((t.estado||'').includes('Pagado')||t.estado==='Cancelado') return '';
+    const label=(t.clientePerfil||{}).moroso?'⚠️ Moroso / pedir adelanto':`⚠️ Adelanto bajo (${Math.round(pct)}%)`;
+    return `<br><span class="hs-chip ${hit&&hit.nivel==='alto'?'hs-danger':'hs-warn'}">${label}</span>`;
+  }
+
+  function renderHoy(){
+    const box=get('hs-hoy-box'); if(!box||typeof DB==='undefined') return;
+    ensureDB(); const items=[]; const td=today();
+    DB.trabajos.forEach(t=>{
+      if(['Pagado','Cancelado','Cerrado definitivamente'].includes(t.estado)) return;
+      const d=dateDiff(t.fent), saldo=saldoTotal(t);
+      if(d!==null&&d<0) items.push({prio:0,id:t.id,txt:`🚨 Vencido: ${t.nombre} — ${t.tipo}`,sub:`Entrega: ${fmt(t.fent)} · saldo ${money(saldo)}`});
+      else if(d===0) items.push({prio:1,id:t.id,txt:`📅 Entregar hoy: ${t.nombre} — ${t.tipo}`,sub:`Saldo ${money(saldo)}`});
+      if((t.promesaPago||{}).fecha===td&&(t.promesaPago||{}).estado!=='cumplio') items.push({prio:1,id:t.id,txt:`💵 Cobrar promesa: ${t.nombre}`,sub:`Prometió ${money((t.promesaPago||{}).monto||saldo)} · ${esc((t.promesaPago||{}).nota||'')}`});
+      if((t.proximaAccion||{}).fecha===td) items.push({prio:2,id:t.id,txt:`✅ Acción hoy: ${t.nombre}`,sub:`${esc((t.proximaAccion||{}).accion||'')} · Resp.: ${esc((t.proximaAccion||{}).responsable||'')}`});
+      if(t.bloqueado&&t.bloqueado.activo) items.push({prio:3,id:t.id,txt:`⛔ Bloqueado: ${t.nombre}`,sub:`${esc(t.bloqueado.motivo||'Sin motivo')} · Resp.: ${esc(t.bloqueado.responsable||'')}`});
+      if(t.esperandoRespuesta&&t.esperandoRespuesta.activo){ const desde=t.esperandoRespuesta.desde; const dias=desde?Math.max(0, dateDiff(desde)*-1):''; items.push({prio:4,id:t.id,txt:`💬 Sin respuesta: ${t.nombre}`,sub:`${dias!==''?dias+' días · ':''}${esc(t.esperandoRespuesta.motivo||'Seguimiento pendiente')}`}); }
+      if((t.correcciones||{}).estado==='En corrección') items.push({prio:5,id:t.id,txt:`📝 Corrección pendiente: ${t.nombre}`,sub:`${Number((t.correcciones||{}).usadas)||0}/${Number((t.correcciones||{}).incluidas)||0} usadas`});
+    });
+    items.sort((a,b)=>a.prio-b.prio);
+    box.innerHTML=`<div class="section-header"><span class="section-title">☀️ Hoy debo hacer</span><span class="hs-mini">${items.length} pendientes reales</span></div>`+(items.length?items.slice(0,12).map(it=>`<div class="reminder-item"><div style="min-width:0"><div style="font-weight:700;color:var(--text);font-size:12px">${it.txt}</div><div class="hs-mini">${it.sub}</div></div><div style="display:flex;gap:4px;flex-shrink:0"><button class="btn btn-ghost btn-sm" onclick="editarTrabajo(${it.id})">Ver</button><button class="btn btn-ghost btn-sm" onclick="hsMarcarAccionHecha(${it.id})">Hecho</button></div></div>`).join(''):'<div class="empty">No hay acciones urgentes para hoy.</div>');
+  }
+
+  function injectDashboard(){
+    const dash=get('v-dashboard'); if(!dash||get('hs-hoy-box')) return;
+    const daily=get('daily-summary-box');
+    const html='<div class="table-wrap" id="hs-hoy-box" style="margin-bottom:16px"></div>';
+    if(daily) daily.insertAdjacentHTML('afterend', html); else dash.insertAdjacentHTML('afterbegin', html);
+  }
+
+  window.hsMarcarAccionHecha=function(id){ const t=DB.trabajos.find(x=>x.id===id); if(!t)return; hsMigrateTrabajo(t); t.proximaAccion.fecha=''; t.proximaAccion.nota=(t.proximaAccion.nota? t.proximaAccion.nota+' · ':'')+'Marcado hecho '+new Date().toLocaleString('es-PE'); t.hsUpdatedAt=new Date().toISOString(); hsLog(id,'Próxima acción marcada como hecha'); save(); renderAll(); toast('Acción marcada como hecha'); };
+
+  function cajaDiariaHTML(fecha){
+    const ev=hsPaymentEvents().filter(p=>p.fecha===fecha);
+    const sum=m=>ev.filter(p=>(p.medio||'Otro')===m).reduce((a,b)=>a+b.monto,0);
+    const total=ev.reduce((a,b)=>a+b.monto,0);
+    const promesas=(DB.trabajos||[]).filter(t=>(t.promesaPago||{}).fecha===fecha&&(t.promesaPago||{}).estado!=='cumplio');
+    const cuotasPend=(DB.trabajos||[]).flatMap(t=>(t.cuotas||[]).map((c,i)=>({t,c,i}))).filter(x=>x.c.f===fecha && cuotaAbonado(x.c)<(Number(x.c.m)||0));
+    const pendiente=promesas.reduce((a,t)=>a+(Number((t.promesaPago||{}).monto)||saldoTotal(t)),0)+cuotasPend.reduce((a,x)=>a+Math.max(0,(Number(x.c.m)||0)-cuotaAbonado(x.c)),0);
+    const medios=hsSettings().mediosPago||[];
+    return `<div class="table-wrap" id="hs-caja-diaria" style="margin-top:14px"><div class="section-header"><span class="section-title">💵 Caja diaria</span><div style="display:flex;gap:6px;align-items:center"><input type="date" class="form-input" id="hs-caja-fecha" value="${fecha}" onchange="hsRenderCaja(this.value)" style="width:135px;padding:5px 8px;font-size:11px"></div></div><div class="stats-grid" style="padding:12px;margin:0">${[`Total|${money(total)}|${ev.length} pagos`,...medios.map(m=>`${m}|${money(sum(m))}|canal`),`Pendiente hoy|${money(pendiente)}|cuotas/promesas`].map(x=>{const [l,v,sub]=x.split('|');return `<div class="hs-card-kpi"><div class="v">${v}</div><div class="l">${l}</div><div class="hs-mini">${sub||''}</div></div>`}).join('')}</div>${ev.length?`<div style="padding:0 12px 12px">${ev.map(p=>`<div class="reminder-item"><span>${esc(p.cliente)} · ${esc(p.medio||'Sin canal')}</span><strong>${money(p.monto)}</strong></div>`).join('')}</div>`:''}</div>`;
+  }
+  function disponibleRealHTML(mes){
+    const s=hsSettings(); const ev=hsPaymentEvents().filter(p=>(p.fecha||'').startsWith(mes)); const cob=ev.reduce((a,b)=>a+b.monto,0);
+    const gastosP=(DB.gastos_puntuales||[]).filter(g=>(g.fecha||'').startsWith(mes)).reduce((a,g)=>a+(Number(g.monto)||0),0);
+    const gh=(DB.gastos_herramientas||[]).filter(g=>g.activa!==false).reduce((a,g)=>a+(Number(g.monto)||0)*(g.moneda==='USD'?Number(s.tipoCambioUSD||3.75):1),0);
+    const gastos=(s.formulaDisponible.incluirGastosPuntuales?gastosP:0)+(s.formulaDisponible.incluirHerramientas?gh:0); const disp=cob-gastos;
+    return `<div class="table-wrap" id="hs-disponible-real" style="margin-top:14px"><div class="section-header"><span class="section-title">🧮 Disponible real del mes</span><span class="hs-mini">Fórmula editable en Config</span></div><div class="stats-grid" style="padding:12px;margin:0"><div class="hs-card-kpi"><div class="v hs-ok">${money(cob)}</div><div class="l">Cobrado del mes</div></div><div class="hs-card-kpi"><div class="v hs-danger">${money(gastos)}</div><div class="l">Gastos incluidos</div><div class="hs-mini">Herramientas: ${money(gh)} · Puntuales: ${money(gastosP)}</div></div><div class="hs-card-kpi"><div class="v" style="color:${disp>=0?'var(--accent3)':'var(--red)'}">${money(disp)}</div><div class="l">Disponible aprox.</div></div></div></div>`;
+  }
+  window.hsRenderCaja=function(fecha){ const cont=get('hs-proy-extra'); if(cont) cont.innerHTML=cajaDiariaHTML(fecha||today())+disponibleRealHTML(monthKey(fecha||today())); };
+  function injectProyeccion(){
+    const view=get('v-proyeccion'); if(!view) return;
+    let cont=get('hs-proy-extra');
+    if(!cont){ view.insertAdjacentHTML('afterbegin','<div id="hs-proy-extra"></div>'); cont=get('hs-proy-extra'); }
+    if(cont&&!cont.innerHTML) cont.innerHTML=cajaDiariaHTML(today())+disponibleRealHTML(monthKey(today()));
+  }
+
+  // Modal configuración simple pero editable.
+  window.hsOpenSettings=function(){
+    let modal=get('hs-modal-settings'); const s=hsSettings();
+    if(!modal){ document.body.insertAdjacentHTML('beforeend', `<div class="modal-overlay" id="hs-modal-settings"><div class="modal" style="max-width:620px"><div class="modal-header"><span class="modal-title">⚙️ Configuración editable</span><button class="modal-close" onclick="hsCloseSettings()">✕</button></div><div class="modal-body"><div class="form-grid"><div class="form-group form-full"><label>Medios de pago (uno por línea)</label><textarea class="form-input" id="hs-set-medios" rows="4"></textarea></div><div class="form-group form-full"><label>Estados (uno por línea)</label><textarea class="form-input" id="hs-set-estados" rows="5"></textarea></div><div class="form-group form-full"><label>Próximas acciones sugeridas</label><textarea class="form-input" id="hs-set-acciones" rows="5"></textarea></div><div class="form-group"><label>Días para considerar pronto</label><input class="form-input" id="hs-set-dias" type="number"></div><div class="form-group"><label>Tipo de cambio USD editable</label><input class="form-input" id="hs-set-tc" type="number" step="0.01"></div><div class="form-group form-full"><label>Disponible real</label><label class="hs-chip" style="cursor:pointer"><input type="checkbox" id="hs-set-inc-gh"> Incluir herramientas</label> <label class="hs-chip" style="cursor:pointer"><input type="checkbox" id="hs-set-inc-gp"> Incluir gastos puntuales</label></div></div></div><div class="modal-footer"><button class="btn btn-ghost" onclick="hsCloseSettings()">Cancelar</button><button class="btn btn-primary" onclick="hsSaveSettingsFromModal()">Guardar configuración</button></div></div></div>`); modal=get('hs-modal-settings'); }
+    setVal('hs-set-medios',(s.mediosPago||[]).join('\n')); setVal('hs-set-estados',(s.estados||[]).join('\n')); setVal('hs-set-acciones',(s.proximasAcciones||[]).join('\n')); setVal('hs-set-dias',s.diasPronto); setVal('hs-set-tc',s.tipoCambioUSD); setChk('hs-set-inc-gh',s.formulaDisponible.incluirHerramientas); setChk('hs-set-inc-gp',s.formulaDisponible.incluirGastosPuntuales); modal.classList.add('open');
+  };
+  window.hsCloseSettings=function(){ const m=get('hs-modal-settings'); if(m)m.classList.remove('open'); };
+  window.hsSaveSettingsFromModal=function(){ const s=hsSettings(); const lines=id=>val(id).split('\n').map(x=>x.trim()).filter(Boolean); s.mediosPago=lines('hs-set-medios'); s.estados=lines('hs-set-estados'); s.proximasAcciones=lines('hs-set-acciones'); s.diasPronto=Number(val('hs-set-dias'))||7; s.tipoCambioUSD=Number(val('hs-set-tc'))||3.75; s.formulaDisponible.incluirHerramientas=chk('hs-set-inc-gh'); s.formulaDisponible.incluirGastosPuntuales=chk('hs-set-inc-gp'); hsSaveSettings(s); ensureStatusOptions(); hsCloseSettings(); renderAll(); toast('Configuración guardada'); };
+
+  window.hsOpenPapelera=function(){
+    ensureDB(); let modal=get('hs-modal-papelera');
+    if(!modal){ document.body.insertAdjacentHTML('beforeend', `<div class="modal-overlay" id="hs-modal-papelera"><div class="modal" style="max-width:600px"><div class="modal-header"><span class="modal-title">🗑️ Papelera</span><button class="modal-close" onclick="hsClosePapelera()">✕</button></div><div class="modal-body" id="hs-papelera-body" style="padding:0"></div></div></div>`); modal=get('hs-modal-papelera'); }
+    const arr=(DB.papelera&&DB.papelera.trabajos)||[]; const body=get('hs-papelera-body');
+    body.innerHTML=arr.length?arr.map((x,i)=>`<div class="reminder-item"><div><strong>${esc((x.item||{}).nombre||'Sin nombre')}</strong><div class="hs-mini">Eliminado: ${esc(x.deletedAt||'')}</div></div><div><button class="btn btn-ghost btn-sm" onclick="hsRestoreTrabajo(${i})">Restaurar</button><button class="btn btn-danger btn-sm" onclick="hsDeleteForever(${i})">Eliminar definitivo</button></div></div>`).join(''):'<div class="empty">La papelera está vacía.</div>';
+    modal.classList.add('open');
+  };
+  window.hsClosePapelera=function(){ const m=get('hs-modal-papelera'); if(m)m.classList.remove('open'); };
+  window.hsRestoreTrabajo=function(i){ ensureDB(); const x=DB.papelera.trabajos.splice(i,1)[0]; if(x&&x.item){ DB.trabajos.push(x.item); save(); renderAll(); hsOpenPapelera(); toast('Trabajo restaurado'); } };
+  window.hsDeleteForever=function(i){ if(confirm('¿Eliminar definitivamente?')){ DB.papelera.trabajos.splice(i,1); save(); hsOpenPapelera(); } };
+  window.hsUndoLast=function(){ if(hsLastAction&&hsLastAction.type==='deleteTrabajo'){ DB.trabajos.push(hsLastAction.item); if(DB.papelera&&DB.papelera.trabajos) DB.papelera.trabajos=DB.papelera.trabajos.filter(x=>!x.item||x.item.id!==hsLastAction.item.id); hsLastAction=null; save(); renderAll(); toast('Última eliminación deshecha'); } else toast('No hay acción reciente para deshacer'); };
+
+  window.hsEnviarAcuerdo=function(id){ const t=DB.trabajos.find(x=>x.id===id); if(!t) return; hsMigrateTrabajo(t); const saldo=saldoTotal(t); const msg=`Queda acordado: trabajo ${t.tipo||''}, precio ${money(precioTotal(t))}, cobrado ${money(cobradoTotal(t))}, saldo ${money(saldo)}, entrega ${t.fent?fmt(t.fent):'por coordinar'}. Incluye: ${(t.alcance||{}).incluye||'según lo conversado'}. No incluye: ${(t.alcance||{}).noIncluye||'cambios fuera del alcance, salvo nuevo acuerdo'}. Cambios fuera del alcance se cotizan aparte.`; const editable=prompt('Puedes editar el acuerdo antes de abrir WhatsApp:', msg); if(editable===null) return; t.wa=t.wa||{}; t.wa.ultimoSeguimiento=today(); hsLog(id,'Acuerdo preparado/enviado por WhatsApp'); save(); const cel=String(t.cel||'').replace(/\D/g,''); if(cel) window.open('https://wa.me/51'+cel+'?text='+encodeURIComponent(editable),'_blank'); else navigator.clipboard&&navigator.clipboard.writeText(editable); toast(cel?'Abriendo WhatsApp':'Acuerdo copiado'); };
+
+  // Wrappers sobre funciones existentes
+  const oldOpenModal = window.openModal;
+  window.openModal = function(t){ injectStyles(); injectTrabajoExtras(); ensureStatusOptions(); if(typeof oldOpenModal==='function') oldOpenModal.apply(this, arguments); injectTrabajoExtras(); ensureStatusOptions(); setTimeout(()=>fillTrabajoExtras(t||{}),0); };
+
+  const oldGuardarTrabajo = window.guardarTrabajo;
+  window.guardarTrabajo = function(){
+    injectTrabajoExtras(); const nombre=val('f-nombre').trim(); if(!nombre){ if(typeof oldGuardarTrabajo==='function') return oldGuardarTrabajo.apply(this,arguments); return; }
+    const before=new Set((DB.trabajos||[]).map(t=>t.id)); const currentId=(typeof editId!=='undefined')?editId:null; const extras=collectTrabajoExtras();
+    if(typeof oldGuardarTrabajo==='function') oldGuardarTrabajo.apply(this,arguments);
+    ensureDB(); let t=currentId?DB.trabajos.find(x=>x.id===currentId):DB.trabajos.find(x=>!before.has(x.id)); if(!t) t=DB.trabajos[DB.trabajos.length-1];
+    if(t){ Object.assign(t, extras); t.hsUpdatedAt=new Date().toISOString(); if(t.bloqueado&&t.bloqueado.activo&&t.estado==='En proceso') t.estado='Bloqueado'; hsMigrateTrabajo(t); hsLog(t.id,currentId?'Trabajo editado con campos cotidianos':'Trabajo creado con campos cotidianos'); save(); renderAll(); }
+  };
+
+  window.eliminarTrabajo = function(id){ ensureDB(); const t=DB.trabajos.find(x=>x.id===id); if(!t) return; if(confirm(`¿Eliminar trabajo de ${t.nombre}? Irá a Papelera.`)){ DB.trabajos=DB.trabajos.filter(x=>x.id!==id); DB.papelera.trabajos.unshift({deletedAt:new Date().toLocaleString('es-PE'),item:t}); hsLastAction={type:'deleteTrabajo',item:t}; save(); renderAll(); toast('Trabajo enviado a papelera'); } };
+
+  const oldCobrarTrabajo = window.cobrarTrabajo;
+  window.cobrarTrabajo = function(id){ injectCobroFields(); if(typeof oldCobrarTrabajo==='function') oldCobrarTrabajo.apply(this,arguments); injectCobroFields(); setVal('cobro-fecha',today()); setVal('cobro-medio',(hsSettings().mediosPago||['Yape'])[0]); setVal('cobro-operacion',''); setVal('cobro-nota',''); };
+  window.guardarCobro = function(){
+    const m=Number(val('cobro-monto'))||0; if(m<=0){ alert('Ingresa un monto válido'); return; }
+    const idx=DB.trabajos.findIndex(x=>x.id===cobroId); if(idx<0) return; const t=DB.trabajos[idx]; hsMigrateTrabajo(t); const saldo=saldoTotal(t);
+    if(m>saldo && !confirm('El monto supera el saldo pendiente. ¿Registrarlo como pago excedente/adicional?')) return;
+    t.pagos.push({monto:m,fecha:val('cobro-fecha')||today(),medioPago:val('cobro-medio'),operacion:val('cobro-operacion'),nota:val('cobro-nota')});
+    t.cobrado=(Number(t.cobrado)||0)+m; if(saldoTotal(t)<=0){ t.cobrado=precioTotal(t); t.estado='Pagado'; }
+    t.hsUpdatedAt=new Date().toISOString(); hsLog(t.id,`Cobro registrado: ${money(m)} por ${val('cobro-medio')||'sin canal'}`); save(); if(typeof closeCobro==='function') closeCobro(); renderAll(); toast('Cobro registrado con canal');
+  };
+
+  const oldRenderCuotasGrid = window.renderCuotasGrid;
+  window.renderCuotasGrid = function(){ if(typeof oldRenderCuotasGrid==='function') oldRenderCuotasGrid.apply(this,arguments); enhanceCuotaPaymentFields(); };
+  window.agregarAbonoCuota = function(i){
+    if(typeof cuotasData==='undefined') return; const c=cuotasData[i]; if(!c) return;
+    const monto=Number(val('abono-monto-'+i))||0; if(monto<=0){ toast('Ingresa un monto válido'); return; }
+    const fecha=val('abono-fecha-'+i)||today(); const nota=val('abono-nota-'+i); const medio=val('abono-medio-'+i); const op=val('abono-operacion-'+i); const tipo=(typeof tipoAbono==='function')?tipoAbono(c.f,fecha):(c.f&&fecha<c.f?'adelanto':'a_tiempo');
+    if(!c.abonos) c.abonos=[]; c.abonos.push({monto,fecha,tipo,nota,medioPago:medio,operacion:op,adelanto:tipo==='adelanto'});
+    if(typeof recalcularEstadoCuota==='function') recalcularEstadoCuota(c); c.cobrado=cuotaAbonado(c); if(typeof actualizarCobradoDesdeCuotas==='function') actualizarCobradoDesdeCuotas(); setVal('abono-monto-'+i,''); setVal('abono-nota-'+i,''); setVal('abono-operacion-'+i,''); if(typeof renderCuotasGrid==='function') renderCuotasGrid(); toast('Abono registrado con canal ✅');
+  };
+
+  const oldRenderDashboard = window.renderDashboard;
+  window.renderDashboard = function(){ if(typeof oldRenderDashboard==='function') oldRenderDashboard.apply(this,arguments); injectDashboard(); renderHoy(); };
+  const oldRenderProyeccion = window.renderProyeccion;
+  window.renderProyeccion = function(){ if(typeof oldRenderProyeccion==='function') oldRenderProyeccion.apply(this,arguments); injectProyeccion(); const f=get('hs-caja-fecha'); hsRenderCaja(f?f.value:today()); };
+  const oldRenderProyeccionMensual = window.renderProyeccionMensual;
+  window.renderProyeccionMensual = function(){ if(typeof oldRenderProyeccionMensual==='function') oldRenderProyeccionMensual.apply(this,arguments); injectProyeccion(); const f=get('hs-caja-fecha'); hsRenderCaja(f?f.value:today()); };
+
+  // Modo privacidad mejorado: reutiliza botón del ojo.
+  const oldToggleHide = window.toggleHidePrecios;
+  window.toggleHidePrecios = function(){ if(typeof oldToggleHide==='function') oldToggleHide.apply(this,arguments); document.body.classList.toggle('hs-privacy', !!hidePrecios); };
+
+  function startHS(){
+    injectStyles(); ensureDB(); injectRegistroToolbar(); injectCobroFields(); injectTrabajoExtras(); ensureStatusOptions(); save(); renderAll();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(startHS,100)); else setTimeout(startHS,100);
+})();
+</script>
 </body>
 </html>
