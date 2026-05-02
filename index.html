@@ -19141,5 +19141,694 @@ body{font-size:11.2px!important;letter-spacing:-.015em!important}
 </script>
 <!-- ===================== FIN HS V7 PATCH ===================== -->
 
+
+<!-- ===================== HS V8 PATCH: REGISTRO 2x9 + UI COMPACTA ===================== -->
+<style id="hs-v8-compact-ui-patch">
+  /* ===== V8: Registro — iconos fijos en 2 líneas de 9 ===== */
+  #v-registro .hs-v8-action-grid{
+    display:grid!important;
+    grid-template-columns:repeat(9,28px)!important;
+    grid-auto-rows:28px!important;
+    gap:4px!important;
+    align-items:center!important;
+    justify-content:start!important;
+    align-content:start!important;
+    max-width:284px!important;
+    min-width:284px!important;
+    overflow:visible!important;
+    flex-wrap:unset!important;
+  }
+  #v-registro .hs-v8-action-grid .btn,
+  #v-registro .hs-v8-action-grid .btn-sm{
+    width:28px!important;
+    height:28px!important;
+    min-width:28px!important;
+    max-width:28px!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:12px!important;
+    line-height:1!important;
+    border-radius:7px!important;
+    overflow:hidden!important;
+  }
+  #v-registro .hs-v8-hidden-action,
+  #v-registro .hs-v8-extra-hidden,
+  #v-registro .hs-v8-action-grid .btn[title="Acuerdo"],
+  #v-registro .hs-v8-action-grid .btn[onclick*="hsEnviarAcuerdo"]{
+    display:none!important;
+  }
+  #v-registro .tbl td:last-child{min-width:300px!important;width:300px!important}
+  #v-registro .tbl th:last-child{min-width:300px!important;width:300px!important}
+
+  /* Tarjetas móviles: mismas 2 líneas de 9, sin scroll horizontal de acciones */
+  #mobile-cards .mcard-footer.hs-v8-action-grid{
+    display:grid!important;
+    grid-template-columns:repeat(9,30px)!important;
+    grid-auto-rows:30px!important;
+    gap:4px!important;
+    justify-content:center!important;
+    align-items:center!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    overflow:visible!important;
+    padding-top:8px!important;
+    margin-top:6px!important;
+    flex-wrap:unset!important;
+    scrollbar-width:none!important;
+  }
+  #mobile-cards .mcard-footer.hs-v8-action-grid::-webkit-scrollbar{display:none!important}
+  #mobile-cards .mcard-footer.hs-v8-action-grid .btn,
+  #mobile-cards .mcard-footer.hs-v8-action-grid .btn-sm{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    max-width:30px!important;
+    padding:0!important;
+    font-size:13px!important;
+    border-radius:8px!important;
+  }
+  #mobile-cards .mcard{padding:10px 11px!important;margin-bottom:8px!important;border-radius:10px!important}
+  #mobile-cards .mcard-header{margin-bottom:7px!important}
+  #mobile-cards .mcard-body{gap:5px!important;margin-bottom:7px!important}
+  #mobile-cards .mcard-field{padding:6px 7px!important;font-size:10.5px!important}
+  #mobile-cards .mcard-field-label{font-size:8px!important;margin-bottom:1px!important}
+  #mobile-cards .mcard-field-val{font-size:10.5px!important}
+
+  @media(max-width:360px){
+    #mobile-cards .mcard-footer.hs-v8-action-grid{
+      grid-template-columns:repeat(9,28px)!important;
+      grid-auto-rows:28px!important;
+      gap:3px!important;
+    }
+    #mobile-cards .mcard-footer.hs-v8-action-grid .btn,
+    #mobile-cards .mcard-footer.hs-v8-action-grid .btn-sm{
+      width:28px!important;height:28px!important;min-width:28px!important;max-width:28px!important;font-size:12px!important;
+    }
+  }
+
+  /* ===== V8: Dashboard un poco más pequeño ===== */
+  #v-dashboard .daily-summary{padding:10px 12px!important;margin-bottom:8px!important;border-radius:10px!important}
+  #v-dashboard .daily-title{font-size:11px!important;margin-bottom:7px!important;line-height:1.25!important}
+  #v-dashboard .daily-summary-close{top:7px!important;right:9px!important;font-size:13px!important}
+  #v-dashboard .daily-grid{gap:5px!important}
+  #v-dashboard .daily-kpi{padding:6px 5px!important;border-radius:7px!important}
+  #v-dashboard .daily-kpi-val{font-size:12.5px!important;line-height:1.1!important}
+  #v-dashboard .daily-kpi-label{font-size:7px!important;line-height:1.1!important;margin-top:1px!important}
+  #v-dashboard #daily-alerts-text{font-size:9.5px!important;margin-top:6px!important;line-height:1.25!important}
+
+  #v-dashboard #hs-hoy-box{margin-bottom:8px!important;border-radius:10px!important}
+  #v-dashboard #hs-hoy-box .section-header{padding:8px 10px!important}
+  #v-dashboard #hs-hoy-box .section-title{font-size:11px!important}
+  #v-dashboard #hs-hoy-box .reminder-item{padding:7px 9px!important;font-size:10.5px!important;gap:6px!important}
+  #v-dashboard #hs-hoy-box .reminder-item div[style*="font-weight:700"]{font-size:10.8px!important;line-height:1.25!important}
+  #v-dashboard #hs-hoy-box .btn-sm{padding:3px 6px!important;font-size:9.5px!important;border-radius:6px!important}
+  #v-dashboard .hs-mini{font-size:9px!important;line-height:1.2!important}
+
+  #v-dashboard .stats-grid{gap:6px!important;margin-bottom:8px!important}
+  #v-dashboard .stat-card{padding:7px 8px!important;min-height:56px!important;border-radius:9px!important}
+  #v-dashboard .stat-label{font-size:7.5px!important;margin-bottom:2px!important;line-height:1.1!important;letter-spacing:.28px!important}
+  #v-dashboard .stat-val{font-size:14.5px!important;line-height:1.05!important;letter-spacing:-.35px!important}
+  #v-dashboard .stat-sub{font-size:7.5px!important;margin-top:1px!important;line-height:1.15!important;max-height:18px!important;overflow:hidden!important}
+  #v-dashboard .progress-wrap{padding:8px 9px!important;margin-bottom:8px!important;border-radius:9px!important}
+  #v-dashboard .progress-title{font-size:9.5px!important}
+  #v-dashboard .progress-pct{font-size:13px!important}
+  #v-dashboard .progress-bar{height:5px!important}
+  #v-dashboard #dash-filtros-rapidos{gap:6px!important;margin-bottom:8px!important}
+  #v-dashboard #dash-filtros-rapidos>div{padding:7px 7px!important;min-height:52px!important;border-radius:9px!important}
+  #v-dashboard #dash-filtros-rapidos>div div:nth-child(1){font-size:7.5px!important;line-height:1.1!important;margin-bottom:1px!important}
+  #v-dashboard #dash-filtros-rapidos>div div:nth-child(2){font-size:13.5px!important;line-height:1.05!important}
+  #v-dashboard #dash-filtros-rapidos>div div:nth-child(3){font-size:7px!important;line-height:1.1!important;margin-top:1px!important}
+
+  /* ===== V8: Asistente Offline más compacto ===== */
+  #v-asistente .ai-wrap{max-width:650px!important}
+  #v-asistente .ai-chat{border-radius:10px!important;margin-bottom:10px!important}
+  #v-asistente .ai-messages{padding:11px!important;gap:8px!important;max-height:390px!important;min-height:170px!important}
+  #v-asistente .ai-msg{gap:7px!important}
+  #v-asistente .ai-avatar{width:25px!important;height:25px!important;font-size:12px!important}
+  #v-asistente .ai-bubble{font-size:11.5px!important;line-height:1.42!important;padding:8px 10px!important;border-radius:10px!important;max-width:88%!important}
+  #v-asistente .ai-bubble br{line-height:1.05!important}
+  #v-asistente .ai-actions{padding:7px 9px!important;gap:5px!important}
+  #v-asistente .ai-chip{font-size:9.5px!important;padding:4px 8px!important;border-radius:14px!important}
+  #v-asistente .ai-input-area{padding:8px 9px!important;gap:6px!important}
+  #v-asistente .ai-input-area textarea{min-height:36px!important;font-size:14px!important;padding:7px 9px!important;border-radius:9px!important;max-height:95px!important}
+  #v-asistente .ai-btn-mic,
+  #v-asistente .ai-btn-send{width:36px!important;height:36px!important;min-width:36px!important;border-radius:9px!important;font-size:16px!important}
+  #v-asistente .ai-status{font-size:9px!important;padding:3px 9px 6px!important;min-height:14px!important}
+  #v-asistente #ai-recording-bar{padding:7px 10px!important;font-size:11px!important;line-height:1.25!important}
+  @media(max-width:768px){
+    #v-asistente .ai-messages{max-height:calc(100svh - 255px)!important;min-height:160px!important}
+    #v-asistente .ai-bubble{font-size:11.2px!important;line-height:1.38!important;padding:7px 9px!important}
+    #v-asistente .ai-actions{max-height:72px!important;overflow-y:auto!important}
+  }
+
+  /* ===== V8: Proyecciones más pequeñas ===== */
+  #v-proyeccion>div:first-child{margin-bottom:9px!important;border-radius:9px!important}
+  #v-proyeccion #proy-tab-dias,
+  #v-proyeccion #proy-tab-meses{padding:8px 10px!important;font-size:10.5px!important}
+  #v-proyeccion .stats-grid{gap:6px!important;margin-bottom:8px!important}
+  #v-proyeccion .proy-card{padding:8px 7px!important;min-height:72px!important;border-radius:9px!important}
+  #v-proyeccion .proy-periodo{font-size:7.8px!important;margin-bottom:3px!important;line-height:1.1!important}
+  #v-proyeccion .proy-monto{font-size:15.5px!important;margin-bottom:1px!important;line-height:1.1!important}
+  #v-proyeccion .proy-desc{font-size:7.5px!important;line-height:1.15!important}
+  #v-proyeccion .hs-card-kpi{padding:8px!important;min-height:62px!important;border-radius:9px!important}
+  #v-proyeccion .hs-card-kpi .v{font-size:15px!important;line-height:1.05!important}
+  #v-proyeccion .hs-card-kpi .l{font-size:7.5px!important;line-height:1.15!important}
+  #v-proyeccion #proy-custom-card{padding:9px 10px!important;gap:7px!important;border-radius:9px!important;margin-bottom:8px!important}
+  #v-proyeccion #proy-custom-card span{font-size:10px!important}
+  #v-proyeccion #proy-custom-resultado{font-size:16px!important;min-width:62px!important}
+  #v-proyeccion #proy-dias-custom{width:58px!important;padding:5px 7px!important;font-size:12px!important;border-radius:7px!important}
+  #v-proyeccion .divider{margin:9px 0!important}
+  #v-proyeccion .table-wrap{border-radius:10px!important;margin-bottom:10px!important}
+  #v-proyeccion .table-toolbar{padding:7px 9px!important;gap:5px!important}
+  #v-proyeccion .table-toolbar span{font-size:11px!important;line-height:1.2!important}
+  #v-proyeccion .filter-select{padding:5px 7px!important;font-size:10px!important;border-radius:7px!important}
+  #v-proyeccion .btn-sm{padding:3px 6px!important;font-size:9.5px!important}
+  #v-proyeccion #cuotas-tabla .cuota-mcard{padding:8px 9px!important;margin:6px 8px!important;border-radius:8px!important}
+  #v-proyeccion #cuotas-tabla .cuota-mcard-nombre{font-size:11px!important}
+  #v-proyeccion #cuotas-tabla .cuota-mcard-sub{font-size:8.5px!important}
+  #v-proyeccion #cuotas-tabla .pill{font-size:8.5px!important;padding:2px 6px!important}
+</style>
+<script id="hs-v8-compact-ui-script">
+(function(){
+  'use strict';
+  var HS_V8_VERSION = 'v8-registro-2x9-ui-compacta';
+  var LOW_PRIORITY_SELECTORS = [
+    '[title="Acuerdo"]',
+    '[onclick*="hsEnviarAcuerdo"]'
+  ];
+  function qsa(root, sel){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function shouldHide(btn){
+    if(!btn) return false;
+    var title = String(btn.getAttribute('title') || '').trim().toLowerCase();
+    var onclick = String(btn.getAttribute('onclick') || '');
+    return title === 'acuerdo' || onclick.indexOf('hsEnviarAcuerdo') !== -1;
+  }
+  function normalizeActionBar(bar){
+    if(!bar || bar.__hsV8Normalized){}
+    bar.classList.add('hs-v8-action-grid');
+    var buttons = qsa(bar, 'button.btn');
+    buttons.forEach(function(btn){
+      btn.classList.remove('hs-v8-extra-hidden');
+      if(shouldHide(btn)) btn.classList.add('hs-v8-hidden-action');
+      else btn.classList.remove('hs-v8-hidden-action');
+    });
+    var visible = qsa(bar, 'button.btn:not(.hs-v8-hidden-action)');
+    if(visible.length > 18){
+      var orderedHide = [];
+      ['Perfil','Historial','Bitácora'].forEach(function(title){
+        visible.forEach(function(btn){ if(String(btn.getAttribute('title')||'') === title) orderedHide.push(btn); });
+      });
+      visible.forEach(function(btn){ if(orderedHide.indexOf(btn) < 0) orderedHide.push(btn); });
+      var need = visible.length - 18;
+      orderedHide.slice(0, need).forEach(function(btn){ btn.classList.add('hs-v8-extra-hidden'); });
+    }
+    bar.__hsV8Normalized = true;
+  }
+  function normalizeAll(){
+    qsa(document, '#v-registro .actions, #mobile-cards .mcard-footer').forEach(normalizeActionBar);
+  }
+  function wrapRenderTabla(){
+    if(typeof window.renderTabla !== 'function' || window.renderTabla.hsV8Wrapped) return;
+    var old = window.renderTabla;
+    var wrapped = function(){
+      var r = old.apply(this, arguments);
+      setTimeout(normalizeAll, 0);
+      setTimeout(normalizeAll, 80);
+      return r;
+    };
+    wrapped.hsV8Wrapped = true;
+    window.renderTabla = wrapped;
+  }
+  function boot(){
+    wrapRenderTabla();
+    normalizeAll();
+    setTimeout(normalizeAll, 120);
+    setTimeout(normalizeAll, 600);
+    setTimeout(normalizeAll, 1500);
+    try{
+      var target = document.getElementById('v-registro');
+      if(target && !target.__hsV8Observer){
+        var obs = new MutationObserver(function(){ normalizeAll(); });
+        obs.observe(target, {childList:true, subtree:true});
+        target.__hsV8Observer = obs;
+      }
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  window.addEventListener('load', function(){ setTimeout(boot, 50); });
+  window.HS_V8_VERSION = HS_V8_VERSION;
+})();
+</script>
+<!-- ===================== FIN HS V8 PATCH ===================== -->
+
+<!-- ===================== HS V9 PATCH: MIC HARD STOP + REGISTRO 9x2 REAL ===================== -->
+<style id="hs-v9-mic-grid-style">
+  /* ===== V9: Registro — siempre 9 columnas reales en PC y móvil ===== */
+  #v-registro .actions.hs-v9-action-grid,
+  #v-registro .mcard-footer.hs-v9-action-grid,
+  #mobile-cards .mcard-footer.hs-v9-action-grid{
+    display:grid!important;
+    grid-template-columns:repeat(9,minmax(0,1fr))!important;
+    grid-auto-rows:28px!important;
+    gap:3px!important;
+    align-items:center!important;
+    align-content:start!important;
+    justify-content:stretch!important;
+    justify-items:stretch!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow:visible!important;
+    flex-wrap:unset!important;
+    scrollbar-width:none!important;
+  }
+  #v-registro .tbl .actions.hs-v9-action-grid{
+    grid-template-columns:repeat(9,28px)!important;
+    width:276px!important;
+    min-width:276px!important;
+    max-width:276px!important;
+    justify-content:start!important;
+  }
+  #v-registro .tbl td:last-child{min-width:292px!important;width:292px!important;max-width:292px!important}
+  #v-registro .tbl th:last-child{min-width:292px!important;width:292px!important;max-width:292px!important}
+  #v-registro .actions.hs-v9-action-grid::-webkit-scrollbar,
+  #mobile-cards .mcard-footer.hs-v9-action-grid::-webkit-scrollbar{display:none!important}
+  #v-registro .actions.hs-v9-action-grid .btn,
+  #v-registro .actions.hs-v9-action-grid .btn-sm,
+  #v-registro .mcard-footer.hs-v9-action-grid .btn,
+  #v-registro .mcard-footer.hs-v9-action-grid .btn-sm,
+  #mobile-cards .mcard-footer.hs-v9-action-grid .btn,
+  #mobile-cards .mcard-footer.hs-v9-action-grid .btn-sm{
+    width:100%!important;
+    height:28px!important;
+    min-width:0!important;
+    max-width:none!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:12px!important;
+    line-height:1!important;
+    border-radius:7px!important;
+    overflow:hidden!important;
+    margin:0!important;
+  }
+  #mobile-cards .mcard-footer.hs-v9-action-grid{
+    padding-top:7px!important;
+    margin-top:6px!important;
+  }
+  #v-registro .hs-v9-hide-action,
+  #v-registro .hs-v9-overflow-hidden,
+  #v-registro .hs-v9-action-grid .btn[title="Acuerdo"],
+  #v-registro .hs-v9-action-grid .btn[onclick*="hsEnviarAcuerdo"]{
+    display:none!important;
+  }
+  #v-registro .hs-v9-delete-slot{
+    display:flex!important;
+    background:#7f1d1d!important;
+    color:var(--red)!important;
+    border-color:var(--red)!important;
+  }
+  @media(max-width:768px){
+    #mobile-cards .mcard-footer.hs-v9-action-grid,
+    #v-registro .mcard-footer.hs-v9-action-grid{
+      grid-template-columns:repeat(9,minmax(0,1fr))!important;
+      grid-auto-rows:27px!important;
+      gap:3px!important;
+    }
+    #mobile-cards .mcard-footer.hs-v9-action-grid .btn,
+    #mobile-cards .mcard-footer.hs-v9-action-grid .btn-sm,
+    #v-registro .mcard-footer.hs-v9-action-grid .btn,
+    #v-registro .mcard-footer.hs-v9-action-grid .btn-sm{
+      height:27px!important;
+      font-size:11.5px!important;
+      border-radius:7px!important;
+    }
+  }
+  @media(max-width:360px){
+    #mobile-cards .mcard-footer.hs-v9-action-grid,
+    #v-registro .mcard-footer.hs-v9-action-grid{
+      grid-template-columns:repeat(9,minmax(0,1fr))!important;
+      grid-auto-rows:25px!important;
+      gap:2px!important;
+    }
+    #mobile-cards .mcard-footer.hs-v9-action-grid .btn,
+    #mobile-cards .mcard-footer.hs-v9-action-grid .btn-sm,
+    #v-registro .mcard-footer.hs-v9-action-grid .btn,
+    #v-registro .mcard-footer.hs-v9-action-grid .btn-sm{
+      height:25px!important;
+      font-size:10.8px!important;
+      border-radius:6px!important;
+    }
+  }
+
+  /* ===== V9: Micro — botón con apagado duro ===== */
+  #ai-mic-btn.hs-v9-recording,
+  .ai-btn-mic.hs-v9-recording{
+    background:#1f0505!important;
+    border-color:var(--red)!important;
+    color:var(--red)!important;
+    animation:pulse 1s infinite!important;
+  }
+  #ai-mic-btn.hs-v9-stopping,
+  .ai-btn-mic.hs-v9-stopping{
+    background:#1c0f00!important;
+    border-color:var(--yellow)!important;
+    color:var(--yellow)!important;
+    animation:none!important;
+  }
+</style>
+<script id="hs-v9-mic-grid-script">
+(function(){
+  'use strict';
+
+  var HS_V9_VERSION = 'v9-mic-hard-stop-registro-9x2';
+  var MIC_ATTR = 'data-hs-v6-mic';
+  var rec = null;
+  var micActive = false;
+  var micStopping = false;
+  var micFinished = false;
+  var micFinal = '';
+  var micRecent = [];
+  var hardStopTimer = null;
+
+  function byId(id){ return document.getElementById(id); }
+  function qsa(root, sel){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function toast9(msg){ try{ if(typeof toast==='function') return toast(msg); if(typeof showToast==='function') return showToast(msg); }catch(e){} console.log(msg); }
+  function norm9(s){
+    try{return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9ñ\s]/g,' ').replace(/\s+/g,' ').trim();}
+    catch(e){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+  }
+  function words9(s){ return String(s||'').trim().split(/\s+/).filter(Boolean); }
+  function clean9(text){
+    if(typeof window.hsV6CleanSpeech === 'function'){
+      try{return window.hsV6CleanSpeech(text); }catch(e){}
+    }
+    var tokens = words9(String(text||'').replace(/\s+/g,' ').trim());
+    if(tokens.length<2) return tokens.join(' ');
+    for(var n=Math.min(12, Math.floor(tokens.length/2)); n>=1; n--){
+      var out=[], i=0;
+      while(i<tokens.length){
+        var dup=false;
+        if(i+2*n<=tokens.length){
+          dup = norm9(tokens.slice(i,i+n).join(' ')) === norm9(tokens.slice(i+n,i+2*n).join(' '));
+        }
+        if(dup){ out=out.concat(tokens.slice(i,i+n)); i+=2*n; }
+        else { out.push(tokens[i]); i++; }
+      }
+      tokens=out;
+    }
+    return tokens.join(' ').replace(/\s+/g,' ').trim();
+  }
+  function merge9(a,b){
+    a=String(a||'').trim(); b=String(b||'').trim();
+    if(!a) return b; if(!b) return a;
+    var aw=words9(a), bw=words9(b), max=Math.min(aw.length,bw.length,14), best=0;
+    for(var k=1;k<=max;k++){
+      if(norm9(aw.slice(aw.length-k).join(' ')) === norm9(bw.slice(0,k).join(' '))) best=k;
+    }
+    if(best) return clean9(aw.concat(bw.slice(best)).join(' '));
+    var na=norm9(a), nb=norm9(b);
+    if(na.endsWith(nb)) return a;
+    if(nb.startsWith(na)) return b;
+    return clean9(a+' '+b);
+  }
+  function pushSegment9(seg){
+    seg=clean9(seg);
+    var ns=norm9(seg);
+    if(!ns) return;
+    if(micRecent.indexOf(ns)!==-1) return;
+    micFinal = clean9(merge9(micFinal, seg));
+    micRecent.push(ns);
+    if(micRecent.length>10) micRecent.shift();
+  }
+  function micUi9(state){
+    var btn=byId('ai-mic-btn'), ta=byId('ai-textarea'), bar=byId('ai-recording-bar');
+    if(btn){
+      btn.classList.toggle('recording', state==='recording');
+      btn.classList.toggle('hs-v9-recording', state==='recording');
+      btn.classList.toggle('hs-v9-stopping', state==='stopping');
+      btn.textContent = state==='recording' ? '⏹️' : (state==='stopping' ? '…' : '🎤');
+      btn.title = state==='recording' ? 'Detener micrófono y procesar' : (state==='stopping' ? 'Deteniendo micrófono...' : 'Activar micrófono');
+      btn.disabled = false;
+    }
+    if(bar){
+      if(state==='recording'){
+        bar.style.display='block';
+        bar.innerHTML='🎙️ Escuchando... toca ⏹️ para detener. El texto se limpia antes de enviarse.';
+      }else if(state==='stopping'){
+        bar.style.display='block';
+        bar.innerHTML='⏳ Deteniendo micrófono y limpiando dictado...';
+      }else{
+        bar.style.display='none';
+      }
+    }
+    if(ta){
+      ta.placeholder = state==='recording' ? '🎙️ Te escucho...' : 'Dicta o escribe tu indicación...';
+    }
+  }
+  function safeAbort9(){
+    try{ if(rec) rec.abort(); }catch(e){}
+  }
+  function finishMic9(autosend){
+    if(micFinished) return;
+    micFinished = true;
+    micActive = false;
+    micStopping = false;
+    clearTimeout(hardStopTimer);
+    micUi9('idle');
+    var ta=byId('ai-textarea');
+    if(ta){
+      var finalText = clean9(ta.value || micFinal);
+      ta.value = finalText;
+      ta.setAttribute(MIC_ATTR, '1');
+      try{ ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,120)+'px'; }catch(e){}
+      if(finalText && autosend !== false){
+        setTimeout(function(){ try{ if(typeof window.aiEnviar === 'function') window.aiEnviar(); }catch(e){} }, 120);
+      }
+    }
+    rec = null;
+  }
+  function stopMic9(){
+    if(!micActive && !rec){ micUi9('idle'); return; }
+    micStopping = true;
+    micActive = false;
+    micUi9('stopping');
+    clearTimeout(hardStopTimer);
+    hardStopTimer = setTimeout(function(){
+      safeAbort9();
+      finishMic9(true);
+    }, 650);
+    try{ if(rec) rec.stop(); else finishMic9(true); }
+    catch(e){ safeAbort9(); finishMic9(true); }
+  }
+  function requestPermission9(cb){
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+        try{ stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
+        cb();
+      }).catch(function(){
+        micUi9('idle');
+        if(typeof aiAddMsg==='function') aiAddMsg('bot','⚠️ <strong>Permiso de micrófono denegado.</strong> Activa el micrófono en permisos de la app o navegador.', true);
+      });
+    }else cb();
+  }
+  function startMic9(){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){
+      if(typeof aiAddMsg==='function') aiAddMsg('bot','⚠️ Tu WebView/navegador no soporta reconocimiento de voz. Prueba con Chrome en Android.', true);
+      return;
+    }
+    try{ if(rec) rec.abort(); }catch(e){}
+    clearTimeout(hardStopTimer);
+    micActive = false;
+    micStopping = false;
+    micFinished = false;
+    micFinal = '';
+    micRecent = [];
+    var ta=byId('ai-textarea');
+    if(ta){ ta.value=''; ta.setAttribute(MIC_ATTR, '1'); }
+
+    rec = new SR();
+    rec.lang = 'es-PE';
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+
+    rec.onstart = function(){
+      micActive = true;
+      micStopping = false;
+      micFinished = false;
+      micUi9('recording');
+    };
+    rec.onresult = function(e){
+      var interim='';
+      for(var i=e.resultIndex; i<e.results.length; i++){
+        var raw = (e.results[i] && e.results[i][0] && e.results[i][0].transcript) ? e.results[i][0].transcript : '';
+        if(!raw) continue;
+        if(e.results[i].isFinal) pushSegment9(raw);
+        else interim = merge9(interim, raw);
+      }
+      var combined = clean9(merge9(micFinal, interim));
+      var box=byId('ai-textarea');
+      if(box){
+        box.value = combined;
+        box.setAttribute(MIC_ATTR, '1');
+        try{ box.style.height='auto'; box.style.height=Math.min(box.scrollHeight,120)+'px'; }catch(e){}
+      }
+    };
+    rec.onend = function(){
+      if(micStopping || !micActive){ finishMic9(true); return; }
+      setTimeout(function(){
+        if(micActive && !micStopping && rec){ try{ rec.start(); }catch(e){} }
+      }, 220);
+    };
+    rec.onerror = function(e){
+      var err = e && e.error ? String(e.error) : '';
+      if(micStopping || err === 'aborted'){
+        finishMic9(true);
+        return;
+      }
+      if(err === 'no-speech'){
+        if(micActive && !micStopping){
+          try{ rec.stop(); }catch(ex){}
+        }
+        return;
+      }
+      micActive = false;
+      micStopping = false;
+      micUi9('idle');
+      if(err === 'not-allowed'){
+        if(typeof aiAddMsg==='function') aiAddMsg('bot','⚠️ Permiso de micrófono denegado. Revisa permisos de Android/WebView.', true);
+      }else if(err){
+        toast9('⚠️ Micrófono: '+err);
+      }
+      finishMic9(false);
+    };
+    try{ rec.start(); }
+    catch(e){ micUi9('idle'); toast9('🎙️ El micrófono ya estaba activo. Toca nuevamente para detener.'); }
+  }
+  window.toggleMic = function(){
+    if(micActive || micStopping || rec){ stopMic9(); return; }
+    requestPermission9(startMic9);
+  };
+  window.hsV9StopMic = stopMic9;
+  window.hsV9MicState = function(){ return {active:micActive, stopping:micStopping, hasRecognition:!!rec, final:micFinal}; };
+
+  // =========================================================
+  // REGISTRO: ocultar Acuerdo y poner X de eliminar en ese espacio.
+  // =========================================================
+  function isAgreement(btn){
+    var title = String(btn && btn.getAttribute('title') || '').toLowerCase().trim();
+    var onclick = String(btn && btn.getAttribute('onclick') || '');
+    var text = String(btn && btn.textContent || '').toLowerCase().trim();
+    return title === 'acuerdo' || title.indexOf('acuerdo') !== -1 || onclick.indexOf('hsEnviarAcuerdo') !== -1 || text === '🤝';
+  }
+  function isDelete(btn){
+    var title = String(btn && btn.getAttribute('title') || '').toLowerCase().trim();
+    var onclick = String(btn && btn.getAttribute('onclick') || '').toLowerCase();
+    var text = String(btn && btn.textContent || '').trim();
+    return title.indexOf('eliminar') !== -1 || onclick.indexOf('eliminartrabajo') !== -1 || text === '✕' || text === 'x' || btn.classList.contains('btn-danger');
+  }
+  function isProtected(btn){
+    if(isDelete(btn)) return true;
+    var title = String(btn.getAttribute('title')||'').toLowerCase();
+    var onclick = String(btn.getAttribute('onclick')||'').toLowerCase();
+    return title.indexOf('cobrar')!==-1 || title.indexOf('editar')!==-1 || title.indexOf('estado')!==-1 || title.indexOf('comprobante')!==-1 || onclick.indexOf('cobrartrabajo')!==-1 || onclick.indexOf('edit')!==-1 || onclick.indexOf('estad')!==-1 || onclick.indexOf('comprobante')!==-1;
+  }
+  function normalizeBar9(bar){
+    if(!bar) return;
+    bar.classList.add('hs-v8-action-grid','hs-v9-action-grid');
+    var buttons = qsa(bar, 'button.btn');
+    var agreement = null, del = null;
+    buttons.forEach(function(btn){
+      btn.classList.remove('hs-v9-hide-action','hs-v9-overflow-hidden','hs-v8-extra-hidden');
+      if(isAgreement(btn)) agreement = btn;
+      if(isDelete(btn)) del = btn;
+    });
+    if(del){
+      del.classList.add('hs-v9-delete-slot');
+      del.classList.remove('hs-v8-extra-hidden','hs-v9-overflow-hidden','hs-v9-hide-action');
+      del.setAttribute('title','Eliminar registro');
+      if(agreement && agreement.parentNode === bar && del.parentNode === bar && del !== agreement){
+        try{ bar.insertBefore(del, agreement); }catch(e){}
+      }
+    }
+    qsa(bar, 'button.btn').forEach(function(btn){
+      if(isAgreement(btn)) btn.classList.add('hs-v9-hide-action','hs-v8-hidden-action');
+      else btn.classList.remove('hs-v9-hide-action');
+    });
+    var visible = qsa(bar, 'button.btn').filter(function(btn){
+      return !btn.classList.contains('hs-v9-hide-action') && !btn.classList.contains('hs-v8-hidden-action');
+    });
+    if(visible.length > 18){
+      var priority = [];
+      var low = ['duplicar','historial','bitácora','bitacora','ver historial','ver cliente','perfil'];
+      low.forEach(function(term){
+        visible.forEach(function(btn){
+          var title = String(btn.getAttribute('title')||'').toLowerCase();
+          if(!isProtected(btn) && priority.indexOf(btn)===-1 && title.indexOf(term)!==-1) priority.push(btn);
+        });
+      });
+      visible.forEach(function(btn){ if(!isProtected(btn) && priority.indexOf(btn)===-1) priority.push(btn); });
+      var need = visible.length - 18;
+      priority.slice(0, need).forEach(function(btn){ btn.classList.add('hs-v9-overflow-hidden'); });
+    }
+  }
+  function normalizeAll9(){
+    qsa(document, '#v-registro .actions, #v-registro .mcard-footer, #mobile-cards .mcard-footer').forEach(normalizeBar9);
+  }
+  function wrapRender9(){
+    if(typeof window.renderTabla === 'function' && !window.renderTabla.hsV9Wrapped){
+      var old = window.renderTabla;
+      var wrapped = function(){
+        var r = old.apply(this, arguments);
+        setTimeout(normalizeAll9, 0);
+        setTimeout(normalizeAll9, 80);
+        setTimeout(normalizeAll9, 250);
+        return r;
+      };
+      wrapped.hsV9Wrapped = true;
+      window.renderTabla = wrapped;
+    }
+    if(typeof window.renderAll === 'function' && !window.renderAll.hsV9Wrapped){
+      var oldAll = window.renderAll;
+      var wrappedAll = function(){
+        var r = oldAll.apply(this, arguments);
+        setTimeout(normalizeAll9, 0);
+        setTimeout(normalizeAll9, 100);
+        return r;
+      };
+      wrappedAll.hsV9Wrapped = true;
+      window.renderAll = wrappedAll;
+    }
+  }
+  function boot9(){
+    wrapRender9();
+    normalizeAll9();
+    setTimeout(normalizeAll9, 120);
+    setTimeout(normalizeAll9, 600);
+    setTimeout(normalizeAll9, 1600);
+    try{
+      var target = byId('v-registro') || byId('mobile-cards');
+      if(target && !target.__hsV9Observer){
+        var obs = new MutationObserver(function(){ normalizeAll9(); });
+        obs.observe(target, {childList:true, subtree:true, attributes:true});
+        target.__hsV9Observer = obs;
+      }
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot9);
+  else boot9();
+  window.addEventListener('load', function(){ setTimeout(boot9, 50); setTimeout(boot9, 1000); });
+  window.HS_V9_VERSION = HS_V9_VERSION;
+})();
+</script>
+<!-- ===================== FIN HS V9 PATCH ===================== -->
+
 </body>
 </html>
